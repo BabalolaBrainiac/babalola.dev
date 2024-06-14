@@ -68,36 +68,14 @@ const portfolio = [
     description:
       "A comprehensive platform featuring extensive apartment listings, detailed property information, advanced search filters, tenant reviews, online booking, and property management tools, aimed at simplifying the rental process for both tenants and property owners.",
     image: nnapt,
+    link: "https://the99apartments.com",
   },
   {
     name: "SafeGarageNG",
     description:
       "API documentation for SafeGarageNG, a robust platform enabling users to seamlessly search for and secure parking spots.",
     image: sgapidc,
-  },
-  {
-    name: "Visually Understanding Algorithms",
-    description:
-      "A showcase of animated algorithms coded using TypeScript, with the video garnering over 400,000 views.",
-    image: algorithms,
-  },
-  {
-    name: "Visually Understanding Algorithms",
-    description:
-      "A showcase of animated algorithms coded using TypeScript, with the video garnering over 400,000 views.",
-    image: algorithms,
-  },
-  {
-    name: "Visually Understanding Algorithms",
-    description:
-      "A showcase of animated algorithms coded using TypeScript, with the video garnering over 400,000 views.",
-    image: algorithms,
-  },
-  {
-    name: "Visually Understanding Algorithms",
-    description:
-      "A showcase of animated algorithms coded using TypeScript, with the video garnering over 400,000 views.",
-    image: algorithms,
+    link: "https://safegarage-dev.up.railway.app/api/schema/swagger-ui",
   },
 ];
 
