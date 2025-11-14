@@ -12,7 +12,11 @@ function SignInForm() {
   const [error, setError] = useState('')
   const router = useRouter()
   const searchParams = useSearchParams()
-  const callbackUrl = searchParams.get('callbackUrl') || '/blog'
+  const rawCallbackUrl = searchParams.get('callbackUrl') || '/blog'
+  
+  // preserve the original callbackUrl if it's a full URL (for blog subdomain redirects)
+  const isFullUrl = rawCallbackUrl.startsWith('http')
+  const callbackUrl = rawCallbackUrl
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -35,13 +39,23 @@ function SignInForm() {
         if (session?.user?.role === 'admin') {
           // if callbackUrl is /create or /admin, use it, otherwise go to /admin
           if (callbackUrl.includes('/admin') || callbackUrl.includes('/create')) {
-            router.push(callbackUrl)
+            // if callbackUrl is absolute (from blog subdomain), redirect directly
+            if (isFullUrl) {
+              window.location.href = callbackUrl
+            } else {
+              router.push(callbackUrl)
+            }
           } else {
             router.push('/admin')
           }
         } else if (session?.user?.role === 'contributor') {
           // preserve callbackUrl for contributors (could be /create)
-          router.push(callbackUrl)
+          // if it's a full URL from blog subdomain, redirect directly
+          if (isFullUrl) {
+            window.location.href = callbackUrl
+          } else {
+            router.push(callbackUrl)
+          }
         } else {
           setError('You do not have permission to access the blog')
         }

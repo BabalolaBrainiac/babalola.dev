@@ -55,6 +55,14 @@ export default withAuth(
       return subdomainResponse
     }
     
+    // if on blog subdomain and trying to access auth routes, redirect to main domain
+    if (isBlogSubdomain && pathname.startsWith('/auth')) {
+      const mainDomain = hostname.replace(/^blog\./, '')
+      const url = req.nextUrl.clone()
+      url.host = mainDomain
+      return NextResponse.redirect(url)
+    }
+    
     // additional middleware logic can go here
     return NextResponse.next()
   },
@@ -79,6 +87,20 @@ export default withAuth(
         }
         
         return true
+      },
+      async redirect({ url, baseUrl, req }) {
+        const hostname = req.headers.get('host') || ''
+        const isBlogSubdomain = hostname.includes('blog.localhost') || hostname.includes('blog.babalola.dev')
+        
+        // if redirecting to sign-in from blog subdomain, redirect to main domain
+        if (isBlogSubdomain && url.includes('/auth/signin')) {
+          const mainDomain = hostname.replace(/^blog\./, '')
+          const protocol = req.nextUrl.protocol
+          const callbackUrl = req.nextUrl.pathname + req.nextUrl.search
+          return `${protocol}//${mainDomain}/auth/signin?callbackUrl=${encodeURIComponent(`${protocol}//${hostname}${callbackUrl}`)}`
+        }
+        
+        return url
       },
     },
   }
