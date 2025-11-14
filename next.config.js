@@ -139,26 +139,27 @@ const nextConfig = {
   },
 
   async redirects() {
-    // Only apply redirects in production
     const isProduction = process.env.NODE_ENV === 'production' && 
                         process.env.VERCEL_ENV === 'production'
     
-    if (isProduction) {
-      return [
-        // Redirect /blog on main domain to blog subdomain
-        {
-          source: '/blog',
-          destination: 'https://blog.babalola.dev',
-          permanent: true,
-        },
-        {
-          source: '/blog/:path*',
-          destination: 'https://blog.babalola.dev/:path*',
-          permanent: true,
-        },
-      ]
+    // only add redirects in production
+    if (!isProduction) {
+      return []
     }
-    return []
+    
+    // production redirects to blog subdomain
+    return [
+      {
+        source: '/blog',
+        destination: 'https://blog.babalola.dev',
+        permanent: true,
+      },
+      {
+        source: '/blog/:path*',
+        destination: 'https://blog.babalola.dev/:path*',
+        permanent: true,
+      }
+    ]
   },
 
   // Security headers with SEO considerations

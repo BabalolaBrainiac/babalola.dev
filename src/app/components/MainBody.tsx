@@ -5,7 +5,7 @@ import { getBlogUrl } from '@/lib/urls';
 
 export default function MainBody() {
 	const [typedText, setTypedText] = useState('');
-	const fullText = 'Software Engineer';
+	const fullText = 'Senior Software Engineer';
 	const [currentExperienceIndex, setCurrentExperienceIndex] = useState(0);
 
 	const getSkillIcon = (category: string) => {
@@ -45,37 +45,49 @@ export default function MainBody() {
 
 	const experiences = [
 		{
-			title: "Software Engineer",
+			title: "Senior Software Engineer",
 			company: "HeySavi LTD",
 			period: "03/2025 - Present",
 			location: "Remote",
 			highlights: [
-				"Designed organization-wide AWS access management using Infrastructure as Code (Terraform)",
-				"Developing LLM powered core chat backend service with Sagemaker integration",
-				"Built robust, event-driven data pipelines with AWS Lambda, S3, SQS, and StepFunctions",
-				"Integrated AI/ML inference pipelines and agents via REST and WebSocket APIs",
-				"Provisioned analytics and data lake streaming pipelines with real-time S3 triggers"
+				"Designed organization-wide AWS IAM access management using Infrastructure as Code (Terraform), automating role-based permissions across environments and reducing manual configuration overhead by 80%",
+				"Architected LLM-powered chat backend service integrating AWS SageMaker, AI agents, and external providers, enabling real-time conversational AI with sub-200ms response times",
+				"Built reusable Terraform modules for provisioning AWS resources (Lambda, ECS, S3, IAM, SQS, SNS, EventBridge), standardizing infrastructure deployment and reducing setup time by 60%",
+				"Developed event-driven data ingestion and processing pipelines using Lambda, S3, SQS, SNS, and Step Functions, processing millions of events daily with 99.9% reliability",
+				"Integrated AI/ML inference pipelines, RAG systems, and agents via REST and WebSocket APIs, enabling real-time image analysis, semantic search, and intelligent recommendations",
+				"Provisioned analytics and data lake streaming pipelines with S3 event triggers, Redshift integration, and CloudWatch monitoring, automating data governance and warehouse operations"
 			],
-			tech: ["AWS", "Terraform", "Lambda", "Sagemaker", "S3", "SQS", "SNS", "StepFunctions", "Python", "Bash"]
+			tech: ["AWS SageMaker", "Terraform", "Lambda", "ECS", "S3", "EventBridge", "Redshift", "Node.js", "TypeScript", "Python", "WebSockets", "DynamoDB", "Pinecone"]
 		},
 		{
-			title: "Senior Software Engineer",
-			company: "Access Bank PLC",
-			period: "04/2023 - Present",
+			title: "Lead Backend Engineer",
+			company: "SpinWellness (Contract)",
+			period: "11/2024 - 02/2025",
 			location: "Remote",
 			highlights: [
-				"Led backend engineering for Access More banking app servicing the South African market with 2M+ users",
-				"Actively developed and implemented comprehensive core banking services for South Africa including customer identification, verification, and transaction processing",
-				"Built employee management and bill payment systems with real-time processing capabilities for South African operations",
-				"Developed new onboarding and KYC certification system compliant with South African banking laws",
-				"Architected back office solutions for South Africa's core banking service infrastructure",
-				"Led backend transformation for Primus Plus serving 52M+ clients across Africa",
-				"Increased system efficiency by 25% through microservice architecture",
-				"Reduced development time by 30% through process optimization by developing custom scripts and rewriting the CI/CD pipeline to use an event-based mode of deployment to the bank's remote servers",
-				"Improved deployment speed by 40% using AWS, Docker, and Kubernetes",
-				"Managed real-time data processing with Kafka and OLTP systems"
+				"Architected and developed complete backend infrastructure using Next.js, Cloudflare Workers, and Terraform, enabling serverless deployment with zero-downtime capabilities",
+				"Built RESTful APIs for waitlist management, user onboarding, and contact management, processing 10K+ requests daily with 99.95% uptime",
+				"Implemented email notification systems using Resend API, automating user communications and reducing manual overhead by 90%",
+				"Designed Infrastructure as Code using Terraform for Cloudflare Workers, KV storage, and D1 databases, ensuring consistent deployments across environments",
+				"Developed admin dashboard APIs for waitlist management and analytics, enabling real-time insights into user growth metrics",
+				"Optimized API response times to sub-100ms average latency through efficient database queries and caching strategies"
 			],
-			tech: ["C#", ".NET", "AWS", "Docker", "Kubernetes", "Kafka", "Python", "GitHub Actions"]
+			tech: ["Next.js", "TypeScript", "Cloudflare Workers", "Cloudflare D1", "Terraform", "Resend API", "Serverless Architecture"]
+		},
+		{
+			title: "Software Engineer",
+			company: "Access Bank PLC",
+			period: "04/2023 - 03/2025",
+			location: "Remote",
+			highlights: [
+				"Transformed backend architecture by implementing scalable microservices, improving system performance by 25% and reducing latency by 40% for 52M+ users",
+				"Conducted design and code reviews, integrating network services across multiple platforms using SOAP and REST APIs (Safaricom, MPesa, RevPay), increasing system efficiency by 25%",
+				"Proactively identified and drove architectural improvements, enhancing decision-making processes and reducing development time by 30%",
+				"Optimized DevOps pipelines using AWS services, Docker, GitHub Actions, and Kubernetes, increasing deployment speed by 40% and reducing deployment failures by 50%",
+				"Architected real-time data processing systems using Kafka and OLTP databases, handling millions of transactions daily with 99.99% reliability",
+				"Developed Python automation scripts for operational tasks, reducing manual processing time by 60%"
+			],
+			tech: ["C#", "ASP.NET", ".NET Core", "Java", "Python", "AWS", "Docker", "Kubernetes", "Kafka", "PostgreSQL", "MySQL", "GitHub Actions", "TurboRepo"]
 		},
 		{
 			title: "Undergraduate Tutor",
@@ -133,10 +145,10 @@ export default function MainBody() {
 	const skills = {
 		languages: ["Java", "C#", "TypeScript", "JavaScript", "Python", "Rust", "Golang"],
 		frameworks: ["Spring Boot", "ASP.NET Core", "NestJS", "React", "Next.js", "Node.js", "ExpressJS"],
-		cloud: ["AWS", "Azure", "GCP", "Docker", "Kubernetes", "Terraform", "CloudFormation"],
-		databases: ["PostgreSQL", "MySQL", "MongoDB", "DynamoDB", "Redis", "Elasticsearch"],
-		devops: ["Git", "Jenkins", "Maven", "Gradle", "Ansible", "Vagrant", "CI/CD"],
-		concepts: ["Microservices", "Serverless", "TDD", "System Design", "Event-driven Architecture"]
+		cloud: ["AWS", "Azure", "GCP", "Docker", "Kubernetes", "Terraform", "CloudFormation", "SageMaker", "Cloudflare Workers"],
+		databases: ["PostgreSQL", "MySQL", "MongoDB", "DynamoDB", "Redis", "Elasticsearch", "Pinecone", "Redshift"],
+		devops: ["Git", "Jenkins", "Maven", "Gradle", "Ansible", "Vagrant", "CI/CD", "GitHub Actions"],
+		concepts: ["Microservices", "Serverless", "TDD", "System Design", "Event-driven Architecture", "MLOps", "LLM Integration", "RAG Pipelines"]
 	};
 
 	return (
@@ -154,9 +166,8 @@ export default function MainBody() {
 									{typedText}<span className="animate-pulse">|</span>
 								</p>
 							</div>
-							<p className="text-lg md:text-xl max-w-3xl mx-auto leading-relaxed mb-8 funky-text" style={{ color: 'var(--muted)' }}>
-								Experienced Software Engineer specializing in backend development, cloud/ML infrastructure, and DevOps automation. Living in the UK and available for remote work. 5+ years building scalable systems for banks, fintech, ecommerce, and AI/ML startups.<br/><br/>
-								Expert in AWS, microservices, Python, C#, Java, Node.js, TypeScript, JavaScript, PostgreSQL, Terraform, Kubernetes, and Docker. Proven track record delivering enterprise solutions for Access Bank (52M+ users), Binance ($1.5M+ weekly transactions), and leading AI/ML infrastructure projects.
+							<p className="text-base md:text-lg max-w-2xl mx-auto leading-relaxed mb-8 funky-text" style={{ color: 'var(--muted)' }}>
+								Senior Software Engineer. Building scalable systems, AI/ML infrastructure, and cloud-native solutions. Leading teams, mentoring engineers, and architecting high-performance systems.
 							</p>
 						</div>
 
@@ -186,42 +197,13 @@ export default function MainBody() {
 			{/* About Section */}
 			<section id="about" className="min-h-screen flex items-center px-4 sm:px-6 scroll-section" style={{ background: 'var(--background-secondary)' }}>
 				<div className="max-w-7xl mx-auto">
-					<div className="text-center mb-16">
+					<div className="text-center mb-12">
 						<h2 className="text-4xl sm:text-5xl md:text-6xl font-bold mb-6 funky-heading gradient-text">
 							about
 						</h2>
 					</div>
 
-					<div className="grid lg:grid-cols-3 gap-8">
-						{/* Main About Card */}
-						<div className="lg:col-span-2">
-							<div className="about-card p-8 h-full">
-								<h3 className="text-2xl font-bold mb-6 font-mono gradient-text">Professional Journey</h3>
-								<div className="space-y-6">
-									<p className="text-lg leading-relaxed" style={{ color: 'var(--muted)' }}>
-										Highly skilled and results-driven Software Engineer with over 5 years of experience designing, 
-										developing, and deploying secure, scalable systems across fintech, enterprise, and AI/ML domains.
-									</p>
-									<p className="text-lg leading-relaxed" style={{ color: 'var(--muted)' }}>
-										Proficient in C#, ASP.Net, Java, NodeJS, Spring Boot, JavaScript, TypeScript, and Python, 
-										with expertise in DevOps technologies like AWS, GCP, Azure DevOps, Docker, Terraform, and ML Ops.
-									</p>
-									<p className="text-lg leading-relaxed" style={{ color: 'var(--muted)' }}>
-										Adept at communicating complex technical concepts to diverse stakeholders and resolving 
-										challenges efficiently. Currently learning and researching Machine Learning Operations (ML Ops) 
-										to bridge the gap between data science and production systems.
-									</p>
-									<div className="mt-8 p-6 glass rounded-xl">
-										<h4 className="text-lg font-semibold mb-3 font-mono gradient-text">Current Focus</h4>
-										<p className="text-base" style={{ color: 'var(--muted)' }}>
-											Committed to continuous learning and leveraging emerging technologies to deliver innovative solutions 
-											that make a real impact on millions of users worldwide.
-										</p>
-									</div>
-								</div>
-							</div>
-						</div>
-
+					<div className="grid lg:grid-cols-2 gap-8 max-w-6xl mx-auto mb-8">
 						{/* Education & Stats Card */}
 						<div className="space-y-6">
 							<div className="about-card p-6">
@@ -256,6 +238,60 @@ export default function MainBody() {
 									<div className="flex justify-between items-center p-3 glass rounded-lg">
 										<span className="text-sm" style={{ color: 'var(--muted)' }}>Technologies</span>
 										<span className="font-bold text-lg gradient-text">25+</span>
+									</div>
+								</div>
+							</div>
+						</div>
+
+						{/* Fun Facts Card */}
+						<div className="space-y-6">
+							<div className="about-card p-6">
+								<h3 className="text-xl font-bold mb-4 font-mono gradient-text">interests</h3>
+								<div className="space-y-4">
+									<div className="p-4 glass rounded-lg">
+										<div className="flex items-start gap-3">
+											<span className="text-lg mt-0.5">🍳</span>
+											<div>
+												<p className="text-sm font-medium" style={{ color: 'var(--foreground)' }}>Cooking</p>
+												<p className="text-xs mt-1" style={{ color: 'var(--muted)' }}>love experimenting with flavors</p>
+											</div>
+										</div>
+									</div>
+									<div className="p-4 glass rounded-lg">
+										<div className="flex items-start gap-3">
+											<span className="text-lg mt-0.5">🎌</span>
+											<div>
+												<p className="text-sm font-medium" style={{ color: 'var(--foreground)' }}>Anime</p>
+												<p className="text-xs mt-1" style={{ color: 'var(--muted)' }}>avid watcher</p>
+											</div>
+										</div>
+									</div>
+									<div className="p-4 glass rounded-lg">
+										<div className="flex items-start gap-3">
+											<span className="text-lg mt-0.5">📚</span>
+											<div>
+												<p className="text-sm font-medium" style={{ color: 'var(--foreground)' }}>Epic Fantasy</p>
+												<p className="text-xs mt-1" style={{ color: 'var(--muted)' }}>favorites: Wheel of Time (Robert Jordan), The Demon Cycle (Peter V. Brett), The Name of the Wind (Patrick Rothfuss), Before They Are Hanged (Joe Abercrombie)</p>
+											</div>
+										</div>
+									</div>
+									<div className="p-4 glass rounded-lg">
+										<div className="flex items-start gap-3">
+											<span className="text-lg mt-0.5">🎹</span>
+											<div>
+												<p className="text-sm font-medium" style={{ color: 'var(--foreground)' }}>Music</p>
+												<p className="text-xs mt-1" style={{ color: 'var(--muted)' }}>piano & guitar. used to be a music director directing a choir of over 300 choristers</p>
+											</div>
+										</div>
+									</div>
+									<div className="p-4 glass rounded-lg">
+										<div className="flex items-start gap-3">
+											<span className="text-lg mt-0.5">🎧</span>
+											<div>
+												<p className="text-sm font-medium" style={{ color: 'var(--foreground)' }}>Audiophile</p>
+												<p className="text-xs mt-1" style={{ color: 'var(--muted)' }}>enjoys listening to music</p>
+											</div>
+										</div>
 									</div>
 								</div>
 							</div>

@@ -29,7 +29,9 @@ export default function SignInPage() {
       } else {
         // Check if user is admin or contributor
         const session = await getSession()
-        if (session?.user?.role === 'admin' || session?.user?.role === 'contributor') {
+        if (session?.user?.role === 'admin') {
+          router.push('/admin')
+        } else if (session?.user?.role === 'contributor') {
           router.push('/blog')
         } else {
           setError('You do not have permission to access the blog')

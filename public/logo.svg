@@ -1,3 +1,9 @@
-<svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-  <text x="12" y="18" font-family="monospace" font-size="16" font-weight="400" text-anchor="middle" fill="var(--accent)">b</text>
+<svg width="40" height="40" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- Minimal stylized B with tech aesthetic -->
+  <rect x="10" y="8" width="3" height="24" rx="1.5" fill="currentColor"/>
+  <rect x="10" y="8" width="14" height="3" rx="1.5" fill="currentColor"/>
+  <rect x="10" y="19.5" width="14" height="3" rx="1.5" fill="currentColor"/>
+  <rect x="10" y="31" width="14" height="3" rx="1.5" fill="currentColor"/>
+  <rect x="21" y="11" width="3" height="8.5" rx="1.5" fill="currentColor"/>
+  <rect x="21" y="22.5" width="3" height="8.5" rx="1.5" fill="currentColor"/>
 </svg>

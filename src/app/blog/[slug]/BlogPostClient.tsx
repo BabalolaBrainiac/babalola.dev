@@ -36,7 +36,7 @@ export default function BlogPostClient({ post }: BlogPostClientProps) {
       }
       
           // Redirect to blog page
-          router.push('/')
+          router.push('/blog')
     } catch (error) {
       console.error('Error deleting post:', error)
       alert('Failed to delete post. Please try again.')
@@ -52,14 +52,14 @@ export default function BlogPostClient({ post }: BlogPostClientProps) {
       <header className="border-b border-[var(--glass-border)]">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 py-6">
               <div className="flex justify-between items-center">
-              <Link href="/" prefetch={true} className="btn btn-secondary">
+              <Link href="/blog" prefetch={true} className="btn btn-secondary">
                 ← Back to brainiac's blog
               </Link>
                 <div className="flex items-center gap-4">
                   <ShareButton title={post.title} slug={post.slug} />
                   {canEdit && (
                     <Link
-                      href={`/${post.slug}/edit`}
+                      href={`/blog/${post.slug}/edit`}
                       className="btn btn-primary"
                     >
                       Edit Post
@@ -112,12 +112,6 @@ export default function BlogPostClient({ post }: BlogPostClientProps) {
                 </div>
               )}
               
-              {post.difficulty_level && (
-                <div className="flex items-center gap-2">
-                  <span className="font-mono">🎯</span>
-                  <span className="capitalize">{post.difficulty_level}</span>
-                </div>
-              )}
             </div>
             
             <div className="flex flex-wrap gap-2 mb-6">

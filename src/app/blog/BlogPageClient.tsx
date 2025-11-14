@@ -72,7 +72,7 @@ export default function BlogPageClient() {
                 <div className="flex gap-4">
                   {canCreate && (
                     <Link
-                      href="/create"
+                      href="/blog/create"
                       className="btn btn-primary"
                     >
                       New Post
@@ -86,12 +86,14 @@ export default function BlogPageClient() {
                       Manage Users
                     </Link>
                   )}
-                  <Link
-                    href={getPortfolioUrl()}
+                  <button
+                    onClick={() => {
+                      window.location.href = getPortfolioUrl()
+                    }}
                     className="btn btn-secondary"
                   >
                     ← Portfolio
-                  </Link>
+                  </button>
                   {session && (
                     <button
                       onClick={async () => {
@@ -181,7 +183,7 @@ export default function BlogPageClient() {
                       }
                     </div>
                     {canCreate && (
-                      <Link href="/create" className="btn btn-primary">
+                      <Link href="/blog/create" className="btn btn-primary">
                         {session?.user?.role === 'admin' 
                           ? 'Create First Post' 
                           : 'Create Your First Post'
@@ -209,7 +211,7 @@ export default function BlogPageClient() {
                         : 'You don\'t have any drafts yet'
                       }
                     </div>
-                    <Link href="/create" className="btn btn-primary">
+                    <Link href="/blog/create" className="btn btn-primary">
                       {session?.user?.role === 'admin' 
                         ? 'Create New Draft' 
                         : 'Create Your First Draft'

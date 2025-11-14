@@ -216,9 +216,12 @@ export default function AdminDashboard() {
                       </span>
                     </div>
                     <div className="flex gap-2">
-                      <button className="btn btn-secondary text-sm">
+                      <Link 
+                        href="/admin/users"
+                        className="btn btn-secondary text-sm"
+                      >
                         Edit
-                      </button>
+                      </Link>
                       <button className="btn btn-secondary text-sm bg-red-500 hover:bg-red-600">
                         Delete
                       </button>

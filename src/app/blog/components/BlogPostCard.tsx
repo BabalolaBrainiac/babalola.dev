@@ -41,7 +41,7 @@ export default function BlogPostCard({ post, onDelete }: BlogPostCardProps) {
       }
       
       // Redirect to blog page if we're on the individual post page
-      router.push('/')
+      router.push('/blog')
     } catch (error) {
       console.error('Error deleting post:', error)
       alert('Failed to delete post. Please try again.')
@@ -84,7 +84,7 @@ export default function BlogPostCard({ post, onDelete }: BlogPostCardProps) {
           <div className="absolute top-3 right-3 flex flex-col gap-2 min-w-[70px] z-10">
             {canEdit && (
               <Link
-                href={`/${post.slug}/edit`}
+                href={`/blog/${post.slug}/edit`}
                 className="text-xs px-2 py-1 glass rounded-full hover:bg-[var(--accent)] transition-all duration-200 text-center hover:scale-110 whitespace-nowrap"
                 style={{ color: 'var(--muted)' }}
               >
@@ -105,7 +105,7 @@ export default function BlogPostCard({ post, onDelete }: BlogPostCardProps) {
       
         <div className="mb-4 pr-32 relative z-5">
           <div className="flex items-center gap-2 mb-2">
-            <Link href={`/${post.slug}`} prefetch={true} className="group/link">
+            <Link href={`/blog/${post.slug}`} prefetch={true} className="group/link">
               <h2 className="text-xl font-bold font-mono gradient-text hover:text-[var(--accent)] transition-all duration-300 group-hover/link:scale-105">
                 {post.title}
               </h2>

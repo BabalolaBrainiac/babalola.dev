@@ -4,8 +4,8 @@ import { ThemeProvider } from '@/contexts/ThemeContext'
 
 export const metadata = {
 	metadataBase: new URL(process.env.NODE_ENV === 'production' ? 'https://babalola.dev' : 'http://localhost:3000'),
-	title: "Babalola Opeyemi - Software Engineer | Backend Developer | Cloud/ML Infrastructure | DevOps Automation",
-	description: "Experienced Software Engineer specializing in backend development, cloud/ML infrastructure, and DevOps automation. Living in the UK and available for remote work. 5+ years building scalable systems for banks, fintech, ecommerce, and AI/ML startups.",
+	title: "Babalola Opeyemi - Senior Backend Engineer | AI/ML Infrastructure Specialist | Cloud Architect",
+	description: "Results-driven Senior Software Engineer with 5+ years of expertise architecting and deploying enterprise-grade backend systems, AI/ML infrastructure, and cloud-native solutions. Proven track record scaling platforms serving 52M+ users and processing $1.5M+ weekly transactions.",
 	keywords: [
 		"Software Engineer",
 		"Backend Developer", 
@@ -40,7 +40,15 @@ export const metadata = {
 		"Real-time Processing",
 		"High-performance Systems",
 		"Security Engineering",
-		"Performance Optimization"
+		"Performance Optimization",
+		"Senior Backend Engineer",
+		"AI/ML Infrastructure",
+		"Cloud Architect",
+		"SageMaker",
+		"LLM Integration",
+		"RAG Pipelines",
+		"Serverless Computing",
+		"Infrastructure Automation"
 	],
 	authors: [{ name: "Babalola Opeyemi", url: "https://babalola.dev" }],
 	creator: "Babalola Opeyemi",
@@ -60,9 +68,9 @@ export const metadata = {
 		type: 'website',
 		locale: 'en_GB',
 		url: 'https://babalola.dev',
-		siteName: 'Babalola Opeyemi - Software Engineer',
-		title: 'Babalola Opeyemi - Software Engineer | Backend Developer | Cloud/ML Infrastructure',
-		description: 'Experienced Software Engineer specializing in backend development, cloud/ML infrastructure, and DevOps automation. Living in the UK and available for remote work.',
+		siteName: 'Babalola Opeyemi - Senior Backend Engineer',
+		title: 'Babalola Opeyemi - Senior Backend Engineer | AI/ML Infrastructure Specialist | Cloud Architect',
+		description: 'Results-driven Senior Software Engineer with 5+ years of expertise architecting and deploying enterprise-grade backend systems, AI/ML infrastructure, and cloud-native solutions.',
 		images: [
 			{
 				url: '/og-image.jpg',
@@ -76,8 +84,8 @@ export const metadata = {
 		card: 'summary_large_image',
 		site: '@brainiac_ope',
 		creator: '@brainiac_ope',
-		title: 'Babalola Opeyemi - Software Engineer | Backend Developer | Cloud/ML Infrastructure',
-		description: 'Experienced Software Engineer specializing in backend development, cloud/ML infrastructure, and DevOps automation. Living in the UK and available for remote work.',
+		title: 'Babalola Opeyemi - Senior Backend Engineer | AI/ML Infrastructure Specialist | Cloud Architect',
+		description: 'Results-driven Senior Software Engineer with 5+ years of expertise architecting and deploying enterprise-grade backend systems, AI/ML infrastructure, and cloud-native solutions.',
 		images: ['/og-image.jpg'],
 	},
 	alternates: {
@@ -136,8 +144,8 @@ export default function RootLayout({
 							"@context": "https://schema.org",
 							"@type": "Person",
 							"name": "Babalola Opeyemi",
-							"jobTitle": "Software Engineer",
-							"description": "Experienced Software Engineer specializing in backend development, cloud/ML infrastructure, and DevOps automation. Living in the UK and available for remote work.",
+							"jobTitle": "Senior Backend Engineer",
+							"description": "Results-driven Senior Software Engineer with 5+ years of expertise architecting and deploying enterprise-grade backend systems, AI/ML infrastructure, and cloud-native solutions.",
 							"url": "https://babalola.dev",
 							"image": "https://babalola.dev/og-image.jpg",
 							"sameAs": [
@@ -173,12 +181,12 @@ export default function RootLayout({
 								{
 									"@type": "Organization",
 									"name": "HeySavi LTD",
-									"jobTitle": "Software Engineer"
+									"jobTitle": "Senior Software Engineer"
 								},
 								{
 									"@type": "Organization",
 									"name": "Access Bank PLC",
-									"jobTitle": "Senior Software Engineer"
+									"jobTitle": "Software Engineer"
 								}
 							],
 							"knowsAbout": [
@@ -203,12 +211,12 @@ export default function RootLayout({
 							],
 							"hasOccupation": {
 								"@type": "Occupation",
-								"name": "Software Engineer",
+								"name": "Senior Backend Engineer",
 								"occupationLocation": {
 									"@type": "Country",
 									"name": "United Kingdom"
 								},
-								"skills": "Backend Development, Cloud Infrastructure, DevOps Automation, Machine Learning Operations"
+								"skills": "Backend Development, AI/ML Infrastructure, MLOps, Cloud Architecture, Microservices, Serverless Computing, Infrastructure Automation, SageMaker, LLM Integration"
 							}
 						})
 					}}

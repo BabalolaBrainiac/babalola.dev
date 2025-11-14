@@ -35,9 +35,7 @@ export interface BlogPost {
   twitter_title?: string
   twitter_description?: string
   twitter_image?: string
-  canonical_url?: string
   reading_time?: number
-  difficulty_level?: 'beginner' | 'intermediate' | 'advanced'
   prerequisites?: string[]
 }
 
@@ -58,9 +56,7 @@ export interface CreateBlogPost {
   twitter_title?: string
   twitter_description?: string
   twitter_image?: string
-  canonical_url?: string
   reading_time?: number
-  difficulty_level?: 'beginner' | 'intermediate' | 'advanced'
   prerequisites?: string[]
 }
 

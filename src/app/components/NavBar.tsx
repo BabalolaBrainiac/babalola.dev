@@ -25,7 +25,7 @@ export default function NavBar() {
 			<div className="max-w-6xl mx-auto px-4 sm:px-6 py-4">
 				<div className="flex justify-between items-center">
 					{/* Logo */}
-					<div className="flex items-center space-x-3">
+					<a href="/" className="flex items-center space-x-3 hover:opacity-80 transition-opacity">
 						<img 
 							src="/logo.svg" 
 							alt="Babalola Logo" 
@@ -34,7 +34,7 @@ export default function NavBar() {
 						<span className="text-lg sm:text-xl font-bold funky-heading text-[var(--foreground)]">
 							babalola
 						</span>
-					</div>
+					</a>
 
 					{/* Desktop Navigation Links */}
 					<div className="hidden md:flex items-center space-x-8">

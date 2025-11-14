@@ -55,18 +55,18 @@ export function getPortfolioUrl(): string {
       hostname.endsWith('.babalola.dev')
     
     if (isLocalhost) {
-      return `${protocol}//localhost:${port}`
+      return `${protocol}//localhost:${port}/`
     }
     
     if (isProduction) {
-      return 'https://babalola.dev'
+      return 'https://babalola.dev/'
     }
     
-    return `${protocol}//localhost:${port}`
+    return `${protocol}//localhost:${port}/`
   }
   
   return process.env.NODE_ENV === 'production' 
-    ? 'https://babalola.dev' 
-    : 'http://localhost:3000'
+    ? 'https://babalola.dev/' 
+    : 'http://localhost:3000/'
 }
 

@@ -65,7 +65,7 @@ export default function EditPostPage() {
       }
 
       const updated = await response.json()
-      router.push(`/${updated.slug}`)
+      router.push(`/blog/${updated.slug}`)
     } catch (error) {
       console.error('Error updating post:', error)
       alert('Error updating post')
@@ -75,7 +75,7 @@ export default function EditPostPage() {
   }
 
   const handleCancel = () => {
-    router.push(`/${params.slug}`)
+    router.push(`/blog/${params.slug}`)
   }
 
   if (status === 'loading' || isLoading) {
@@ -92,7 +92,7 @@ export default function EditPostPage() {
         <div className="text-center">
           <div className="text-red-500 mb-4">{error || 'Post not found'}</div>
           <button 
-            onClick={() => router.push('/')}
+            onClick={() => router.push('/blog')}
             className="btn btn-primary"
           >
             ← Back to Blog

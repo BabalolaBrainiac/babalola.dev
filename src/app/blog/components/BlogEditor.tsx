@@ -25,9 +25,7 @@ export default function BlogEditor({ initialPost, onSave, onCancel }: BlogEditor
   const [twitterTitle, setTwitterTitle] = useState(initialPost?.twitter_title || '')
   const [twitterDescription, setTwitterDescription] = useState(initialPost?.twitter_description || '')
   const [twitterImage, setTwitterImage] = useState(initialPost?.twitter_image || '')
-  const [canonicalUrl, setCanonicalUrl] = useState(initialPost?.canonical_url || '')
   const [readingTime, setReadingTime] = useState(initialPost?.reading_time || 0)
-  const [difficultyLevel, setDifficultyLevel] = useState(initialPost?.difficulty_level || 'intermediate')
   const [prerequisites, setPrerequisites] = useState(initialPost?.prerequisites?.join(', ') || '')
 
   // Auto-generate slug from title
@@ -74,19 +72,6 @@ export default function BlogEditor({ initialPost, onSave, onCancel }: BlogEditor
       published: saveAsDraft ? false : published,
       slug,
       author_id: '', // This will be set by the API
-      // SEO metadata
-      meta_description: metaDescription.trim() || excerpt.trim() || content.substring(0, 160) + '...',
-      meta_keywords: metaKeywords.split(',').map(k => k.trim()).filter(k => k.length > 0),
-      og_title: ogTitle.trim() || title.trim(),
-      og_description: ogDescription.trim() || metaDescription.trim() || excerpt.trim(),
-      og_image: ogImage.trim() || '/og-image.jpg',
-      twitter_title: twitterTitle.trim() || ogTitle.trim() || title.trim(),
-      twitter_description: twitterDescription.trim() || ogDescription.trim() || metaDescription.trim(),
-      twitter_image: twitterImage.trim() || ogImage.trim() || '/og-image.jpg',
-      canonical_url: canonicalUrl.trim() || '',
-      reading_time: readingTime || Math.ceil(content.split(' ').length / 200), // Auto-calculate if not set
-      difficulty_level: difficultyLevel as 'beginner' | 'intermediate' | 'advanced',
-      prerequisites: prerequisites.split(',').map(p => p.trim()).filter(p => p.length > 0)
     }
 
     try {
@@ -313,19 +298,6 @@ console.log("Hello, World!")
 
               <div>
                 <label className="block text-sm font-mono font-semibold mb-2" style={{ color: 'var(--foreground)' }}>
-                  Canonical URL
-                </label>
-                <input
-                  type="url"
-                  value={canonicalUrl}
-                  onChange={(e) => setCanonicalUrl(e.target.value)}
-                  className="w-full px-4 py-2 glass rounded-lg border border-[var(--glass-border)] focus:border-[var(--accent)] focus:outline-none text-sm"
-                  placeholder="https://blog.babalola.dev/post-slug"
-                />
-              </div>
-
-              <div>
-                <label className="block text-sm font-mono font-semibold mb-2" style={{ color: 'var(--foreground)' }}>
                   Reading Time (minutes)
                 </label>
                 <input
@@ -336,21 +308,6 @@ console.log("Hello, World!")
                   placeholder="Auto-calculated if empty"
                   min="1"
                 />
-              </div>
-
-              <div>
-                <label className="block text-sm font-mono font-semibold mb-2" style={{ color: 'var(--foreground)' }}>
-                  Difficulty Level
-                </label>
-                <select
-                  value={difficultyLevel}
-                  onChange={(e) => setDifficultyLevel(e.target.value as 'beginner' | 'intermediate' | 'advanced')}
-                  className="w-full px-4 py-2 glass rounded-lg border border-[var(--glass-border)] focus:border-[var(--accent)] focus:outline-none text-sm"
-                >
-                  <option value="beginner">Beginner</option>
-                  <option value="intermediate">Intermediate</option>
-                  <option value="advanced">Advanced</option>
-                </select>
               </div>
 
               <div className="md:col-span-2">

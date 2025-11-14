@@ -65,7 +65,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const title = post.og_title || post.title
   const description = post.meta_description || post.excerpt || post.content.substring(0, 160) + '...'
   const keywords = post.meta_keywords || post.tags
-  const canonicalUrl = post.canonical_url || `https://blog.babalola.dev/${post.slug}`
+  const canonicalUrl = `https://blog.babalola.dev/${post.slug}`
   const ogImage = post.og_image || '/og-image.jpg'
   const twitterImage = post.twitter_image || post.og_image || '/og-image.jpg'
 
@@ -126,7 +126,6 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
       'article:section': 'Technology',
       'article:tag': Array.isArray(post.tags) ? post.tags.join(', ') : post.tags,
       'reading-time': post.reading_time?.toString() || '',
-      'difficulty-level': post.difficulty_level || 'intermediate',
       'prerequisites': Array.isArray(post.prerequisites) ? post.prerequisites.join(', ') : post.prerequisites || '',
     },
   }

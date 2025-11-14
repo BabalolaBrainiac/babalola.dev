@@ -76,20 +76,7 @@ export async function POST(request: NextRequest) {
       excerpt, 
       tags, 
       published, 
-      slug,
-      // SEO metadata fields
-      meta_description,
-      meta_keywords,
-      og_title,
-      og_description,
-      og_image,
-      twitter_title,
-      twitter_description,
-      twitter_image,
-      canonical_url,
-      reading_time,
-      difficulty_level,
-      prerequisites
+      slug
     } = body
 
     // Validate required fields
@@ -97,30 +84,20 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Missing required fields' }, { status: 400 })
     }
 
+    // build insert object with only core fields that exist in database
+    const insertData: any = {
+      title,
+      content,
+      excerpt: excerpt || content.substring(0, 200) + '...',
+      tags: tags || [],
+      published: published || false,
+      slug,
+      author_id: session.user.id,
+    }
+
     const { data, error } = await supabase
       .from('blog_posts')
-      .insert([{
-        title,
-        content,
-        excerpt: excerpt || content.substring(0, 200) + '...',
-        tags: tags || [],
-        published: published || false,
-        slug,
-        author_id: session.user.id,
-        // SEO metadata
-        meta_description: meta_description || excerpt || content.substring(0, 160) + '...',
-        meta_keywords: meta_keywords || [],
-        og_title: og_title || title,
-        og_description: og_description || meta_description || excerpt,
-        og_image: og_image || '/og-image.jpg',
-        twitter_title: twitter_title || og_title || title,
-        twitter_description: twitter_description || og_description || meta_description,
-        twitter_image: twitter_image || og_image || '/og-image.jpg',
-        canonical_url: canonical_url || '',
-        reading_time: reading_time || Math.ceil(content.split(' ').length / 200),
-        difficulty_level: difficulty_level || 'intermediate',
-        prerequisites: prerequisites || []
-      }])
+      .insert([insertData])
       .select()
 
     if (error) {

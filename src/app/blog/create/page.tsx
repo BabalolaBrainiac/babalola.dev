@@ -36,7 +36,7 @@ export default function CreatePostPage() {
       }
 
       const createdPost = await response.json()
-      router.push(`/${createdPost.slug}`)
+      router.push(`/blog/${createdPost.slug}`)
     } catch (error) {
       console.error('Error creating post:', error)
       alert('Error creating post')
@@ -46,7 +46,7 @@ export default function CreatePostPage() {
   }
 
   const handleCancel = () => {
-    router.push('/')
+    router.push('/blog')
   }
 
   return (
