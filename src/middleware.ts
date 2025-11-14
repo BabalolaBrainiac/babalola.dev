@@ -25,7 +25,7 @@ function handleSubdomainRouting(req: NextRequest): NextResponse | null {
     }
     
     // rewrite /:slug to /blog/:slug (but not if it's already /blog/*)
-    if (!pathname.startsWith('/blog') && !pathname.startsWith('/_next') && !pathname.startsWith('/api') && !pathname.startsWith('/admin')) {
+    if (!pathname.startsWith('/blog') && !pathname.startsWith('/_next') && !pathname.startsWith('/api') && !pathname.startsWith('/admin') && pathname !== '/manifest.json') {
       // check if it's an edit route
       if (pathname.endsWith('/edit')) {
         const slug = pathname.replace('/edit', '')
@@ -45,6 +45,10 @@ function handleSubdomainRouting(req: NextRequest): NextResponse | null {
 
 export default withAuth(
   function middleware(req) {
+    const hostname = req.headers.get('host') || ''
+    const pathname = req.nextUrl.pathname
+    const isBlogSubdomain = hostname.includes('blog.localhost') || hostname.includes('blog.babalola.dev')
+    
     // handle subdomain routing first
     const subdomainResponse = handleSubdomainRouting(req)
     if (subdomainResponse) {
@@ -57,14 +61,20 @@ export default withAuth(
   {
     callbacks: {
       authorized: ({ token, req }) => {
-        // protect blog creation and editing routes
-        if (req.nextUrl.pathname.startsWith('/blog/create') || 
-            req.nextUrl.pathname.includes('/edit')) {
+        const pathname = req.nextUrl.pathname
+        const hostname = req.headers.get('host') || ''
+        const isBlogSubdomain = hostname.includes('blog.localhost') || hostname.includes('blog.babalola.dev')
+        
+        // protect blog creation and editing routes (handle both /create and /blog/create)
+        const isCreateRoute = pathname === '/create' || pathname.startsWith('/blog/create')
+        const isEditRoute = pathname.includes('/edit')
+        
+        if (isCreateRoute || isEditRoute) {
           return token?.role === 'admin' || token?.role === 'contributor'
         }
         
         // protect admin routes
-        if (req.nextUrl.pathname.startsWith('/admin')) {
+        if (pathname.startsWith('/admin')) {
           return token?.role === 'admin'
         }
         
@@ -82,7 +92,9 @@ export const config = {
      * - _next/static (static files)
      * - _next/image (image optimization files)
      * - favicon.ico (favicon file)
+     * - manifest.json (manifest file)
+     * - logo.svg, og-image.jpg (other static assets)
      */
-    '/((?!api|_next/static|_next/image|favicon.ico).*)',
+    '/((?!api|_next/static|_next/image|favicon.ico|manifest.json|logo.svg|og-image.jpg).*)',
   ]
 }

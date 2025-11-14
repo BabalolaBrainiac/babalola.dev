@@ -1,16 +1,18 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, Suspense } from 'react'
 import { signIn, getSession } from 'next-auth/react'
-import { useRouter } from 'next/navigation'
+import { useRouter, useSearchParams } from 'next/navigation'
 import Link from 'next/link'
 
-export default function SignInPage() {
+function SignInForm() {
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState('')
   const router = useRouter()
+  const searchParams = useSearchParams()
+  const callbackUrl = searchParams.get('callbackUrl') || '/blog'
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -22,6 +24,7 @@ export default function SignInPage() {
         email,
         password,
         redirect: false,
+        callbackUrl: callbackUrl,
       })
 
       if (result?.error) {
@@ -30,9 +33,15 @@ export default function SignInPage() {
         // Check if user is admin or contributor
         const session = await getSession()
         if (session?.user?.role === 'admin') {
-          router.push('/admin')
+          // if callbackUrl is /create or /admin, use it, otherwise go to /admin
+          if (callbackUrl.includes('/admin') || callbackUrl.includes('/create')) {
+            router.push(callbackUrl)
+          } else {
+            router.push('/admin')
+          }
         } else if (session?.user?.role === 'contributor') {
-          router.push('/blog')
+          // preserve callbackUrl for contributors (could be /create)
+          router.push(callbackUrl)
         } else {
           setError('You do not have permission to access the blog')
         }
@@ -113,5 +122,17 @@ export default function SignInPage() {
         </div>
       </div>
     </div>
+  )
+}
+
+export default function SignInPage() {
+  return (
+    <Suspense fallback={
+      <div className="min-h-screen bg-[var(--background)] text-[var(--foreground)] flex items-center justify-center">
+        <div className="text-[var(--muted)]">Loading...</div>
+      </div>
+    }>
+      <SignInForm />
+    </Suspense>
   )
 }
