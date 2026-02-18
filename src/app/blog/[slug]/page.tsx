@@ -3,6 +3,7 @@ import { notFound } from 'next/navigation'
 import { getServerSession } from 'next-auth'
 import { authOptions } from '@/lib/auth'
 import { supabase } from '@/lib/supabase'
+import { stripMarkdown, generateExcerpt } from '@/lib/markdown'
 import BlogPostClient from './BlogPostClient'
 
 interface Props {
@@ -63,7 +64,10 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   }
 
   const title = post.og_title || post.title
-  const description = post.meta_description || post.excerpt || post.content.substring(0, 160) + '...'
+  // Strip markdown from excerpt/content for clean meta descriptions
+  const cleanExcerpt = post.excerpt ? stripMarkdown(post.excerpt) : ''
+  const cleanContentPreview = generateExcerpt(post.content, 160)
+  const description = post.meta_description || cleanExcerpt || cleanContentPreview
   const keywords = post.meta_keywords || post.tags
   const canonicalUrl = `https://blog.babalola.dev/${post.slug}`
   const ogImage = post.og_image || '/og-image.jpg'
@@ -93,7 +97,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
       url: canonicalUrl,
       siteName: 'Babalola Opeyemi - Software Engineer Blog',
       title: post.og_title || post.title,
-      description: post.og_description || post.meta_description || post.excerpt,
+      description: post.og_description || post.meta_description || cleanExcerpt,
       images: [
         {
           url: ogImage,
@@ -113,7 +117,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
       site: '@brainiac_ope',
       creator: '@brainiac_ope',
       title: post.twitter_title || post.og_title || post.title,
-      description: post.twitter_description || post.og_description || post.meta_description || post.excerpt,
+      description: post.twitter_description || post.og_description || post.meta_description || cleanExcerpt,
       images: [twitterImage],
     },
     alternates: {
