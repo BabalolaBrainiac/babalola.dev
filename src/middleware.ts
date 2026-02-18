@@ -63,6 +63,15 @@ export default withAuth(
       return NextResponse.redirect(url)
     }
     
+    // handle redirect to sign-in from blog subdomain
+    const url = req.nextUrl
+    if (isBlogSubdomain && url.searchParams.get('callbackUrl')?.includes('/auth/signin')) {
+      const mainDomain = hostname.replace(/^blog\./, '')
+      const protocol = url.protocol
+      const callbackUrl = pathname + url.search
+      return NextResponse.redirect(`${protocol}//${mainDomain}/auth/signin${callbackUrl}`)
+    }
+    
     // additional middleware logic can go here
     return NextResponse.next()
   },
@@ -71,7 +80,6 @@ export default withAuth(
       authorized: ({ token, req }) => {
         const pathname = req.nextUrl.pathname
         const hostname = req.headers.get('host') || ''
-        const isBlogSubdomain = hostname.includes('blog.localhost') || hostname.includes('blog.babalola.dev')
         
         // protect blog creation and editing routes (handle both /create and /blog/create)
         const isCreateRoute = pathname === '/create' || pathname.startsWith('/blog/create')
@@ -87,20 +95,6 @@ export default withAuth(
         }
         
         return true
-      },
-      async redirect({ url, baseUrl, req }) {
-        const hostname = req.headers.get('host') || ''
-        const isBlogSubdomain = hostname.includes('blog.localhost') || hostname.includes('blog.babalola.dev')
-        
-        // if redirecting to sign-in from blog subdomain, redirect to main domain
-        if (isBlogSubdomain && url.includes('/auth/signin')) {
-          const mainDomain = hostname.replace(/^blog\./, '')
-          const protocol = req.nextUrl.protocol
-          const callbackUrl = req.nextUrl.pathname + req.nextUrl.search
-          return `${protocol}//${mainDomain}/auth/signin?callbackUrl=${encodeURIComponent(`${protocol}//${hostname}${callbackUrl}`)}`
-        }
-        
-        return url
       },
     },
   }

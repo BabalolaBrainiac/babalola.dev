@@ -5,7 +5,7 @@ import { ThemeProvider } from '@/contexts/ThemeContext'
 export const metadata = {
 	metadataBase: new URL(process.env.NODE_ENV === 'production' ? 'https://babalola.dev' : 'http://localhost:3000'),
 	title: "Babalola Opeyemi - Senior Backend Engineer | AI/ML Infrastructure Specialist | Cloud Architect",
-	description: "Results-driven Senior Software Engineer with 5+ years of expertise architecting and deploying enterprise-grade backend systems, AI/ML infrastructure, and cloud-native solutions. Proven track record scaling platforms serving 52M+ users and processing $1.5M+ weekly transactions.",
+	description: "Results-driven Software Engineer with 5+ years of expertise architecting and deploying enterprise-grade backend systems, AI/ML infrastructure, and cloud-native solutions. Proven track record scaling platforms serving 52M+ users and processing $1.5M+ weekly transactions.",
 	keywords: [
 		"Software Engineer",
 		"Backend Developer", 
@@ -70,7 +70,7 @@ export const metadata = {
 		url: 'https://babalola.dev',
 		siteName: 'Babalola Opeyemi - Senior Backend Engineer',
 		title: 'Babalola Opeyemi - Senior Backend Engineer | AI/ML Infrastructure Specialist | Cloud Architect',
-		description: 'Results-driven Senior Software Engineer with 5+ years of expertise architecting and deploying enterprise-grade backend systems, AI/ML infrastructure, and cloud-native solutions.',
+		description: 'Results-driven Software Engineer with 5+ years of expertise architecting and deploying enterprise-grade backend systems, AI/ML infrastructure, and cloud-native solutions.',
 		images: [
 			{
 				url: '/og-image.jpg',
@@ -85,7 +85,7 @@ export const metadata = {
 		site: '@brainiac_ope',
 		creator: '@brainiac_ope',
 		title: 'Babalola Opeyemi - Senior Backend Engineer | AI/ML Infrastructure Specialist | Cloud Architect',
-		description: 'Results-driven Senior Software Engineer with 5+ years of expertise architecting and deploying enterprise-grade backend systems, AI/ML infrastructure, and cloud-native solutions.',
+		description: 'Results-driven Software Engineer with 5+ years of expertise architecting and deploying enterprise-grade backend systems, AI/ML infrastructure, and cloud-native solutions.',
 		images: ['/og-image.jpg'],
 	},
 	alternates: {
@@ -145,7 +145,7 @@ export default function RootLayout({
 							"@type": "Person",
 							"name": "Babalola Opeyemi",
 							"jobTitle": "Senior Backend Engineer",
-							"description": "Results-driven Senior Software Engineer with 5+ years of expertise architecting and deploying enterprise-grade backend systems, AI/ML infrastructure, and cloud-native solutions.",
+							"description": "Results-driven Software Engineer with 5+ years of expertise architecting and deploying enterprise-grade backend systems, AI/ML infrastructure, and cloud-native solutions.",
 							"url": "https://babalola.dev",
 							"image": "https://babalola.dev/og-image.jpg",
 							"sameAs": [
@@ -181,7 +181,7 @@ export default function RootLayout({
 								{
 									"@type": "Organization",
 									"name": "HeySavi LTD",
-									"jobTitle": "Senior Software Engineer"
+									"jobTitle": "Software Engineer"
 								},
 								{
 									"@type": "Organization",

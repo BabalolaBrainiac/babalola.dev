@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 
@@ -15,7 +15,22 @@ export default function RegisterPage() {
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState('')
   const [success, setSuccess] = useState('')
+  const [userExists, setUserExists] = useState<boolean | null>(null)
   const router = useRouter()
+
+  // Check if user already exists on mount
+  useEffect(() => {
+    const checkUserExists = async () => {
+      try {
+        const response = await fetch('/api/auth/check-user')
+        const data = await response.json()
+        setUserExists(data.exists)
+      } catch (error) {
+        console.error('Failed to check user status')
+      }
+    }
+    checkUserExists()
+  }, [])
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     setFormData({
@@ -64,6 +79,7 @@ export default function RegisterPage() {
       }
 
       setSuccess('User created successfully! You can now sign in.')
+      setUserExists(true)
       setFormData({
         email: '',
         name: '',
@@ -78,6 +94,33 @@ export default function RegisterPage() {
     }
   }
 
+  // Show closed message if user exists
+  if (userExists === true) {
+    return (
+      <div className="min-h-screen bg-[var(--background)] text-[var(--foreground)] transition-all duration-300 ease-out flex items-center justify-center">
+        <div className="max-w-md w-full mx-4">
+          <div className="glass-card p-8 text-center">
+            <div className="text-5xl mb-4">🔒</div>
+            <h1 className="text-2xl font-bold font-mono gradient-text mb-4">
+              Registration Closed
+            </h1>
+            <p className="text-[var(--muted)] mb-6">
+              User account already exists. Registration is disabled.
+            </p>
+            <div className="space-y-3">
+              <Link href="/auth/signin" className="block w-full btn btn-primary">
+                Sign In
+              </Link>
+              <Link href="/blog" className="block text-sm text-[var(--muted)] hover:text-[var(--accent)] transition-colors">
+                ← Back to Blog
+              </Link>
+            </div>
+          </div>
+        </div>
+      </div>
+    )
+  }
+
   return (
     <div className="min-h-screen bg-[var(--background)] text-[var(--foreground)] transition-all duration-300 ease-out flex items-center justify-center">
       <div className="max-w-md w-full mx-4">
@@ -87,7 +130,7 @@ export default function RegisterPage() {
               Register User
             </h1>
             <p className="text-[var(--muted)]">
-              Create a new blog contributor account
+              Create admin account (one-time only)
             </p>
           </div>
 
@@ -162,21 +205,6 @@ export default function RegisterPage() {
                 placeholder="Confirm your password"
                 required
               />
-            </div>
-
-            <div>
-              <label className="block text-sm font-mono font-semibold mb-2" style={{ color: 'var(--foreground)' }}>
-                Role
-              </label>
-              <select
-                name="role"
-                value={formData.role}
-                onChange={handleChange}
-                className="w-full px-4 py-2 glass rounded-lg border border-[var(--glass-border)] focus:border-[var(--accent)] focus:outline-none"
-              >
-                <option value="contributor">Contributor</option>
-                <option value="admin">Admin</option>
-              </select>
             </div>
 
             <button

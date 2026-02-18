@@ -14,15 +14,18 @@ export const authOptions: NextAuthOptions = {
       },
       async authorize(credentials) {
         if (!credentials?.email || !credentials?.password) {
+          console.log('Auth: Missing credentials')
           return null
         }
 
         if (!supabase) {
-          // Supabase not configured
+          console.log('Auth: Supabase not configured')
           return null
         }
 
         try {
+          console.log('Auth: Attempting login for:', credentials.email)
+          
           // Get user from database
           const { data: user, error } = await supabase
             .from('blog_users')
@@ -30,20 +33,30 @@ export const authOptions: NextAuthOptions = {
             .eq('email', credentials.email)
             .single()
 
-          if (error || !user) {
-            // Authentication failed: User not found
+          if (error) {
+            console.log('Auth: Database error:', error.message)
             return null
           }
+
+          if (!user) {
+            console.log('Auth: User not found')
+            return null
+          }
+
+          console.log('Auth: User found, verifying password...')
+          console.log('Auth: Stored hash starts with:', user.password_hash?.substring(0, 20))
 
           // Verify password using bcrypt
           const isValidPassword = await bcrypt.compare(credentials.password, user.password_hash)
           
+          console.log('Auth: Password valid?', isValidPassword)
+          
           if (!isValidPassword) {
-            // Authentication failed: Invalid password
+            console.log('Auth: Invalid password')
             return null
           }
 
-          // Authentication successful
+          console.log('Auth: Login successful')
           return {
             id: user.id,
             email: user.email,
@@ -51,7 +64,7 @@ export const authOptions: NextAuthOptions = {
             role: user.role
           }
         } catch (error) {
-          // Authentication error occurred
+          console.error('Auth: Error occurred:', error)
           return null
         }
       }

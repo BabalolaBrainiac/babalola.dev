@@ -74,6 +74,8 @@ web_modules/
 
 # dotenv environment variable files
 .env
+.env.*
+!.env.example
 .env.development.local
 .env.test.local
 .env.production.local
@@ -182,3 +184,106 @@ override.tf.json
 
 
 src/layer/nodejs/shared/application/controller/test.js
+.next
+
+# ============================================
+# AGENT & AI ASSISTANT FILES
+# ============================================
+AGENTS.md
+AGENT.md
+agent*.md
+agents*.md
+.cursorrules
+.cursor/
+.ai/
+ai-context/
+prompts/
+*.prompt
+
+# ============================================
+# SENSITIVE PERSONAL FILES
+# ============================================
+# Personal notes and todos
+TODO.md
+TODO.txt
+todo.md
+todo.txt
+NOTES.md
+notes.md
+personal/
+private/
+
+# SSH and GPG keys
+*.pem
+*.key
+*.pub
+id_rsa
+id_rsa.pub
+id_ed25519
+id_ed25519.pub
+gpg-keys/
+.ssh/
+
+# Certificates
+*.crt
+*.cer
+*.p12
+*.pfx
+*.der
+
+# Credentials and secrets (additional patterns)
+*credentials*
+*secret*
+*password*
+*.htpasswd
+.netrc
+.aws/
+azure-credentials.json
+gcp-credentials.json
+service-account*.json
+
+# Database files
+*.db
+*.sqlite
+*.sqlite3
+*.dump
+
+# Backup files
+*.backup
+*.bak
+*.old
+*.orig
+*~
+
+# Local development configs
+.local/
+local/
+config/local*
+config/*local*
+
+# OS generated files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+desktop.ini
+
+# IDE and editor files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.vs/
+*.sublime-*
+.atom/
+
+# Temporary files
+tmp/
+temp/
+*.tmp
+*.temp
+.cache/

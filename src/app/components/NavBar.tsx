@@ -44,6 +44,9 @@ export default function NavBar() {
 						<a href="#experience" className="text-[var(--muted)] hover:text-[var(--accent)] transition-colors font-mono text-sm">
 							experience()
 						</a>
+						<a href="#projects" className="text-[var(--muted)] hover:text-[var(--accent)] transition-colors font-mono text-sm">
+							projects()
+						</a>
 						<a href="#skills" className="text-[var(--muted)] hover:text-[var(--accent)] transition-colors font-mono text-sm">
 							skills()
 						</a>
@@ -141,6 +144,13 @@ export default function NavBar() {
 								onClick={() => setIsMobileMenuOpen(false)}
 							>
 								experience()
+							</a>
+							<a 
+								href="#projects" 
+								className="text-[var(--muted)] hover:text-[var(--accent)] transition-colors font-mono text-sm py-2"
+								onClick={() => setIsMobileMenuOpen(false)}
+							>
+								projects()
 							</a>
 							<a 
 								href="#skills" 

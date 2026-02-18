@@ -6,6 +6,8 @@ import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter'
 import { tomorrow } from 'react-syntax-highlighter/dist/esm/styles/prism'
 import CodeExecution from './CodeExecution'
 
+import rehypeSlug from 'rehype-slug'
+
 interface MarkdownRendererProps {
   content: string
 }
@@ -18,25 +20,25 @@ export default function MarkdownRenderer({ content }: MarkdownRendererProps) {
     // Extract CodeExecution components and replace with placeholders
     const codeExecutionRegex = /<CodeExecution\s+([^>]+)>\s*```(\w+)\s*([\s\S]*?)```\s*<\/CodeExecution>/g
     const matches = Array.from(content.matchAll(codeExecutionRegex))
-    
+
     const executions: any[] = []
     let processed = content
-    
+
     matches.forEach((match, index) => {
       const fullMatch = match[0]
       const props = match[1]
       const language = match[2]
       const code = match[3]
-      
+
       // Extract props
       const titleMatch = props.match(/title="([^"]*)"/)
       const descriptionMatch = props.match(/description="([^"]*)"/)
       const executableMatch = props.match(/executable=\{([^}]+)\}/)
-      
+
       const title = titleMatch ? titleMatch[1] : ''
       const description = descriptionMatch ? descriptionMatch[1] : ''
       const executable = executableMatch ? executableMatch[1] === 'true' : true
-      
+
       executions.push({
         index,
         title,
@@ -45,12 +47,12 @@ export default function MarkdownRenderer({ content }: MarkdownRendererProps) {
         language,
         code: code.trim()
       })
-      
+
       // Replace with a unique placeholder
       const placeholder = `\n\nCODE_EXECUTION_${index}\n\n`
       processed = processed.replace(fullMatch, placeholder)
     })
-    
+
     setCodeExecutions(executions)
     setProcessedContent(processed)
   }, [content])
@@ -65,7 +67,7 @@ export default function MarkdownRenderer({ content }: MarkdownRendererProps) {
         </h1>
       )
     },
-    
+
     h2({ children, ...props }: any) {
       return (
         <h2 className="text-2xl md:text-3xl font-bold font-mono gradient-text mb-4 mt-6 pb-2 border-b border-[var(--accent)]/20" {...props}>
@@ -73,7 +75,7 @@ export default function MarkdownRenderer({ content }: MarkdownRendererProps) {
         </h2>
       )
     },
-    
+
     h3({ children, ...props }: any) {
       return (
         <h3 className="text-xl md:text-2xl font-bold font-mono text-[var(--accent)] mb-3 mt-5" {...props}>
@@ -81,7 +83,7 @@ export default function MarkdownRenderer({ content }: MarkdownRendererProps) {
         </h3>
       )
     },
-    
+
     h4({ children, ...props }: any) {
       return (
         <h4 className="text-lg md:text-xl font-semibold font-mono text-[var(--accent)] mb-2 mt-4" {...props}>
@@ -89,7 +91,7 @@ export default function MarkdownRenderer({ content }: MarkdownRendererProps) {
         </h4>
       )
     },
-    
+
     h5({ children, ...props }: any) {
       return (
         <h5 className="text-base md:text-lg font-semibold font-mono text-[var(--muted)] mb-2 mt-3" {...props}>
@@ -97,7 +99,7 @@ export default function MarkdownRenderer({ content }: MarkdownRendererProps) {
         </h5>
       )
     },
-    
+
     h6({ children, ...props }: any) {
       return (
         <h6 className="text-sm md:text-base font-semibold font-mono text-[var(--muted)] mb-2 mt-3" {...props}>
@@ -109,7 +111,7 @@ export default function MarkdownRenderer({ content }: MarkdownRendererProps) {
     code({ node, inline, className, children, ...props }: any) {
       const match = /language-(\w+)/.exec(className || '')
       const language = match ? match[1] : ''
-      
+
       if (!inline && language) {
         return (
           <SyntaxHighlighter
@@ -123,23 +125,23 @@ export default function MarkdownRenderer({ content }: MarkdownRendererProps) {
           </SyntaxHighlighter>
         )
       }
-      
+
       return (
         <code className={className} {...props}>
           {children}
         </code>
       )
     },
-    
+
     // Handle paragraphs with better spacing
     p({ children, ...props }: any) {
       const text = String(children)
-      
+
       // Check if this paragraph contains a CodeExecution placeholder
       const placeholderMatch = text.match(/CODE_EXECUTION_(\d+)/)
       if (placeholderMatch) {
         const index = parseInt(placeholderMatch[1])
-        
+
         if (codeExecutions[index]) {
           const execution = codeExecutions[index]
           return (
@@ -153,7 +155,7 @@ export default function MarkdownRenderer({ content }: MarkdownRendererProps) {
           )
         }
       }
-      
+
       return <p className="mb-4 leading-relaxed text-[var(--foreground)]" {...props}>{children}</p>
     },
 
@@ -187,7 +189,10 @@ export default function MarkdownRenderer({ content }: MarkdownRendererProps) {
 
   return (
     <div className="prose prose-invert max-w-none">
-      <ReactMarkdown components={components}>
+      <ReactMarkdown
+        components={components}
+        rehypePlugins={[rehypeSlug]}
+      >
         {processedContent}
       </ReactMarkdown>
     </div>

@@ -2,485 +2,648 @@
 
 import React, { useState, useEffect } from 'react';
 import { getBlogUrl } from '@/lib/urls';
+import { 
+  experiences, 
+  skills, 
+  getFeaturedProjects, 
+  getAllProjects,
+  type Project 
+} from '../data/portfolio';
+
+// Category icons for projects
+const getProjectIcon = (category: Project['category']) => {
+  const icons = {
+    security: (
+      <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+      </svg>
+    ),
+    iac: (
+      <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
+      </svg>
+    ),
+    ai: (
+      <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+      </svg>
+    ),
+    opensource: (
+      <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4" />
+      </svg>
+    ),
+  };
+  return icons[category];
+};
+
+const getCategoryColor = (category: Project['category']) => {
+  const colors = {
+    security: 'from-red-500/20 to-orange-500/20 border-red-500/30',
+    iac: 'from-blue-500/20 to-cyan-500/20 border-blue-500/30',
+    ai: 'from-purple-500/20 to-pink-500/20 border-purple-500/30',
+    opensource: 'from-green-500/20 to-emerald-500/20 border-green-500/30',
+  };
+  return colors[category];
+};
+
+const getCategoryLabel = (category: Project['category']) => {
+  const labels = {
+    security: 'Security',
+    iac: 'Infrastructure',
+    ai: 'AI/ML',
+    opensource: 'Open Source',
+  };
+  return labels[category];
+};
 
 export default function MainBody() {
-	const [typedText, setTypedText] = useState('');
-	const fullText = 'Senior Software Engineer';
-	const [currentExperienceIndex, setCurrentExperienceIndex] = useState(0);
+  const [typedText, setTypedText] = useState('');
+  const fullText = 'Software Engineer';
+  const [currentExperienceIndex, setCurrentExperienceIndex] = useState(0);
+  const [activeProjectFilter, setActiveProjectFilter] = useState<Project['category'] | 'all'>('all');
+  const [expandedProject, setExpandedProject] = useState<string | null>(null);
 
-	const getSkillIcon = (category: string) => {
-		const icons: { [key: string]: string } = {
-			'languages': '💻',
-			'frameworks': '⚡',
-			'cloud': '☁️',
-			'databases': '🗄️',
-			'devops': '🔧',
-			'concepts': '🧠'
-		};
-		return icons[category] || '🔧';
-	};
+  const featuredProjects = getFeaturedProjects();
+  const allProjects = getAllProjects();
+  
+  const filteredProjects = activeProjectFilter === 'all' 
+    ? allProjects 
+    : allProjects.filter(p => p.category === activeProjectFilter);
 
-	useEffect(() => {
-		// Typing animation
-		let i = 0;
-		const timer = setInterval(() => {
-			if (i < fullText.length) {
-				setTypedText(fullText.slice(0, i + 1));
-				i++;
-			} else {
-				clearInterval(timer);
-			}
-		}, 100);
+  const getSkillIcon = (category: string) => {
+    const icons: { [key: string]: string } = {
+      'languages': '💻',
+      'frameworks': '⚡',
+      'cloud': '☁️',
+      'databases': '🗄️',
+      'devops': '🔧',
+      'concepts': '🧠'
+    };
+    return icons[category] || '🔧';
+  };
 
-		return () => clearInterval(timer);
-	}, []);
+  useEffect(() => {
+    let i = 0;
+    const timer = setInterval(() => {
+      if (i < fullText.length) {
+        setTypedText(fullText.slice(0, i + 1));
+        i++;
+      } else {
+        clearInterval(timer);
+      }
+    }, 100);
 
-	const nextExperience = () => {
-		setCurrentExperienceIndex((prev) => (prev + 1) % experiences.length);
-	};
+    return () => clearInterval(timer);
+  }, []);
 
-	const prevExperience = () => {
-		setCurrentExperienceIndex((prev) => (prev - 1 + experiences.length) % experiences.length);
-	};
+  const nextExperience = () => {
+    setCurrentExperienceIndex((prev) => (prev + 1) % experiences.length);
+  };
 
-	const experiences = [
-		{
-			title: "Senior Software Engineer",
-			company: "HeySavi LTD",
-			period: "03/2025 - Present",
-			location: "Remote",
-			highlights: [
-				"Designed organization-wide AWS IAM access management using Infrastructure as Code (Terraform), automating role-based permissions across environments and reducing manual configuration overhead by 80%",
-				"Architected LLM-powered chat backend service integrating AWS SageMaker, AI agents, and external providers, enabling real-time conversational AI with sub-200ms response times",
-				"Built reusable Terraform modules for provisioning AWS resources (Lambda, ECS, S3, IAM, SQS, SNS, EventBridge), standardizing infrastructure deployment and reducing setup time by 60%",
-				"Developed event-driven data ingestion and processing pipelines using Lambda, S3, SQS, SNS, and Step Functions, processing millions of events daily with 99.9% reliability",
-				"Integrated AI/ML inference pipelines, RAG systems, and agents via REST and WebSocket APIs, enabling real-time image analysis, semantic search, and intelligent recommendations",
-				"Provisioned analytics and data lake streaming pipelines with S3 event triggers, Redshift integration, and CloudWatch monitoring, automating data governance and warehouse operations"
-			],
-			tech: ["AWS SageMaker", "Terraform", "Lambda", "ECS", "S3", "EventBridge", "Redshift", "Node.js", "TypeScript", "Python", "WebSockets", "DynamoDB", "Pinecone"]
-		},
-		{
-			title: "Lead Backend Engineer",
-			company: "SpinWellness (Contract)",
-			period: "11/2024 - 02/2025",
-			location: "Remote",
-			highlights: [
-				"Architected and developed complete backend infrastructure using Next.js, Cloudflare Workers, and Terraform, enabling serverless deployment with zero-downtime capabilities",
-				"Built RESTful APIs for waitlist management, user onboarding, and contact management, processing 10K+ requests daily with 99.95% uptime",
-				"Implemented email notification systems using Resend API, automating user communications and reducing manual overhead by 90%",
-				"Designed Infrastructure as Code using Terraform for Cloudflare Workers, KV storage, and D1 databases, ensuring consistent deployments across environments",
-				"Developed admin dashboard APIs for waitlist management and analytics, enabling real-time insights into user growth metrics",
-				"Optimized API response times to sub-100ms average latency through efficient database queries and caching strategies"
-			],
-			tech: ["Next.js", "TypeScript", "Cloudflare Workers", "Cloudflare D1", "Terraform", "Resend API", "Serverless Architecture"]
-		},
-		{
-			title: "Software Engineer",
-			company: "Access Bank PLC",
-			period: "04/2023 - 03/2025",
-			location: "Remote",
-			highlights: [
-				"Transformed backend architecture by implementing scalable microservices, improving system performance by 25% and reducing latency by 40% for 52M+ users",
-				"Conducted design and code reviews, integrating network services across multiple platforms using SOAP and REST APIs (Safaricom, MPesa, RevPay), increasing system efficiency by 25%",
-				"Proactively identified and drove architectural improvements, enhancing decision-making processes and reducing development time by 30%",
-				"Optimized DevOps pipelines using AWS services, Docker, GitHub Actions, and Kubernetes, increasing deployment speed by 40% and reducing deployment failures by 50%",
-				"Architected real-time data processing systems using Kafka and OLTP databases, handling millions of transactions daily with 99.99% reliability",
-				"Developed Python automation scripts for operational tasks, reducing manual processing time by 60%"
-			],
-			tech: ["C#", "ASP.NET", ".NET Core", "Java", "Python", "AWS", "Docker", "Kubernetes", "Kafka", "PostgreSQL", "MySQL", "GitHub Actions", "TurboRepo"]
-		},
-		{
-			title: "Undergraduate Tutor",
-			company: "EdgeHill University",
-			period: "10/2023 - 12/2023",
-			location: "Ormskirk, UK",
-			highlights: [
-				"Conducted extracurricular sessions on programming and databases",
-				"Provided one-on-one mentoring for complex technical concepts",
-				"Assisted faculty in preparing learning materials and evaluating projects"
-			],
-			tech: ["Teaching", "Mentoring", "Database Design", "Programming"]
-		},
-		{
-			title: "Lead Software Engineer",
-			company: "GipperPay",
-			period: "05/2022 - 04/2023",
-			location: "Delaware, USA",
-			highlights: [
-				"Developed scalable authentication microservice enhancing security and UX",
-				"Led cross-functional team of 7 engineers delivering cryptocurrency products",
-				"Increased market reach by 50% and transaction volumes by 60%",
-				"Reduced time to market by 20% through streamlined processes"
-			],
-			tech: [".NET", "C#", "JavaScript", "Python", "AWS", "Docker", "Microservices"]
-		},
-		{
-			title: "Software Engineer, Backend",
-			company: "Binance",
-			period: "12/2021 - 12/2022",
-			location: "Remote",
-			highlights: [
-				"Architected Cashlink P2P service processing $1.5M+ weekly transactions",
-				"Improved transaction success rate by 15% and customer satisfaction by 25%",
-				"Enhanced crypto social platform features, increasing user activity by 30%",
-				"Collaborated across blockchain, backend, and frontend teams"
-			],
-			tech: ["Node.js", "TypeScript", "Java", "Spring Boot", "C#", "Docker", "Blockchain"]
-		},
-		{
-			title: "Backend Software Engineer",
-			company: "DevClusters",
-			period: "02/2018 - 12/2021",
-			location: "Remote",
-			highlights: [
-				"Developed and managed backend APIs for team networking",
-				"Integrated various API providers enhancing functionality and UX",
-				"Improved application performance by 20% through seamless integration",
-				"Led major initiatives coordinating efforts across teams"
-			],
-			tech: ["Backend APIs", "System Integration", "Performance Optimization", "Team Leadership"]
-		}
-	];
+  const prevExperience = () => {
+    setCurrentExperienceIndex((prev) => (prev - 1 + experiences.length) % experiences.length);
+  };
 
-	const skills = {
-		languages: ["Java", "C#", "TypeScript", "JavaScript", "Python", "Rust", "Golang"],
-		frameworks: ["Spring Boot", "ASP.NET Core", "NestJS", "React", "Next.js", "Node.js", "ExpressJS"],
-		cloud: ["AWS", "Azure", "GCP", "Docker", "Kubernetes", "Terraform", "CloudFormation", "SageMaker", "Cloudflare Workers"],
-		databases: ["PostgreSQL", "MySQL", "MongoDB", "DynamoDB", "Redis", "Elasticsearch", "Pinecone", "Redshift"],
-		devops: ["Git", "Jenkins", "Maven", "Gradle", "Ansible", "Vagrant", "CI/CD", "GitHub Actions"],
-		concepts: ["Microservices", "Serverless", "TDD", "System Design", "Event-driven Architecture", "MLOps", "LLM Integration", "RAG Pipelines"]
-	};
+  const currentExperience = experiences[currentExperienceIndex];
 
-	return (
-		<main className="scroll-container">
-			{/* Hero Section */}
-			<section className="min-h-screen flex items-center justify-center px-4 sm:px-6 scroll-section" style={{ background: 'var(--background)' }}>
-				<div className="max-w-4xl mx-auto text-center">
-					<div className="animate-fade-in">
-						<div className="mb-8">
-							<h1 className="text-4xl sm:text-5xl md:text-6xl font-bold mb-6 funky-heading capitalize">
-								<span className="gradient-text">Babalola Opeyemi</span>
-							</h1>
-							<div className="h-8 mb-6">
-								<p className="text-xl md:text-2xl font-mono" style={{ color: 'var(--muted)' }}>
-									{typedText}<span className="animate-pulse">|</span>
-								</p>
-							</div>
-							<p className="text-base md:text-lg max-w-2xl mx-auto leading-relaxed mb-8 funky-text" style={{ color: 'var(--muted)' }}>
-								Senior Software Engineer. Building scalable systems, AI/ML infrastructure, and cloud-native solutions. Leading teams, mentoring engineers, and architecting high-performance systems.
-							</p>
-						</div>
+  return (
+    <main className="scroll-container">
+      {/* Hero Section */}
+      <section className="min-h-screen flex items-center justify-center px-4 sm:px-6 scroll-section" style={{ background: 'var(--background)' }}>
+        <div className="max-w-4xl mx-auto text-center">
+          <div className="animate-fade-in">
+            <div className="mb-8">
+              <h1 className="text-4xl sm:text-5xl md:text-6xl font-bold mb-6 funky-heading capitalize">
+                <span className="gradient-text">Babalola Opeyemi</span>
+              </h1>
+              <div className="h-8 mb-6">
+                <p className="text-xl md:text-2xl font-mono" style={{ color: 'var(--muted)' }}>
+                  {typedText}<span className="animate-pulse">|</span>
+                </p>
+              </div>
+              <p className="text-base md:text-lg max-w-2xl mx-auto leading-relaxed mb-8 funky-text" style={{ color: 'var(--muted)' }}>
+                Software Engineer. Building scalable systems, AI/ML infrastructure, and cloud-native solutions. Leading teams, mentoring engineers, and architecting high-performance systems.
+              </p>
+            </div>
 
-						{/* CTA Buttons */}
-						<div className="flex flex-col sm:flex-row gap-4 justify-center items-center mb-12">
-							<a
-								href={getBlogUrl()}
-								className="btn btn-secondary w-full sm:w-auto"
-							>
-								Read brainiac's blog
-							</a>
-							<a
-								href="mailto:babaloladanielope@gmail.com"
-								className="btn btn-secondary w-full sm:w-auto"
-							>
-								<svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-									<path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 4.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
-								</svg>
-								Get In Touch
-							</a>
-						</div>
+            <div className="flex flex-col sm:flex-row gap-4 justify-center items-center mb-12">
+              <a
+                href={getBlogUrl()}
+                className="btn btn-secondary w-full sm:w-auto"
+              >
+                Read brainiac's blog
+              </a>
+              <a
+                href="mailto:babaloladanielope@gmail.com"
+                className="btn btn-secondary w-full sm:w-auto"
+              >
+                <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 4.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                </svg>
+                Get In Touch
+              </a>
+            </div>
+          </div>
+        </div>
+      </section>
 
-					</div>
-				</div>
-			</section>
+      {/* About Section */}
+      <section id="about" className="min-h-screen flex items-center px-4 sm:px-6 scroll-section" style={{ background: 'var(--background-secondary)' }}>
+        <div className="max-w-7xl mx-auto">
+          <div className="text-center mb-12">
+            <h2 className="text-4xl sm:text-5xl md:text-6xl font-bold mb-6 funky-heading gradient-text">
+              about
+            </h2>
+          </div>
 
-			{/* About Section */}
-			<section id="about" className="min-h-screen flex items-center px-4 sm:px-6 scroll-section" style={{ background: 'var(--background-secondary)' }}>
-				<div className="max-w-7xl mx-auto">
-					<div className="text-center mb-12">
-						<h2 className="text-4xl sm:text-5xl md:text-6xl font-bold mb-6 funky-heading gradient-text">
-							about
-						</h2>
-					</div>
+          <div className="grid lg:grid-cols-2 gap-8 max-w-6xl mx-auto mb-8">
+            <div className="space-y-6">
+              <div className="about-card p-6">
+                <h3 className="text-xl font-bold mb-4 font-mono gradient-text">Education</h3>
+                <div className="space-y-4">
+                  <div className="p-4 glass rounded-lg">
+                    <h4 className="font-semibold text-lg" style={{ color: 'var(--foreground)' }}>EdgeHill University, UK</h4>
+                    <p className="text-sm mt-1" style={{ color: 'var(--muted)' }}>Master's Degree in Computing (2024)</p>
+                  </div>
+                  <div className="p-4 glass rounded-lg">
+                    <h4 className="font-semibold text-lg" style={{ color: 'var(--foreground)' }}>University of Ilorin, Nigeria</h4>
+                    <p className="text-sm mt-1" style={{ color: 'var(--muted)' }}>Bachelor's Degree (2016)</p>
+                  </div>
+                </div>
+              </div>
 
-					<div className="grid lg:grid-cols-2 gap-8 max-w-6xl mx-auto mb-8">
-						{/* Education & Stats Card */}
-						<div className="space-y-6">
-							<div className="about-card p-6">
-								<h3 className="text-xl font-bold mb-4 font-mono gradient-text">Education</h3>
-								<div className="space-y-4">
-									<div className="p-4 glass rounded-lg">
-										<h4 className="font-semibold text-lg" style={{ color: 'var(--foreground)' }}>EdgeHill University, UK</h4>
-										<p className="text-sm mt-1" style={{ color: 'var(--muted)' }}>Master's Degree in Computing (2024)</p>
-									</div>
-									<div className="p-4 glass rounded-lg">
-										<h4 className="font-semibold text-lg" style={{ color: 'var(--foreground)' }}>University of Ilorin, Nigeria</h4>
-										<p className="text-sm mt-1" style={{ color: 'var(--muted)' }}>Bachelor's Degree (2016)</p>
-									</div>
-								</div>
-							</div>
+              <div className="about-card p-6">
+                <h3 className="text-xl font-bold mb-4 font-mono gradient-text">Quick Stats</h3>
+                <div className="space-y-3">
+                  <div className="flex justify-between items-center p-3 glass rounded-lg">
+                    <span className="text-sm" style={{ color: 'var(--muted)' }}>Experience</span>
+                    <span className="font-bold text-lg gradient-text">5+ Years</span>
+                  </div>
+                  <div className="flex justify-between items-center p-3 glass rounded-lg">
+                    <span className="text-sm" style={{ color: 'var(--muted)' }}>Users Impacted</span>
+                    <span className="font-bold text-lg gradient-text">52M+</span>
+                  </div>
+                  <div className="flex justify-between items-center p-3 glass rounded-lg">
+                    <span className="text-sm" style={{ color: 'var(--muted)' }}>Companies</span>
+                    <span className="font-bold text-lg gradient-text">6</span>
+                  </div>
+                  <div className="flex justify-between items-center p-3 glass rounded-lg">
+                    <span className="text-sm" style={{ color: 'var(--muted)' }}>Technologies</span>
+                    <span className="font-bold text-lg gradient-text">25+</span>
+                  </div>
+                </div>
+              </div>
+            </div>
 
-							<div className="about-card p-6">
-								<h3 className="text-xl font-bold mb-4 font-mono gradient-text">Quick Stats</h3>
-								<div className="space-y-3">
-									<div className="flex justify-between items-center p-3 glass rounded-lg">
-										<span className="text-sm" style={{ color: 'var(--muted)' }}>Experience</span>
-										<span className="font-bold text-lg gradient-text">5+ Years</span>
-									</div>
-									<div className="flex justify-between items-center p-3 glass rounded-lg">
-										<span className="text-sm" style={{ color: 'var(--muted)' }}>Users Impacted</span>
-										<span className="font-bold text-lg gradient-text">52M+</span>
-									</div>
-									<div className="flex justify-between items-center p-3 glass rounded-lg">
-										<span className="text-sm" style={{ color: 'var(--muted)' }}>Companies</span>
-										<span className="font-bold text-lg gradient-text">6</span>
-								</div>
-									<div className="flex justify-between items-center p-3 glass rounded-lg">
-										<span className="text-sm" style={{ color: 'var(--muted)' }}>Technologies</span>
-										<span className="font-bold text-lg gradient-text">25+</span>
-									</div>
-								</div>
-							</div>
-						</div>
+            <div className="space-y-6">
+              <div className="about-card p-6">
+                <h3 className="text-xl font-bold mb-4 font-mono gradient-text">interests</h3>
+                <div className="space-y-4">
+                  <div className="p-4 glass rounded-lg">
+                    <div className="flex items-start gap-3">
+                      <span className="text-lg mt-0.5">🍳</span>
+                      <div>
+                        <p className="text-sm font-medium" style={{ color: 'var(--foreground)' }}>Cooking</p>
+                        <p className="text-xs mt-1" style={{ color: 'var(--muted)' }}>love experimenting with flavors</p>
+                      </div>
+                    </div>
+                  </div>
+                  <div className="p-4 glass rounded-lg">
+                    <div className="flex items-start gap-3">
+                      <span className="text-lg mt-0.5">🎌</span>
+                      <div>
+                        <p className="text-sm font-medium" style={{ color: 'var(--foreground)' }}>Anime</p>
+                        <p className="text-xs mt-1" style={{ color: 'var(--muted)' }}>avid watcher</p>
+                      </div>
+                    </div>
+                  </div>
+                  <div className="p-4 glass rounded-lg">
+                    <div className="flex items-start gap-3">
+                      <span className="text-lg mt-0.5">📚</span>
+                      <div>
+                        <p className="text-sm font-medium" style={{ color: 'var(--foreground)' }}>Epic Fantasy</p>
+                        <p className="text-xs mt-1" style={{ color: 'var(--muted)' }}>favorites: Wheel of Time, The Demon Cycle, The Name of the Wind, Before They Are Hanged</p>
+                      </div>
+                    </div>
+                  </div>
+                  <div className="p-4 glass rounded-lg">
+                    <div className="flex items-start gap-3">
+                      <span className="text-lg mt-0.5">🎹</span>
+                      <div>
+                        <p className="text-sm font-medium" style={{ color: 'var(--foreground)' }}>Music</p>
+                        <p className="text-xs mt-1" style={{ color: 'var(--muted)' }}>piano & guitar. used to be a music director directing a choir of over 300 choristers</p>
+                      </div>
+                    </div>
+                  </div>
+                  <div className="p-4 glass rounded-lg">
+                    <div className="flex items-start gap-3">
+                      <span className="text-lg mt-0.5">🎧</span>
+                      <div>
+                        <p className="text-sm font-medium" style={{ color: 'var(--foreground)' }}>Audiophile</p>
+                        <p className="text-xs mt-1" style={{ color: 'var(--muted)' }}>enjoys listening to music</p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
 
-						{/* Fun Facts Card */}
-						<div className="space-y-6">
-							<div className="about-card p-6">
-								<h3 className="text-xl font-bold mb-4 font-mono gradient-text">interests</h3>
-								<div className="space-y-4">
-									<div className="p-4 glass rounded-lg">
-										<div className="flex items-start gap-3">
-											<span className="text-lg mt-0.5">🍳</span>
-											<div>
-												<p className="text-sm font-medium" style={{ color: 'var(--foreground)' }}>Cooking</p>
-												<p className="text-xs mt-1" style={{ color: 'var(--muted)' }}>love experimenting with flavors</p>
-											</div>
-										</div>
-									</div>
-									<div className="p-4 glass rounded-lg">
-										<div className="flex items-start gap-3">
-											<span className="text-lg mt-0.5">🎌</span>
-											<div>
-												<p className="text-sm font-medium" style={{ color: 'var(--foreground)' }}>Anime</p>
-												<p className="text-xs mt-1" style={{ color: 'var(--muted)' }}>avid watcher</p>
-											</div>
-										</div>
-									</div>
-									<div className="p-4 glass rounded-lg">
-										<div className="flex items-start gap-3">
-											<span className="text-lg mt-0.5">📚</span>
-											<div>
-												<p className="text-sm font-medium" style={{ color: 'var(--foreground)' }}>Epic Fantasy</p>
-												<p className="text-xs mt-1" style={{ color: 'var(--muted)' }}>favorites: Wheel of Time (Robert Jordan), The Demon Cycle (Peter V. Brett), The Name of the Wind (Patrick Rothfuss), Before They Are Hanged (Joe Abercrombie)</p>
-											</div>
-										</div>
-									</div>
-									<div className="p-4 glass rounded-lg">
-										<div className="flex items-start gap-3">
-											<span className="text-lg mt-0.5">🎹</span>
-											<div>
-												<p className="text-sm font-medium" style={{ color: 'var(--foreground)' }}>Music</p>
-												<p className="text-xs mt-1" style={{ color: 'var(--muted)' }}>piano & guitar. used to be a music director directing a choir of over 300 choristers</p>
-											</div>
-										</div>
-									</div>
-									<div className="p-4 glass rounded-lg">
-										<div className="flex items-start gap-3">
-											<span className="text-lg mt-0.5">🎧</span>
-											<div>
-												<p className="text-sm font-medium" style={{ color: 'var(--foreground)' }}>Audiophile</p>
-												<p className="text-xs mt-1" style={{ color: 'var(--muted)' }}>enjoys listening to music</p>
-											</div>
-										</div>
-									</div>
-								</div>
-							</div>
-						</div>
-					</div>
-				</div>
-			</section>
+      {/* Experience Section with Projects */}
+      <section id="experience" className="min-h-screen flex items-center px-4 sm:px-6 scroll-section py-20" style={{ background: 'var(--background)' }}>
+        <div className="max-w-7xl mx-auto w-full">
+          <div className="text-center mb-16">
+            <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold mb-4 funky-heading gradient-text">
+              experience
+            </h2>
+            <p className="text-lg max-w-2xl mx-auto" style={{ color: 'var(--muted)' }}>
+              where i've worked and what i've built
+            </p>
+          </div>
 
-			{/* Experience Section */}
-			<section id="experience" className="min-h-screen flex items-center px-4 sm:px-6 scroll-section" style={{ background: 'var(--background)' }}>
-				<div className="max-w-6xl mx-auto">
-					<div className="text-center mb-16">
-						<h2 className="text-3xl sm:text-4xl md:text-5xl font-bold mb-4 funky-heading gradient-text">
-							experience
-						</h2>
-					</div>
+          <div className="grid lg:grid-cols-12 gap-8">
+            {/* Experience List - Left Side */}
+            <div className="lg:col-span-4 space-y-2">
+              {experiences.map((exp, index) => (
+                <button
+                  key={exp.id}
+                  onClick={() => setCurrentExperienceIndex(index)}
+                  className={`w-full text-left p-4 rounded-xl transition-all duration-300 group ${
+                    index === currentExperienceIndex
+                      ? 'bg-[var(--accent)]/10 border border-[var(--accent)]/30'
+                      : 'hover:bg-[var(--glass-bg)] border border-transparent'
+                  }`}
+                >
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <h3 className={`font-semibold ${
+                        index === currentExperienceIndex ? 'text-[var(--accent)]' : 'text-[var(--foreground)]'
+                      }`}>
+                        {exp.company}
+                      </h3>
+                      <p className="text-sm" style={{ color: 'var(--muted)' }}>{exp.title}</p>
+                    </div>
+                    <span className="text-xs font-mono opacity-50">{exp.period.split(' - ')[0]}</span>
+                  </div>
+                </button>
+              ))}
+            </div>
 
-					{/* Experience Carousel */}
-					<div className="relative">
-						{/* Navigation Arrows */}
-						<button
-							onClick={prevExperience}
-							className="absolute left-1 top-1/2 -translate-y-1/2 z-20 w-12 h-12 sm:w-14 sm:h-14 glass rounded-full flex items-center justify-center hover:scale-110 transition-transform shadow-lg"
-							aria-label="Previous experience"
-						>
-							<svg className="w-6 h-6 sm:w-7 sm:h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-								<path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
-							</svg>
-						</button>
+            {/* Experience Details - Right Side */}
+            <div className="lg:col-span-8">
+              <div className="experience-card animate-fade-in">
+                {/* Header */}
+                <div className="flex flex-col sm:flex-row sm:justify-between sm:items-start mb-6 gap-4">
+                  <div>
+                    <h3 className="text-2xl sm:text-3xl font-bold font-mono gradient-text mb-1">
+                      {currentExperience.title}
+                    </h3>
+                    <p className="text-xl font-semibold" style={{ color: 'var(--foreground)' }}>
+                      {currentExperience.company}
+                    </p>
+                    <div className="flex flex-wrap items-center gap-2 mt-2 text-sm font-mono" style={{ color: 'var(--muted)' }}>
+                      <span>{currentExperience.period}</span>
+                      <span className="opacity-50">•</span>
+                      <span>{currentExperience.location}</span>
+                      <span className="opacity-50">•</span>
+                      <span className={`px-2 py-0.5 rounded-full text-xs ${
+                        currentExperience.type === 'contract' 
+                          ? 'bg-yellow-500/20 text-yellow-400' 
+                          : currentExperience.type === 'parttime'
+                          ? 'bg-blue-500/20 text-blue-400'
+                          : 'bg-green-500/20 text-green-400'
+                      }`}>
+                        {currentExperience.type}
+                      </span>
+                    </div>
+                  </div>
+                </div>
 
-						<button
-							onClick={nextExperience}
-							className="absolute right-1 top-1/2 -translate-y-1/2 z-20 w-12 h-12 sm:w-14 sm:h-14 glass rounded-full flex items-center justify-center hover:scale-110 transition-transform shadow-lg"
-							aria-label="Next experience"
-						>
-							<svg className="w-6 h-6 sm:w-7 sm:h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-								<path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-							</svg>
-						</button>
+                {/* Highlights */}
+                <div className="mb-8">
+                  <h4 className="text-lg font-semibold mb-3 font-mono gradient-text">Key Achievements</h4>
+                  <ul className="space-y-3" style={{ color: 'var(--muted)' }}>
+                    {currentExperience.highlights.map((highlight, idx) => (
+                      <li key={idx} className="flex items-start gap-3">
+                        <span className="text-[var(--accent)] mt-1">▶</span>
+                        <span className="leading-relaxed text-sm">{highlight}</span>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
 
-						{/* Experience Card */}
-						<div className="mx-4">
-							<div className="experience-card animate-fade-in">
-								<div className="flex flex-col lg:flex-row lg:justify-between lg:items-start mb-6">
-									<div className="mb-4 lg:mb-0 lg:flex-1">
-										<h3 className="text-2xl sm:text-3xl lg:text-4xl font-bold font-mono gradient-text mb-2">
-											{experiences[currentExperienceIndex].title}
-										</h3>
-										<p className="text-xl sm:text-2xl lg:text-3xl font-semibold mb-4" style={{ color: 'var(--foreground)' }}>
-											{experiences[currentExperienceIndex].company}
-										</p>
-										<div className="flex flex-col sm:flex-row sm:items-center gap-1 text-sm font-mono" style={{ color: 'var(--muted)' }}>
-											<span className="opacity-75">{experiences[currentExperienceIndex].period}</span>
-											<span className="hidden sm:inline opacity-50">•</span>
-											<span className="opacity-75">{experiences[currentExperienceIndex].location}</span>
-										</div>
-									</div>
-								</div>
+                {/* Tech Stack */}
+                <div className="mb-8">
+                  <h4 className="text-sm font-semibold mb-2 font-mono" style={{ color: 'var(--muted)' }}>Technologies</h4>
+                  <div className="flex flex-wrap gap-2">
+                    {currentExperience.tech.map((tech) => (
+                      <span key={tech} className="project-tag text-xs">
+                        {tech}
+                      </span>
+                    ))}
+                  </div>
+                </div>
 
-								<div className="mb-6">
-									<h4 className="text-lg sm:text-xl font-semibold mb-3 font-mono gradient-text">Key Achievements</h4>
-									<ul className="space-y-3 sm:space-y-4" style={{ color: 'var(--muted)' }}>
-										{experiences[currentExperienceIndex].highlights.map((highlight, idx) => (
-											<li key={idx} className="flex items-start gap-3 sm:gap-4 text-base sm:text-lg">
-												<span className="text-[var(--accent)] mt-1 sm:mt-2 text-lg sm:text-xl">▶</span>
-												<span className="leading-relaxed">{highlight}</span>
-											</li>
-										))}
-									</ul>
-								</div>
+                {/* Projects Built at this Role */}
+                {currentExperience.projects && currentExperience.projects.length > 0 && (
+                  <div className="border-t border-[var(--glass-border)] pt-6">
+                    <h4 className="text-lg font-semibold mb-4 font-mono gradient-text flex items-center gap-2">
+                      <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
+                      </svg>
+                      Projects Built
+                    </h4>
+                    <div className="grid sm:grid-cols-2 gap-4">
+                      {currentExperience.projects.map((project) => (
+                        <div 
+                          key={project.id}
+                          className="p-4 glass rounded-lg hover:border-[var(--accent)]/30 transition-all duration-300 group"
+                        >
+                          <div className="flex items-start justify-between mb-2">
+                            <h5 className="font-semibold text-[var(--accent)] group-hover:text-[var(--accent)] transition-colors">
+                              {project.name}
+                            </h5>
+                            {getProjectIcon(project.category)}
+                          </div>
+                          <p className="text-xs mb-2 font-medium" style={{ color: 'var(--foreground)' }}>
+                            {project.tagline}
+                          </p>
+                          <p className="text-xs leading-relaxed" style={{ color: 'var(--muted)' }}>
+                            {project.description}
+                          </p>
+                          <div className="flex flex-wrap gap-1 mt-3">
+                            {project.tech.slice(0, 3).map((t) => (
+                              <span key={t} className="text-[10px] px-2 py-0.5 rounded-full bg-[var(--glass-bg)]" style={{ color: 'var(--muted)' }}>
+                                {t}
+                              </span>
+                            ))}
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+              </div>
 
-								{/* Removed Technologies Used here to avoid duplication with Skills section */}
-							</div>
-						</div>
+              {/* Navigation Dots */}
+              <div className="flex justify-center mt-8 space-x-2">
+                {experiences.map((_, index) => (
+                  <button
+                    key={index}
+                    onClick={() => setCurrentExperienceIndex(index)}
+                    className={`w-2 h-2 rounded-full transition-all duration-300 ${
+                      index === currentExperienceIndex 
+                        ? 'bg-[var(--accent)] w-6' 
+                        : 'bg-[var(--muted)] hover:bg-[var(--accent)]'
+                    }`}
+                    aria-label={`Go to experience ${index + 1}`}
+                  />
+                ))}
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
 
-						{/* Experience Indicators */}
-						<div className="flex justify-center mt-8 space-x-2">
-							{experiences.map((_, index) => (
-								<button
-									key={index}
-									onClick={() => setCurrentExperienceIndex(index)}
-									className={`w-3 h-3 rounded-full transition-all duration-300 ${
-										index === currentExperienceIndex 
-											? 'bg-[var(--accent)] scale-125' 
-											: 'bg-[var(--muted)] hover:bg-[var(--accent)]'
-									}`}
-									aria-label={`Go to experience ${index + 1}`}
-								/>
-								))}
-							</div>
+      {/* Projects Section - Bento Grid */}
+      <section id="projects" className="min-h-screen flex items-center px-4 sm:px-6 scroll-section py-20" style={{ background: 'var(--background-secondary)' }}>
+        <div className="max-w-7xl mx-auto w-full">
+          <div className="text-center mb-12">
+            <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold mb-4 funky-heading gradient-text">
+              projects
+            </h2>
+            <p className="text-lg max-w-2xl mx-auto mb-8" style={{ color: 'var(--muted)' }}>
+              building tools that solve real problems
+            </p>
 
-						{/* Experience Counter */}
-						<div className="text-center mt-4">
-							<span className="text-sm font-mono" style={{ color: 'var(--muted)' }}>
-								{currentExperienceIndex + 1} of {experiences.length}
-							</span>
-						</div>
-					</div>
-				</div>
-			</section>
+            {/* Filter Tabs */}
+            <div className="flex flex-wrap justify-center gap-2 mb-8">
+              {(['all', 'security', 'iac', 'ai', 'opensource'] as const).map((filter) => (
+                <button
+                  key={filter}
+                  onClick={() => setActiveProjectFilter(filter)}
+                  className={`px-4 py-2 rounded-full text-sm font-medium transition-all duration-300 ${
+                    activeProjectFilter === filter
+                      ? 'bg-[var(--accent)] text-white'
+                      : 'glass hover:border-[var(--accent)]/30'
+                  }`}
+                >
+                  {filter === 'all' ? 'All Projects' : getCategoryLabel(filter)}
+                </button>
+              ))}
+            </div>
+          </div>
 
-			{/* Skills Section */}
-			<section id="skills" className="min-h-screen flex items-center px-4 sm:px-6 scroll-section" style={{ background: 'var(--background-secondary)' }}>
-				<div className="max-w-6xl mx-auto">
-					<div className="text-center mb-16">
-						<h2 className="text-3xl sm:text-4xl md:text-5xl font-bold mb-4 funky-heading gradient-text">
-							skills
-						</h2>
-					</div>
+          {/* Bento Grid */}
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {filteredProjects.map((project, index) => {
+              const isExpanded = expandedProject === project.id;
+              const isFeatured = project.featured;
+              
+              return (
+                <div
+                  key={project.id}
+                  className={`project-card group relative overflow-hidden transition-all duration-500 ${
+                    isFeatured && activeProjectFilter === 'all' ? 'md:col-span-2 lg:col-span-1' : ''
+                  } ${isExpanded ? 'row-span-2' : ''}`}
+                  style={{ animationDelay: `${index * 0.1}s` }}
+                >
+                  {/* Gradient Background */}
+                  <div className={`absolute inset-0 bg-gradient-to-br ${getCategoryColor(project.category)} opacity-0 group-hover:opacity-100 transition-opacity duration-500`} />
+                  
+                  <div className="relative p-6 h-full flex flex-col">
+                    {/* Header */}
+                    <div className="flex items-start justify-between mb-4">
+                      <div>
+                        <div className="flex items-center gap-2 mb-1">
+                          <span className="text-[10px] uppercase tracking-wider font-semibold px-2 py-0.5 rounded-full bg-[var(--glass-bg)]" style={{ color: 'var(--muted)' }}>
+                            {getCategoryLabel(project.category)}
+                          </span>
+                          {project.featured && (
+                            <span className="text-[10px] uppercase tracking-wider font-semibold px-2 py-0.5 rounded-full bg-[var(--accent)]/20 text-[var(--accent)]">
+                              Featured
+                            </span>
+                          )}
+                        </div>
+                        <h3 className="text-xl font-bold font-mono gradient-text">
+                          {project.name}
+                        </h3>
+                        <p className="text-sm font-medium mt-0.5" style={{ color: 'var(--foreground)' }}>
+                          {project.tagline}
+                        </p>
+                      </div>
+                      <div className="glass p-2 rounded-lg text-[var(--accent)]">
+                        {getProjectIcon(project.category)}
+                      </div>
+                    </div>
 
-					<div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-8">
-						{Object.entries(skills).map(([category, items], index) => (
-							<div key={category} className="skill-card p-6 animate-fade-in" style={{ animationDelay: `${index * 0.1}s` }}>
-								<div className="skill-icon">
-									<span className="text-2xl">{getSkillIcon(category)}</span>
-							</div>
-								<h3 className="text-xl font-bold mb-4 font-mono gradient-text capitalize">
-									{category}
-								</h3>
-								<div className="flex flex-wrap gap-2">
-									{items.map((skill, skillIndex) => (
-										<span 
-											key={skill} 
-											className="skill-tag"
-											style={{ animationDelay: `${(index * 0.1) + (skillIndex * 0.05)}s` }}
-										>
-											{skill}
-										</span>
-									))}
-								</div>
-							</div>
-						))}
-					</div>
-				</div>
-			</section>
+                    {/* Description */}
+                    <p className="text-sm leading-relaxed mb-4 flex-grow" style={{ color: 'var(--muted)' }}>
+                      {isExpanded ? project.fullDescription : project.description}
+                    </p>
 
-			{/* Contact Section */}
-			<section id="contact" className="min-h-screen flex items-center px-4 sm:px-6 scroll-section" style={{ background: 'var(--background)' }}>
-				<div className="max-w-4xl mx-auto text-center">
-					<h2 className="text-3xl sm:text-4xl md:text-5xl font-bold mb-8 funky-heading gradient-text">
-						let's connect
-					</h2>
+                    {/* Stats (if featured) */}
+                    {project.stats && (
+                      <div className="flex gap-4 mb-4">
+                        {project.stats.map((stat) => (
+                          <div key={stat.label} className="text-center">
+                            <div className="text-lg font-bold gradient-text">{stat.value}</div>
+                            <div className="text-[10px] uppercase tracking-wider" style={{ color: 'var(--muted)' }}>{stat.label}</div>
+                          </div>
+                        ))}
+                      </div>
+                    )}
 
-					<div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
-						<a 
-							href="mailto:babaloladanielope@gmail.com" 
-							className="contact-card p-6"
-						>
-							<div className="text-3xl mb-4">📧</div>
-							<h3 className="font-bold mb-2" style={{ color: 'var(--foreground)' }}>Email</h3>
-							<p className="font-mono text-sm break-all" style={{ color: 'var(--muted)' }}>babaloladanielope@gmail.com</p>
-						</a>
+                    {/* Tech Stack */}
+                    <div className="flex flex-wrap gap-2 mb-4">
+                      {project.tech.map((tech) => (
+                        <span key={tech} className="project-tag text-xs">
+                          {tech}
+                        </span>
+                      ))}
+                    </div>
 
-						<a 
-							href="https://linkedin.com/in/babalola-opeyemi" 
-							target="_blank"
-							rel="noopener noreferrer"
-							className="contact-card p-6"
-						>
-							<div className="text-3xl mb-4">💼</div>
-							<h3 className="font-bold mb-2" style={{ color: 'var(--foreground)' }}>LinkedIn</h3>
-							<p className="font-mono text-sm" style={{ color: 'var(--muted)' }}>Babalola Opeyemi</p>
-						</a>
+                    {/* Actions */}
+                    <div className="flex flex-wrap gap-3 pt-4 border-t border-[var(--glass-border)]">
+                      {project.links.website && (
+                        <a
+                          href={project.links.website}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="btn btn-primary text-sm flex-1 text-center"
+                        >
+                          <svg className="w-4 h-4 mr-1 inline" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+                          </svg>
+                          Website
+                        </a>
+                      )}
+                      {project.links.github && (
+                        <a
+                          href={project.links.github}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="btn btn-secondary text-sm flex-1 text-center"
+                        >
+                          <svg className="w-4 h-4 mr-1 inline" fill="currentColor" viewBox="0 0 24 24">
+                            <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/>
+                          </svg>
+                          GitHub
+                        </a>
+                      )}
+                      <button
+                        onClick={() => setExpandedProject(isExpanded ? null : project.id)}
+                        className="btn btn-secondary text-sm px-3"
+                        title={isExpanded ? 'Show less' : 'Show more'}
+                      >
+                        <svg 
+                          className={`w-4 h-4 transition-transform duration-300 ${isExpanded ? 'rotate-180' : ''}`} 
+                          fill="none" 
+                          stroke="currentColor" 
+                          viewBox="0 0 24 24"
+                        >
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                        </svg>
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      </section>
 
-						<a 
-							href="https://medium.com/@babaloladanielope" 
-							target="_blank"
-							rel="noopener noreferrer"
-							className="contact-card p-6"
-						>
-							<div className="text-3xl mb-4">📝</div>
-							<h3 className="font-bold mb-2" style={{ color: 'var(--foreground)' }}>Medium</h3>
-							<p className="font-mono text-sm break-all" style={{ color: 'var(--muted)' }}>@babaloladanielope</p>
-						</a>
+      {/* Skills Section */}
+      <section id="skills" className="min-h-screen flex items-center px-4 sm:px-6 scroll-section" style={{ background: 'var(--background)' }}>
+        <div className="max-w-6xl mx-auto">
+          <div className="text-center mb-16">
+            <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold mb-4 funky-heading gradient-text">
+              skills
+            </h2>
+          </div>
 
-						<a 
-							href="https://twitter.com/brainiac_ope" 
-							target="_blank"
-							rel="noopener noreferrer"
-							className="contact-card p-6"
-						>
-							<div className="text-3xl mb-4">🐦</div>
-							<h3 className="font-bold mb-2" style={{ color: 'var(--foreground)' }}>Twitter</h3>
-							<p className="font-mono text-sm" style={{ color: 'var(--muted)' }}>@brainiac_ope</p>
-						</a>
-					</div>
+          <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-8">
+            {skills.map((skillGroup, index) => (
+              <div key={skillGroup.category} className="skill-card p-6 animate-fade-in" style={{ animationDelay: `${index * 0.1}s` }}>
+                <div className="skill-icon">
+                  <span className="text-2xl">{skillGroup.icon}</span>
+                </div>
+                <h3 className="text-xl font-bold mb-4 font-mono gradient-text capitalize">
+                  {skillGroup.category}
+                </h3>
+                <div className="flex flex-wrap gap-2">
+                  {skillGroup.items.map((skill, skillIndex) => (
+                    <span 
+                      key={skill} 
+                      className="skill-tag"
+                      style={{ animationDelay: `${(index * 0.1) + (skillIndex * 0.05)}s` }}
+                    >
+                      {skill}
+                    </span>
+                  ))}
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
 
-				</div>
-			</section>
-		</main>
-	);
+      {/* Contact Section */}
+      <section id="contact" className="min-h-screen flex items-center px-4 sm:px-6 scroll-section" style={{ background: 'var(--background)' }}>
+        <div className="max-w-4xl mx-auto text-center">
+          <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold mb-8 funky-heading gradient-text">
+            let's connect
+          </h2>
+
+          <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
+            <a 
+              href="mailto:babaloladanielope@gmail.com" 
+              className="contact-card p-6"
+            >
+              <div className="text-3xl mb-4">📧</div>
+              <h3 className="font-bold mb-2" style={{ color: 'var(--foreground)' }}>Email</h3>
+              <p className="font-mono text-sm break-all" style={{ color: 'var(--muted)' }}>babaloladanielope@gmail.com</p>
+            </a>
+
+            <a 
+              href="https://linkedin.com/in/babalola-opeyemi" 
+              target="_blank"
+              rel="noopener noreferrer"
+              className="contact-card p-6"
+            >
+              <div className="text-3xl mb-4">💼</div>
+              <h3 className="font-bold mb-2" style={{ color: 'var(--foreground)' }}>LinkedIn</h3>
+              <p className="font-mono text-sm" style={{ color: 'var(--muted)' }}>Babalola Opeyemi</p>
+            </a>
+
+            <a 
+              href="https://medium.com/@babaloladanielope" 
+              target="_blank"
+              rel="noopener noreferrer"
+              className="contact-card p-6"
+            >
+              <div className="text-3xl mb-4">📝</div>
+              <h3 className="font-bold mb-2" style={{ color: 'var(--foreground)' }}>Medium</h3>
+              <p className="font-mono text-sm break-all" style={{ color: 'var(--muted)' }}>@babaloladanielope</p>
+            </a>
+
+            <a 
+              href="https://twitter.com/brainiac_ope" 
+              target="_blank"
+              rel="noopener noreferrer"
+              className="contact-card p-6"
+            >
+              <div className="text-3xl mb-4">🐦</div>
+              <h3 className="font-bold mb-2" style={{ color: 'var(--foreground)' }}>Twitter</h3>
+              <p className="font-mono text-sm" style={{ color: 'var(--muted)' }}>@brainiac_ope</p>
+            </a>
+          </div>
+        </div>
+      </section>
+    </main>
+  );
 }

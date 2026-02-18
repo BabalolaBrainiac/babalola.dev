@@ -4,7 +4,12 @@ const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || ''
 const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY || ''
 
 // Only create client if key is available
+// Service role key bypasses RLS policies
 export const supabase = supabaseKey ? createClient(supabaseUrl, supabaseKey, {
+  auth: {
+    autoRefreshToken: false,
+    persistSession: false,
+  },
   realtime: {
     params: {
       eventsPerSecond: 10

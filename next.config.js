@@ -9,6 +9,19 @@ const nextConfig = {
     optimizeCss: true,
   },
 
+  // Fix Supabase realtime-js warnings
+  webpack: (config, { isServer }) => {
+    if (isServer) {
+      config.module = config.module || {}
+      config.module.exprContextCritical = false
+    }
+    // Suppress critical dependency warnings for @supabase/realtime-js
+    config.ignoreWarnings = [
+      { module: /node_modules\/@supabase\/realtime-js/ },
+    ]
+    return config
+  },
+
   // Image optimization
   images: {
     formats: ['image/webp', 'image/avif'],
