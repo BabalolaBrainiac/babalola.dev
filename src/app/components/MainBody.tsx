@@ -5,6 +5,7 @@ import { getBlogUrl } from '@/lib/urls';
 import { 
   experiences, 
   skills, 
+  openSourceContributions,
   getFeaturedProjects, 
   getAllProjects,
   type Project 
@@ -33,6 +34,16 @@ const getProjectIcon = (category: Project['category']) => {
         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4" />
       </svg>
     ),
+    agent: (
+      <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+      </svg>
+    ),
+    health: (
+      <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
+      </svg>
+    ),
   };
   return icons[category];
 };
@@ -43,6 +54,8 @@ const getCategoryColor = (category: Project['category']) => {
     iac: 'from-blue-500/20 to-cyan-500/20 border-blue-500/30',
     ai: 'from-purple-500/20 to-pink-500/20 border-purple-500/30',
     opensource: 'from-green-500/20 to-emerald-500/20 border-green-500/30',
+    agent: 'from-amber-500/20 to-yellow-500/20 border-amber-500/30',
+    health: 'from-rose-500/20 to-pink-500/20 border-rose-500/30',
   };
   return colors[category];
 };
@@ -53,6 +66,8 @@ const getCategoryLabel = (category: Project['category']) => {
     iac: 'Infrastructure',
     ai: 'AI/ML',
     opensource: 'Open Source',
+    agent: 'AI Agents',
+    health: 'Health Tech',
   };
   return labels[category];
 };
@@ -122,8 +137,8 @@ export default function MainBody() {
                   {typedText}<span className="animate-pulse">|</span>
                 </p>
               </div>
-              <p className="text-base md:text-lg max-w-2xl mx-auto leading-relaxed mb-8 funky-text" style={{ color: 'var(--muted)' }}>
-                Software Engineer. Building scalable systems, AI/ML infrastructure, and cloud-native solutions. Leading teams, mentoring engineers, and architecting high-performance systems.
+              <p className="text-base md:text-lg max-w-3xl mx-auto leading-relaxed mb-8 funky-text" style={{ color: 'var(--muted)' }}>
+                Highly skilled, motivated and results-driven Software Engineer with over 6 years of experience designing, developing, and deploying secure, scalable platform services and backend systems. Proven track record of building high-performance APIs, infrastructure automation, and distributed systems serving millions of users. Passionate about building platform services that power exceptional user experiences, with particular interest in audio/AI technology and accessibility.
               </p>
             </div>
 
@@ -142,6 +157,15 @@ export default function MainBody() {
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 4.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
                 </svg>
                 Get In Touch
+              </a>
+              <a
+                href="tel:+447831135283"
+                className="btn btn-secondary w-full sm:w-auto"
+              >
+                <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
+                </svg>
+                +44 7831 135283
               </a>
             </div>
           </div>
@@ -421,7 +445,7 @@ export default function MainBody() {
 
             {/* Filter Tabs */}
             <div className="flex flex-wrap justify-center gap-2 mb-8">
-              {(['all', 'security', 'iac', 'ai', 'opensource'] as const).map((filter) => (
+              {(['all', 'agent', 'ai', 'security', 'iac', 'health', 'opensource'] as const).map((filter) => (
                 <button
                   key={filter}
                   onClick={() => setActiveProjectFilter(filter)}
@@ -592,6 +616,76 @@ export default function MainBody() {
         </div>
       </section>
 
+      {/* Open Source & Community Section */}
+      <section id="opensource" className="min-h-screen flex items-center px-4 sm:px-6 scroll-section py-20" style={{ background: 'var(--background-secondary)' }}>
+        <div className="max-w-6xl mx-auto w-full">
+          <div className="text-center mb-16">
+            <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold mb-4 funky-heading gradient-text">
+              open source & community
+            </h2>
+            <p className="text-lg max-w-2xl mx-auto" style={{ color: 'var(--muted)' }}>
+              contributing to the ecosystem and building communities
+            </p>
+          </div>
+
+          <div className="grid md:grid-cols-2 gap-8">
+            {openSourceContributions.map((contribution, index) => (
+              <div 
+                key={contribution.organization}
+                className="opensource-card p-8 animate-fade-in"
+                style={{ animationDelay: `${index * 0.1}s` }}
+              >
+                <div className="flex items-start justify-between mb-6">
+                  <div>
+                    <h3 className="text-2xl font-bold font-mono gradient-text">
+                      {contribution.organization}
+                    </h3>
+                    <p className="text-sm font-semibold mt-1" style={{ color: 'var(--accent)' }}>
+                      {contribution.role}
+                    </p>
+                  </div>
+                  <div className="glass p-3 rounded-lg">
+                    <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" style={{ color: 'var(--accent)' }}>
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
+                    </svg>
+                  </div>
+                </div>
+
+                <p className="text-sm mb-6 leading-relaxed" style={{ color: 'var(--muted)' }}>
+                  {contribution.description}
+                </p>
+
+                <div className="space-y-3">
+                  {contribution.highlights.map((highlight, idx) => (
+                    <div key={idx} className="flex items-start gap-3">
+                      <span className="text-[var(--accent)] mt-1">▶</span>
+                      <span className="text-sm leading-relaxed" style={{ color: 'var(--foreground)' }}>
+                        {highlight}
+                      </span>
+                    </div>
+                  ))}
+                </div>
+
+                {contribution.links?.website && (
+                  <a 
+                    href={contribution.links.website}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center gap-2 mt-6 text-sm font-semibold hover:opacity-80 transition-opacity"
+                    style={{ color: 'var(--accent)' }}
+                  >
+                    Learn more
+                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+                    </svg>
+                  </a>
+                )}
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
       {/* Contact Section */}
       <section id="contact" className="min-h-screen flex items-center px-4 sm:px-6 scroll-section" style={{ background: 'var(--background)' }}>
         <div className="max-w-4xl mx-auto text-center">
@@ -599,14 +693,23 @@ export default function MainBody() {
             let's connect
           </h2>
 
-          <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
+          <div className="grid sm:grid-cols-2 lg:grid-cols-5 gap-6">
             <a 
               href="mailto:babaloladanielope@gmail.com" 
               className="contact-card p-6"
             >
               <div className="text-3xl mb-4">📧</div>
               <h3 className="font-bold mb-2" style={{ color: 'var(--foreground)' }}>Email</h3>
-              <p className="font-mono text-sm break-all" style={{ color: 'var(--muted)' }}>babaloladanielope@gmail.com</p>
+              <p className="font-mono text-xs break-all" style={{ color: 'var(--muted)' }}>babaloladanielope@gmail.com</p>
+            </a>
+
+            <a 
+              href="tel:+447831135283"
+              className="contact-card p-6"
+            >
+              <div className="text-3xl mb-4">📱</div>
+              <h3 className="font-bold mb-2" style={{ color: 'var(--foreground)' }}>Phone</h3>
+              <p className="font-mono text-xs" style={{ color: 'var(--muted)' }}>+44 7831 135283</p>
             </a>
 
             <a 
@@ -617,7 +720,7 @@ export default function MainBody() {
             >
               <div className="text-3xl mb-4">💼</div>
               <h3 className="font-bold mb-2" style={{ color: 'var(--foreground)' }}>LinkedIn</h3>
-              <p className="font-mono text-sm" style={{ color: 'var(--muted)' }}>Babalola Opeyemi</p>
+              <p className="font-mono text-xs" style={{ color: 'var(--muted)' }}>Babalola Opeyemi</p>
             </a>
 
             <a 
@@ -628,7 +731,7 @@ export default function MainBody() {
             >
               <div className="text-3xl mb-4">📝</div>
               <h3 className="font-bold mb-2" style={{ color: 'var(--foreground)' }}>Medium</h3>
-              <p className="font-mono text-sm break-all" style={{ color: 'var(--muted)' }}>@babaloladanielope</p>
+              <p className="font-mono text-xs break-all" style={{ color: 'var(--muted)' }}>@babaloladanielope</p>
             </a>
 
             <a 
@@ -639,7 +742,7 @@ export default function MainBody() {
             >
               <div className="text-3xl mb-4">🐦</div>
               <h3 className="font-bold mb-2" style={{ color: 'var(--foreground)' }}>Twitter</h3>
-              <p className="font-mono text-sm" style={{ color: 'var(--muted)' }}>@brainiac_ope</p>
+              <p className="font-mono text-xs" style={{ color: 'var(--muted)' }}>@brainiac_ope</p>
             </a>
           </div>
         </div>
