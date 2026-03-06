@@ -14,49 +14,30 @@ export const authOptions: NextAuthOptions = {
       },
       async authorize(credentials) {
         if (!credentials?.email || !credentials?.password) {
-          console.log('Auth: Missing credentials')
           return null
         }
 
         if (!supabase) {
-          console.log('Auth: Supabase not configured')
           return null
         }
 
         try {
-          console.log('Auth: Attempting login for:', credentials.email)
-          
-          // Get user from database
           const { data: user, error } = await supabase
             .from('blog_users')
             .select('*')
             .eq('email', credentials.email)
             .single()
 
-          if (error) {
-            console.log('Auth: Database error:', error.message)
+          if (error || !user) {
             return null
           }
 
-          if (!user) {
-            console.log('Auth: User not found')
-            return null
-          }
-
-          console.log('Auth: User found, verifying password...')
-          console.log('Auth: Stored hash starts with:', user.password_hash?.substring(0, 20))
-
-          // Verify password using bcrypt
           const isValidPassword = await bcrypt.compare(credentials.password, user.password_hash)
-          
-          console.log('Auth: Password valid?', isValidPassword)
-          
+
           if (!isValidPassword) {
-            console.log('Auth: Invalid password')
             return null
           }
 
-          console.log('Auth: Login successful')
           return {
             id: user.id,
             email: user.email,
@@ -72,7 +53,7 @@ export const authOptions: NextAuthOptions = {
   ],
   session: {
     strategy: 'jwt',
-    maxAge: 30 * 60, // 30 minutes
+    maxAge: 7 * 24 * 60 * 60, // 7 days
   },
   callbacks: {
     async jwt({ token, user, trigger }) {
@@ -97,7 +78,7 @@ export const authOptions: NextAuthOptions = {
             sameSite: 'lax',
             path: '/',
             secure: process.env.NODE_ENV === 'production',
-            maxAge: 30 * 60, // 30 minutes
+            maxAge: 7 * 24 * 60 * 60, // 7 days
           },
         },
     callbackUrl: {

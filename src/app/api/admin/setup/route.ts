@@ -8,6 +8,10 @@ const ALLOWED_EMAIL = 'brainiac@babalola.dev'
 // CALL THIS ONCE: curl -X POST http://localhost:3000/api/admin/setup
 export async function POST(request: NextRequest) {
   try {
+    if (process.env.NODE_ENV === 'production') {
+      return NextResponse.json({ error: 'Not available in production' }, { status: 403 })
+    }
+
     if (!supabase) {
       return NextResponse.json({ error: 'Database not configured' }, { status: 500 })
     }

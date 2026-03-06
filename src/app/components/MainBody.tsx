@@ -158,15 +158,6 @@ export default function MainBody() {
                 </svg>
                 Get In Touch
               </a>
-              <a
-                href="tel:+447831135283"
-                className="btn btn-secondary w-full sm:w-auto"
-              >
-                <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
-                </svg>
-                +44 7831 135283
-              </a>
             </div>
           </div>
         </div>
@@ -693,7 +684,7 @@ export default function MainBody() {
             let's connect
           </h2>
 
-          <div className="grid sm:grid-cols-2 lg:grid-cols-5 gap-6">
+          <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
             <a 
               href="mailto:babaloladanielope@gmail.com" 
               className="contact-card p-6"
@@ -701,15 +692,6 @@ export default function MainBody() {
               <div className="text-3xl mb-4">📧</div>
               <h3 className="font-bold mb-2" style={{ color: 'var(--foreground)' }}>Email</h3>
               <p className="font-mono text-xs break-all" style={{ color: 'var(--muted)' }}>babaloladanielope@gmail.com</p>
-            </a>
-
-            <a 
-              href="tel:+447831135283"
-              className="contact-card p-6"
-            >
-              <div className="text-3xl mb-4">📱</div>
-              <h3 className="font-bold mb-2" style={{ color: 'var(--foreground)' }}>Phone</h3>
-              <p className="font-mono text-xs" style={{ color: 'var(--muted)' }}>+44 7831 135283</p>
             </a>
 
             <a 
