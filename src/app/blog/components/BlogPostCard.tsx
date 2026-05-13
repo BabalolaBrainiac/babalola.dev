@@ -15,185 +15,114 @@ interface BlogPostCardProps {
 export default function BlogPostCard({ post, onDelete }: BlogPostCardProps) {
   const { data: session } = useSession()
   const router = useRouter()
-  const [isDeleting, setIsDeleting] = useState(false)
+  const [isDeleting, setIsDeleting]         = useState(false)
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false)
-  
-  const canEdit = session?.user?.role === 'admin' || 
-                  (session?.user?.role === 'contributor' && session?.user?.id === post.author_id)
+
+  const canEdit   = session?.user?.role === 'admin' ||
+                    (session?.user?.role === 'contributor' && session?.user?.id === post.author_id)
   const canDelete = session?.user?.role === 'admin'
 
   const handleDelete = async () => {
     if (!canDelete) return
-    
     setIsDeleting(true)
     try {
-      const response = await fetch(`/api/blog/${post.slug}`, {
-        method: 'DELETE',
-      })
-      
-      if (!response.ok) {
-        throw new Error('Failed to delete post')
-      }
-      
-      // Call the onDelete callback to refresh the list
-      if (onDelete) {
-        onDelete()
-      }
-      
-      // Redirect to blog page if we're on the individual post page
+      const res = await fetch(`/api/blog/${post.slug}`, { method: 'DELETE' })
+      if (!res.ok) throw new Error('Failed to delete post')
+      if (onDelete) onDelete()
       router.push('/blog')
-    } catch (error) {
-      console.error('Error deleting post:', error)
-      alert('Failed to delete post. Please try again.')
+    } catch (e) {
+      console.error('Error deleting post:', e)
+      alert('Failed to delete post.')
     } finally {
       setIsDeleting(false)
       setShowDeleteConfirm(false)
     }
   }
 
-  // Generate funky colors based on post title
-  const getFunkyColor = (title: string) => {
-    const colors = [
-      'from-purple-500 to-pink-500',
-      'from-blue-500 to-cyan-500', 
-      'from-green-500 to-emerald-500',
-      'from-orange-500 to-red-500',
-      'from-indigo-500 to-purple-500',
-      'from-pink-500 to-rose-500',
-      'from-teal-500 to-blue-500',
-      'from-yellow-500 to-orange-500'
-    ]
-    const hash = title.split('').reduce((a, b) => a + b.charCodeAt(0), 0)
-    return colors[hash % colors.length]
-  }
-
-  const funkyGradient = getFunkyColor(post.title)
-
   return (
     <>
-      <article className="group glass-card p-6 hover:scale-105 hover:rotate-1 transition-all duration-300 relative overflow-hidden">
-        {/* Funky background gradient */}
-        <div className={`absolute inset-0 bg-gradient-to-br ${funkyGradient} opacity-5 group-hover:opacity-10 transition-opacity duration-300`}></div>
-        
-        {/* Floating particles effect */}
-        <div className="absolute top-2 left-2 w-2 h-2 bg-[var(--accent)] rounded-full opacity-30 animate-pulse"></div>
-        <div className="absolute top-4 right-8 w-1 h-1 bg-[var(--accent)] rounded-full opacity-40 animate-pulse delay-100"></div>
-        <div className="absolute bottom-4 left-4 w-1.5 h-1.5 bg-[var(--accent)] rounded-full opacity-20 animate-pulse delay-200"></div>
+      <article className="relative group border border-[#1e1e1e] bg-[#111111] hover:border-[#e8a000] transition-colors duration-150 flex flex-col h-full">
+        <Link href={`/blog/${post.slug}`} className="flex-1 p-6 block space-y-3">
+          <div className="flex items-center justify-between">
+            <span className="text-[9px] font-mono text-[#e8a000] uppercase tracking-[0.2em]">
+              {post.tags?.[0] || 'Engineering'}
+            </span>
+            {!post.published && (
+              <span className="px-1.5 py-0.5 text-[8px] font-bold font-mono border border-yellow-700/40 text-yellow-600 uppercase tracking-widest">
+                Draft
+              </span>
+            )}
+          </div>
+
+          <h3 className="text-sm font-bold text-[#d4d0c8] group-hover:text-[#e8a000] transition-colors leading-snug line-clamp-2">
+            {post.title}
+          </h3>
+
+          <p className="text-xs text-[#666666] line-clamp-3 leading-relaxed">
+            {post.excerpt}
+          </p>
+        </Link>
+
+        <div className="px-6 py-4 border-t border-[#1e1e1e] flex items-center justify-between">
+          <div className="flex items-center gap-2">
+            <div className="w-6 h-6 border border-[#2a2a2a] flex items-center justify-center text-[9px] font-bold text-[#e8a000]">
+              BO
+            </div>
+            <span className="text-[10px] font-mono text-[#444444]">
+              {new Date(post.created_at).toLocaleDateString('en-GB', {
+                day: 'numeric', month: 'short', year: 'numeric'
+              })}
+            </span>
+          </div>
+          <div className="flex items-center gap-2">
+            <ShareButton title={post.title} slug={post.slug} className="opacity-40 hover:opacity-100 transition-opacity" />
+            <span className="text-xs text-[#3a3a3a] group-hover:text-[#e8a000] transition-colors">→</span>
+          </div>
+        </div>
 
         {(canEdit || canDelete) && (
-          <div className="absolute top-3 right-3 flex flex-col gap-2 min-w-[70px] z-10">
+          <div className="absolute top-3 right-3 flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
             {canEdit && (
               <Link
                 href={`/blog/${post.slug}/edit`}
-                className="text-xs px-2 py-1 glass rounded-full hover:bg-[var(--accent)] transition-all duration-200 text-center hover:scale-110 whitespace-nowrap"
-                style={{ color: 'var(--muted)' }}
+                className="p-1.5 border border-[#2a2a2a] bg-[#0a0a0a] text-[#888888] hover:text-[#e8a000] hover:border-[#e8a000] transition-colors text-[10px]"
               >
-                ✏️ Edit
+                edit
               </Link>
             )}
             {canDelete && (
               <button
                 onClick={() => setShowDeleteConfirm(true)}
-                disabled={isDeleting}
-                className="text-xs px-2 py-1 glass rounded-full hover:bg-red-500 transition-all duration-200 text-red-400 hover:text-white text-center hover:scale-110 whitespace-nowrap"
+                className="p-1.5 border border-[#2a2a2a] bg-[#0a0a0a] text-[#888888] hover:text-red-400 hover:border-red-500/30 transition-colors text-[10px]"
               >
-                {isDeleting ? '🗑️ Deleting...' : '🗑️ Delete'}
+                del
               </button>
             )}
           </div>
         )}
-      
-        <div className="mb-4 pr-32 relative z-5">
-          <div className="flex items-center gap-2 mb-2">
-            <Link href={`/blog/${post.slug}`} prefetch={true} className="group/link">
-              <h2 className="text-xl font-bold font-mono gradient-text hover:text-[var(--accent)] transition-all duration-300 group-hover/link:scale-105">
-                {post.title}
-              </h2>
-            </Link>
-            {!post.published && (
-              <span className="px-2 py-1 text-xs font-mono glass rounded-full bg-yellow-500 text-black animate-pulse">
-                📝 Draft
-              </span>
-            )}
-          </div>
-          
-          {/* Funky date with icon */}
-          <div className="flex items-center gap-2 text-sm text-[var(--muted)]">
-            <span className="text-[var(--accent)]">📅</span>
-            <span>
-              {new Date(post.created_at).toLocaleDateString('en-US', {
-                year: 'numeric',
-                month: 'long',
-                day: 'numeric'
-              })}
-            </span>
-          </div>
-        </div>
-        
-        {/* Excerpt with funky styling */}
-        <div className="relative mb-4">
-          <p className="text-[var(--muted)] leading-relaxed group-hover:text-[var(--foreground)] transition-colors duration-300">
-            {post.excerpt}
-          </p>
-          {/* Decorative line */}
-          <div className="w-0 group-hover:w-full h-0.5 bg-gradient-to-r from-[var(--accent)] to-transparent transition-all duration-500 mt-2"></div>
-        </div>
-        
-        {/* Funky tags */}
-        <div className="flex flex-wrap gap-2">
-          {post.tags.map((tag, index) => (
-            <span
-              key={tag}
-              className="px-3 py-1 text-xs font-mono glass rounded-full hover:scale-110 transition-all duration-200 hover:bg-[var(--accent)] hover:text-white cursor-default"
-              style={{ 
-                color: 'var(--accent)',
-                animationDelay: `${index * 100}ms`
-              }}
-            >
-              #{tag}
-            </span>
-          ))}
-        </div>
-
-        {/* Funky read more indicator and share button */}
-        <div className="mt-4 flex items-center justify-between">
-          <div className="flex items-center gap-2 text-xs text-[var(--muted)] group-hover:text-[var(--accent)] transition-colors duration-300">
-            <span>👀</span>
-            <span>Click to read more</span>
-          </div>
-          <div className="flex items-center gap-3">
-            <ShareButton title={post.title} slug={post.slug} className="scale-75" />
-            <div className="text-[var(--accent)] group-hover:translate-x-1 transition-transform duration-300">
-              →
-            </div>
-          </div>
-        </div>
       </article>
 
-      {/* Delete Confirmation Dialog */}
       {showDeleteConfirm && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="glass-card p-6 max-w-md mx-4">
-            <h3 className="text-lg font-bold font-mono mb-4 text-red-400">
-              Delete Post
-            </h3>
-            <p className="text-[var(--muted)] mb-6">
-              Are you sure you want to delete "{post.title}"? This action cannot be undone.
+        <div className="fixed inset-0 bg-[#0a0a0a]/90 flex items-center justify-center z-50 p-6">
+          <div className="border border-red-500/30 bg-[#111111] p-8 max-w-sm w-full font-mono">
+            <p className="text-[10px] text-[#e8a000] uppercase tracking-widest mb-3">// confirm delete</p>
+            <h3 className="text-base font-bold text-red-400 mb-2">Delete post?</h3>
+            <p className="text-xs text-[#888888] mb-8 leading-relaxed">
+              Permanently remove &quot;{post.title}&quot;. This cannot be undone.
             </p>
             <div className="flex gap-3">
               <button
                 onClick={handleDelete}
                 disabled={isDeleting}
-                className="btn bg-red-500 hover:bg-red-600 text-white"
+                className="flex-1 py-2 bg-red-500 text-white text-[10px] uppercase tracking-widest font-bold hover:bg-red-600 transition-colors disabled:opacity-50"
               >
-                {isDeleting ? 'Deleting...' : 'Delete'}
+                {isDeleting ? 'deleting...' : 'confirm'}
               </button>
               <button
                 onClick={() => setShowDeleteConfirm(false)}
-                disabled={isDeleting}
-                className="btn btn-secondary"
+                className="flex-1 py-2 border border-[#2a2a2a] text-[#888888] text-[10px] uppercase tracking-widest hover:border-[#e8a000] hover:text-[#e8a000] transition-colors"
               >
-                Cancel
+                cancel
               </button>
             </div>
           </div>

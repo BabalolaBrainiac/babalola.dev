@@ -5,7 +5,40 @@ import type { NextRequest } from 'next/server'
 function handleSubdomainRouting(req: NextRequest): NextResponse | null {
   const hostname = req.headers.get('host') || ''
   const pathname = req.nextUrl.pathname
-  
+
+  // learning subdomain
+  const isLearningSubdomain = hostname.includes('learning.localhost') || hostname.includes('learning.babalola.dev')
+  if (isLearningSubdomain) {
+    if (!pathname.startsWith('/learning') && !pathname.startsWith('/_next') && !pathname.startsWith('/api') && !pathname.startsWith('/auth')) {
+      const url = req.nextUrl.clone()
+      url.pathname = pathname === '/' ? '/learning' : `/learning${pathname}`
+      return NextResponse.rewrite(url)
+    }
+    return NextResponse.next()
+  }
+
+  // uploads subdomain - rewrite to /uploads/* and bypass auth
+  const isUploadsSubdomain = hostname.includes('uploads.localhost') || hostname.includes('uploads.babalola.dev')
+  if (isUploadsSubdomain) {
+    if (!pathname.startsWith('/uploads') && !pathname.startsWith('/_next') && !pathname.startsWith('/api')) {
+      const url = req.nextUrl.clone()
+      url.pathname = pathname === '/' ? '/uploads' : `/uploads${pathname}`
+      return NextResponse.rewrite(url)
+    }
+    return NextResponse.next()
+  }
+
+  // check if we're on jobs subdomain
+  const isJobsSubdomain = hostname.includes('jobs.localhost') || hostname.includes('jobs.babalola.dev')
+
+  if (isJobsSubdomain) {
+    if (pathname === '/') {
+      const url = req.nextUrl.clone()
+      url.pathname = '/jobs'
+      return NextResponse.rewrite(url)
+    }
+  }
+
   // check if we're on blog subdomain (handle with or without port)
   const isBlogSubdomain = hostname.includes('blog.localhost') || hostname.includes('blog.babalola.dev')
   
@@ -80,20 +113,33 @@ export default withAuth(
       authorized: ({ token, req }) => {
         const pathname = req.nextUrl.pathname
         const hostname = req.headers.get('host') || ''
-        
+
+        // uploads subdomain uses its own TOTP auth - never require NextAuth session
+        const isUploadsSubdomain = hostname.includes('uploads.localhost') || hostname.includes('uploads.babalola.dev')
+        if (isUploadsSubdomain || pathname.startsWith('/uploads')) {
+          return true
+        }
+
         // protect blog creation and editing routes (handle both /create and /blog/create)
         const isCreateRoute = pathname === '/create' || pathname.startsWith('/blog/create')
         const isEditRoute = pathname.includes('/edit')
-        
+
         if (isCreateRoute || isEditRoute) {
           return token?.role === 'admin' || token?.role === 'contributor'
         }
-        
+
         // protect admin routes
-        if (pathname.startsWith('/admin')) {
+        if (pathname.startsWith('/admin') || pathname.startsWith('/brainiac')) {
           return token?.role === 'admin'
         }
-        
+
+        if (pathname.startsWith('/learning')) {
+          if (pathname === '/learning' || pathname === '/learning/') {
+            return true
+          }
+          return !!token
+        }
+
         return true
       },
     },
@@ -111,6 +157,6 @@ export const config = {
      * - manifest.json (manifest file)
      * - logo.svg, og-image.jpg (other static assets)
      */
-    '/((?!api|_next/static|_next/image|favicon.ico|manifest.json|logo.svg|og-image.jpg).*)',
+    '/((?!api|_next/static|_next/image|favicon.ico|manifest.json|logo.svg|og-image.jpg|opengraph-image).*)',
   ]
 }

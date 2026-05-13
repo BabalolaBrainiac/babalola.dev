@@ -117,6 +117,19 @@ export const projects: Project[] = [
     featured: true,
   },
   {
+    id: 'meanas',
+    name: 'meanas',
+    tagline: 'LLM Context Broker CLI',
+    description: 'High-performance Go CLI that silently captures LLM sessions and bridges context between providers — switch from Claude to Gemini without losing a single turn.',
+    fullDescription: 'Meanas runs as a background daemon, attaching to LLM CLI processes (Claude, Gemini, GPT) in read-only PTY mode to capture conversations without interfering with your workflow. Sessions are stored in a local SQLite database with compression. A single `meanas migrate` command generates a bridge file you paste into the new provider to continue exactly where you left off. Features a Bubbletea TUI for session management, shell hook injection for automatic capture, and a compaction pipeline that summarises long sessions to stay within context limits.',
+    tech: ['Go', 'SQLite', 'PTY', 'Bubbletea', 'Cobra', 'Shell Hooks'],
+    category: 'ai',
+    links: {
+      github: 'https://github.com/Oladunjoyelo/meanas',
+    },
+    featured: true,
+  },
+  {
     id: 'portfolio',
     name: 'babalola.dev',
     tagline: 'Personal Portfolio & Blog',

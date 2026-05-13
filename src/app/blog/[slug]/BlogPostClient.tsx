@@ -1,12 +1,13 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { useSession } from 'next-auth/react'
 import { BlogPost } from '@/lib/supabase'
 import MarkdownRenderer from '../components/MarkdownRenderer'
 import ShareButton from '../components/ShareButton'
+import { motion, useScroll, useSpring } from 'framer-motion'
 
 interface BlogPostClientProps {
   post: BlogPost
@@ -15,31 +16,41 @@ interface BlogPostClientProps {
 export default function BlogPostClient({ post }: BlogPostClientProps) {
   const router = useRouter()
   const { data: session } = useSession()
-  const [isDeleting, setIsDeleting] = useState(false)
+  const [isDeleting,        setIsDeleting]        = useState(false)
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false)
-  
-  const canEdit = session?.user?.role === 'admin' || 
-                  (session?.user?.role === 'contributor' && session?.user?.id === post?.author_id)
+  const [headings,          setHeadings]          = useState<{ id: string; text: string; level: number }[]>([])
+
+  const { scrollYProgress } = useScroll()
+  const scaleX = useSpring(scrollYProgress, { stiffness: 100, damping: 30, restDelta: 0.001 })
+
+  useEffect(() => {
+    const headingRegex = /^(#{1,6})\s+(.+)$/gm
+    const extracted: { id: string; text: string; level: number }[] = []
+    let match
+    while ((match = headingRegex.exec(post.content)) !== null) {
+      const text = match[2]
+      const id   = text.toLowerCase().replace(/[^\w]+/g, '-')
+      extracted.push({ id, text, level: match[1].length })
+    }
+    setHeadings(extracted)
+  }, [post.content])
+
+  const canEdit   = session?.user?.role === 'admin' ||
+                    (session?.user?.role === 'contributor' && session?.user?.id === post?.author_id)
   const canDelete = session?.user?.role === 'admin'
+
+  const readTime = Math.max(1, Math.ceil((post.content?.length || 0) / 1200))
 
   const handleDelete = async () => {
     if (!canDelete || !post) return
-    
     setIsDeleting(true)
     try {
-      const response = await fetch(`/api/blog/${post.slug}`, {
-        method: 'DELETE',
-      })
-      
-      if (!response.ok) {
-        throw new Error('Failed to delete post')
-      }
-      
-          // Redirect to blog page
-          router.push('/blog')
-    } catch (error) {
-      console.error('Error deleting post:', error)
-      alert('Failed to delete post. Please try again.')
+      const res = await fetch(`/api/blog/${post.slug}`, { method: 'DELETE' })
+      if (!res.ok) throw new Error('Failed to delete post')
+      router.push('/blog')
+    } catch (e) {
+      console.error(e)
+      alert('Failed to delete post.')
     } finally {
       setIsDeleting(false)
       setShowDeleteConfirm(false)
@@ -47,127 +58,174 @@ export default function BlogPostClient({ post }: BlogPostClientProps) {
   }
 
   return (
-    <div className="min-h-screen bg-[var(--background)] text-[var(--foreground)] transition-all duration-300 ease-out">
+    <div className="min-h-screen bg-[#0a0a0a] text-[#d4d0c8] font-mono">
+
+      {/* Reading progress */}
+      <motion.div
+        className="fixed top-0 left-0 right-0 h-[2px] bg-[#e8a000] z-50 origin-left"
+        style={{ scaleX }}
+      />
+
       {/* Header */}
-      <header className="border-b border-[var(--glass-border)]">
-        <div className="max-w-4xl mx-auto px-4 sm:px-6 py-6">
-              <div className="flex justify-between items-center">
-              <Link href="/blog" prefetch={true} className="btn btn-secondary">
-                ← Back to brainiac's blog
+      <header className="border-b border-[#1e1e1e] bg-[#0a0a0a] sticky top-0 z-40">
+        <div className="max-w-7xl mx-auto px-5 sm:px-8 py-4 flex items-center justify-between gap-4">
+          <Link
+            href="/blog"
+            className="text-[10px] text-[#888888] hover:text-[#e8a000] transition-colors uppercase tracking-widest"
+          >
+            ← blog
+          </Link>
+          <div className="flex items-center gap-2">
+            <ShareButton title={post.title} slug={post.slug} />
+            {canEdit && (
+              <Link
+                href={`/blog/${post.slug}/edit`}
+                className="btn btn-primary"
+              >
+                edit
               </Link>
-                <div className="flex items-center gap-4">
-                  <ShareButton title={post.title} slug={post.slug} />
-                  {canEdit && (
-                    <Link
-                      href={`/blog/${post.slug}/edit`}
-                      className="btn btn-primary"
-                    >
-                      Edit Post
-                    </Link>
-                  )}
-                  {canDelete && (
-                    <button
-                      onClick={() => setShowDeleteConfirm(true)}
-                      disabled={isDeleting}
-                      className="btn bg-red-500 hover:bg-red-600 text-white"
-                    >
-                      {isDeleting ? 'Deleting...' : 'Delete Post'}
-                    </button>
-                  )}
-                  <div className="text-sm text-[var(--muted)]">
-                    {new Date(post.created_at).toLocaleDateString('en-US', {
-                      year: 'numeric',
-                      month: 'long',
-                      day: 'numeric'
-                    })}
-                  </div>
-                </div>
-              </div>
+            )}
+            {canDelete && (
+              <button
+                onClick={() => setShowDeleteConfirm(true)}
+                className="btn btn-ghost border-red-500/30 text-red-400 hover:bg-red-500/10 hover:border-red-500/50"
+              >
+                delete
+              </button>
+            )}
+          </div>
         </div>
       </header>
 
-      {/* Post Content */}
-      <article className="max-w-4xl mx-auto px-4 sm:px-6 py-8">
-        <div className="glass-card p-8">
-          <header className="mb-8">
-            <h1 className="text-3xl md:text-4xl font-bold font-mono gradient-text mb-4">
-              {post.title}
-            </h1>
-            
-            {/* Post Meta Information */}
-            <div className="flex flex-wrap gap-4 mb-6 text-sm text-[var(--muted)]">
-              <div className="flex items-center gap-2">
-                <span className="font-mono">📅</span>
-                <span>{new Date(post.created_at).toLocaleDateString('en-US', {
-                  year: 'numeric',
-                  month: 'long',
-                  day: 'numeric'
-                })}</span>
-              </div>
-              
-              {post.reading_time && (
-                <div className="flex items-center gap-2">
-                  <span className="font-mono">⏱️</span>
-                  <span>{post.reading_time} min read</span>
-                </div>
-              )}
-              
+      <div className="max-w-7xl mx-auto px-5 sm:px-8 py-16 lg:py-24 grid lg:grid-cols-12 gap-12">
+
+        {/* TOC sidebar */}
+        <aside className="hidden lg:block lg:col-span-3 sticky top-24 h-fit space-y-8">
+          {headings.length > 0 && (
+            <div>
+              <p className="text-[10px] text-[#e8a000] uppercase tracking-widest mb-4">
+                // contents
+              </p>
+              <nav className="space-y-2">
+                {headings.map(h => (
+                  <a
+                    key={h.id}
+                    href={`#${h.id}`}
+                    className={`block text-[11px] text-[#555555] hover:text-[#e8a000] transition-colors leading-relaxed ${
+                      h.level > 1 ? 'pl-3 border-l border-[#1e1e1e]' : ''
+                    }`}
+                  >
+                    {h.text}
+                  </a>
+                ))}
+              </nav>
             </div>
-            
-            <div className="flex flex-wrap gap-2 mb-6">
-              {post.tags.map((tag) => (
-                <span
-                  key={tag}
-                  className="px-3 py-1 text-sm font-mono glass rounded-full"
-                  style={{ color: 'var(--accent)' }}
-                >
-                  #{tag}
-                </span>
-              ))}
+          )}
+
+          <div className="border-t border-[#1e1e1e] pt-6">
+            <p className="text-[10px] text-[#3a3a3a] uppercase tracking-widest mb-3">author</p>
+            <div className="flex items-center gap-2">
+              <div className="w-8 h-8 border border-[#2a2a2a] flex items-center justify-center text-[10px] font-bold text-[#e8a000]">
+                BO
+              </div>
+              <div>
+                <p className="text-xs text-[#d4d0c8] font-semibold">Brainiac</p>
+                <p className="text-[10px] text-[#444444]">Senior Engineer</p>
+              </div>
+            </div>
+          </div>
+        </aside>
+
+        {/* Article */}
+        <article className="lg:col-span-7 space-y-10">
+          {/* Meta */}
+          <header className="space-y-4">
+            <div className="flex flex-wrap items-center gap-3 text-[10px] text-[#444444] uppercase tracking-widest">
+              <span className="text-[#e8a000]">{post.tags?.[0] || 'Engineering'}</span>
+              <span>·</span>
+              <span>{new Date(post.created_at).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' })}</span>
+              <span>·</span>
+              <span>{readTime} min read</span>
             </div>
 
-            {post.prerequisites && post.prerequisites.length > 0 && (
-              <div className="mb-6 p-4 glass rounded-lg border border-[var(--glass-border)]">
-                <h3 className="text-sm font-mono font-semibold mb-2 gradient-text">
-                  📚 Prerequisites
-                </h3>
-                <p className="text-sm text-[var(--muted)]">
-                  {Array.isArray(post.prerequisites) ? post.prerequisites.join(', ') : post.prerequisites}
-                </p>
+            <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold text-[#d4d0c8] leading-tight">
+              {post.title}
+            </h1>
+
+            {post.tags && post.tags.length > 0 && (
+              <div className="flex flex-wrap gap-1.5 pt-1">
+                {post.tags.map(t => (
+                  <span
+                    key={t}
+                    className="text-[9px] border border-[#2a2a2a] px-2 py-0.5 text-[#555555] uppercase tracking-widest"
+                  >
+                    #{t}
+                  </span>
+                ))}
               </div>
             )}
           </header>
 
-          <div className="prose prose-lg max-w-none">
+          {/* Content */}
+          <div className="prose prose-invert max-w-none
+            prose-p:text-[#888888] prose-p:leading-relaxed prose-p:text-sm
+            prose-h1:text-[#d4d0c8] prose-h2:text-[#d4d0c8] prose-h3:text-[#d4d0c8]
+            prose-h2:border-b prose-h2:border-[#1e1e1e] prose-h2:pb-2
+            prose-a:text-[#e8a000] prose-a:no-underline hover:prose-a:underline
+            prose-strong:text-[#d4d0c8]
+            prose-code:text-[#e8a000] prose-code:bg-[#111111] prose-code:border prose-code:border-[#1e1e1e]
+            prose-pre:bg-[#111111] prose-pre:border prose-pre:border-[#1e1e1e] prose-pre:rounded-none
+            prose-blockquote:border-l-[#e8a000] prose-blockquote:text-[#666666] prose-blockquote:not-italic
+            prose-hr:border-[#1e1e1e]
+            prose-li:text-[#888888] prose-li:text-sm
+          ">
             <MarkdownRenderer content={post.content} />
           </div>
-        </div>
-      </article>
 
-      {/* Delete Confirmation Dialog */}
+          {/* Author card */}
+          <div className="border-t border-[#1e1e1e] pt-10 mt-10">
+            <div className="border border-[#1e1e1e] p-7 flex flex-col sm:flex-row items-start sm:items-center gap-6">
+              <div className="w-14 h-14 border border-[#2a2a2a] flex items-center justify-center text-base font-bold text-[#e8a000] shrink-0">
+                BO
+              </div>
+              <div className="space-y-2 flex-1">
+                <p className="text-sm font-bold text-[#d4d0c8]">Babalola Opeyemi</p>
+                <p className="text-xs text-[#666666] leading-relaxed">
+                  Software Engineer and Platform Builder specialising in AI systems and secure infrastructure.
+                  I write about my findings in the trenches of backend engineering.
+                </p>
+                <div className="flex gap-4 pt-1">
+                  <a href="https://twitter.com/brainiac_ope" className="text-[10px] uppercase tracking-widest text-[#e8a000] hover:underline">Twitter</a>
+                  <a href="https://linkedin.com/in/babalola-opeyemi" className="text-[10px] uppercase tracking-widest text-[#e8a000] hover:underline">LinkedIn</a>
+                </div>
+              </div>
+            </div>
+          </div>
+        </article>
+      </div>
+
+      {/* Delete confirmation */}
       {showDeleteConfirm && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="glass-card p-6 max-w-md mx-4">
-            <h3 className="text-lg font-bold font-mono mb-4 text-red-400">
-              Delete Post
-            </h3>
-            <p className="text-[var(--muted)] mb-6">
-              Are you sure you want to delete "{post.title}"? This action cannot be undone.
+        <div className="fixed inset-0 bg-[#0a0a0a]/90 flex items-center justify-center z-50 p-6">
+          <div className="border border-red-500/30 bg-[#111111] p-8 max-w-md w-full font-mono">
+            <p className="text-[10px] text-[#e8a000] uppercase tracking-widest mb-3">// confirm delete</p>
+            <h3 className="text-base font-bold text-red-400 mb-2">Delete post?</h3>
+            <p className="text-xs text-[#888888] leading-relaxed mb-8">
+              Permanently remove &quot;{post.title}&quot;. This cannot be undone.
             </p>
             <div className="flex gap-3">
               <button
                 onClick={handleDelete}
                 disabled={isDeleting}
-                className="btn bg-red-500 hover:bg-red-600 text-white"
+                className="flex-1 py-2.5 bg-red-500 text-white text-[10px] uppercase tracking-widest font-bold hover:bg-red-600 transition-colors disabled:opacity-50"
               >
-                {isDeleting ? 'Deleting...' : 'Delete'}
+                {isDeleting ? 'deleting...' : 'confirm'}
               </button>
               <button
                 onClick={() => setShowDeleteConfirm(false)}
-                disabled={isDeleting}
-                className="btn btn-secondary"
+                className="flex-1 py-2.5 border border-[#2a2a2a] text-[#888888] text-[10px] uppercase tracking-widest hover:border-[#e8a000] hover:text-[#e8a000] transition-colors"
               >
-                Cancel
+                cancel
               </button>
             </div>
           </div>

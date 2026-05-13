@@ -69,6 +69,6 @@ export interface BlogUser {
   id: string
   email: string
   name: string
-  role: 'admin' | 'contributor'
+  role: 'admin' | 'contributor' | 'learner'
   created_at: string
 }

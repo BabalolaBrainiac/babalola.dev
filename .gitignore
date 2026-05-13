@@ -287,3 +287,4 @@ temp/
 *.tmp
 *.temp
 .cache/
+.vercel

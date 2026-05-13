@@ -31,11 +31,63 @@ const nextConfig = {
 
   // Subdomain handling and redirects
   async rewrites() {
-    const isProduction = process.env.NODE_ENV === 'production' && 
+    const isProduction = process.env.NODE_ENV === 'production' &&
                         process.env.VERCEL_ENV === 'production'
-    
+
     const rewrites = []
-    
+
+    // uploads subdomain routing (dev + prod)
+    const uploadsSubdomain = isProduction ? 'uploads.babalola.dev' : 'uploads.localhost'
+    rewrites.push(
+      {
+        source: '/',
+        destination: '/uploads',
+        has: [{ type: 'host', value: uploadsSubdomain }],
+      },
+      {
+        source: '/upload',
+        destination: '/uploads/upload',
+        has: [{ type: 'host', value: uploadsSubdomain }],
+      },
+      {
+        source: '/:path*',
+        destination: '/uploads/:path*',
+        has: [{ type: 'host', value: uploadsSubdomain }],
+      }
+    )
+
+    // development subdomain routing for jobs.localhost
+    if (!isProduction) {
+      rewrites.push(
+        {
+          source: '/',
+          destination: '/jobs',
+          has: [
+            {
+              type: 'host',
+              value: 'jobs.localhost',
+            },
+          ],
+        }
+      )
+    }
+
+    // production subdomain routing for jobs.babalola.dev
+    if (isProduction) {
+      rewrites.push(
+        {
+          source: '/',
+          destination: '/jobs',
+          has: [
+            {
+              type: 'host',
+              value: 'jobs.babalola.dev',
+            },
+          ],
+        }
+      )
+    }
+
     // development subdomain routing for blog.localhost
     if (!isProduction) {
       rewrites.push(

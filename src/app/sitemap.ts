@@ -1,9 +1,10 @@
 import { MetadataRoute } from 'next'
+import { supabase } from '@/lib/supabase'
 
-export default function sitemap(): MetadataRoute.Sitemap {
+export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const baseUrl = 'https://babalola.dev'
-  
-  return [
+
+  const staticRoutes: MetadataRoute.Sitemap = [
     {
       url: baseUrl,
       lastModified: new Date(),
@@ -11,34 +12,31 @@ export default function sitemap(): MetadataRoute.Sitemap {
       priority: 1,
     },
     {
-      url: `${baseUrl}/blog`,
+      url: 'https://blog.babalola.dev',
       lastModified: new Date(),
       changeFrequency: 'weekly',
       priority: 0.8,
     },
-    {
-      url: `${baseUrl}/blog/hetzner-infrastructure-setup`,
-      lastModified: new Date(),
-      changeFrequency: 'monthly',
-      priority: 0.7,
-    },
-    {
-      url: `${baseUrl}/auth/signin`,
-      lastModified: new Date(),
-      changeFrequency: 'monthly',
-      priority: 0.3,
-    },
-    {
-      url: `${baseUrl}/auth/register`,
-      lastModified: new Date(),
-      changeFrequency: 'monthly',
-      priority: 0.3,
-    },
-    {
-      url: `${baseUrl}/admin`,
-      lastModified: new Date(),
-      changeFrequency: 'monthly',
-      priority: 0.2,
-    },
   ]
+
+  let blogRoutes: MetadataRoute.Sitemap = []
+
+  if (supabase) {
+    const { data } = await supabase
+      .from('blog_posts')
+      .select('slug, updated_at, created_at')
+      .eq('published', true)
+      .order('created_at', { ascending: false })
+
+    if (data) {
+      blogRoutes = data.map(post => ({
+        url: `https://blog.babalola.dev/${post.slug}`,
+        lastModified: new Date(post.updated_at || post.created_at),
+        changeFrequency: 'monthly' as const,
+        priority: 0.7,
+      }))
+    }
+  }
+
+  return [...staticRoutes, ...blogRoutes]
 }

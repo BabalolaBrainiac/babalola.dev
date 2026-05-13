@@ -2,420 +2,165 @@
 
 import React, { useState, useEffect } from 'react';
 import { getBlogUrl } from '@/lib/urls';
-import { 
-  experiences, 
-  skills, 
+import {
+  experiences,
+  skills,
   openSourceContributions,
-  getFeaturedProjects, 
   getAllProjects,
-  type Project 
+  type Project
 } from '../data/portfolio';
 
-// Category icons for projects
-const getProjectIcon = (category: Project['category']) => {
-  const icons = {
-    security: (
-      <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
-      </svg>
-    ),
-    iac: (
-      <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
-      </svg>
-    ),
-    ai: (
-      <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
-      </svg>
-    ),
-    opensource: (
-      <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4" />
-      </svg>
-    ),
-    agent: (
-      <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
-      </svg>
-    ),
-    health: (
-      <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
-      </svg>
-    ),
-  };
-  return icons[category];
+const CATEGORY_LABELS: Record<Project['category'], string> = {
+  security:   'Security',
+  iac:        'Infrastructure',
+  ai:         'AI / ML',
+  opensource: 'Open Source',
+  agent:      'AI Agents',
+  health:     'Health Tech',
 };
 
-const getCategoryColor = (category: Project['category']) => {
-  const colors = {
-    security: 'from-red-500/20 to-orange-500/20 border-red-500/30',
-    iac: 'from-blue-500/20 to-cyan-500/20 border-blue-500/30',
-    ai: 'from-purple-500/20 to-pink-500/20 border-purple-500/30',
-    opensource: 'from-green-500/20 to-emerald-500/20 border-green-500/30',
-    agent: 'from-amber-500/20 to-yellow-500/20 border-amber-500/30',
-    health: 'from-rose-500/20 to-pink-500/20 border-rose-500/30',
-  };
-  return colors[category];
-};
-
-const getCategoryLabel = (category: Project['category']) => {
-  const labels = {
-    security: 'Security',
-    iac: 'Infrastructure',
-    ai: 'AI/ML',
-    opensource: 'Open Source',
-    agent: 'AI Agents',
-    health: 'Health Tech',
-  };
-  return labels[category];
-};
+const ROLES = [
+  'Software Engineer',
+  'Platform Builder',
+  'AI Systems Architect',
+  'Brainiac',
+];
 
 export default function MainBody() {
-  const [typedText, setTypedText] = useState('');
-  const fullText = 'Software Engineer';
-  const [currentExperienceIndex, setCurrentExperienceIndex] = useState(0);
-  const [activeProjectFilter, setActiveProjectFilter] = useState<Project['category'] | 'all'>('all');
+  const [roleIndex, setRoleIndex] = useState(0);
+  const [roleFade,  setRoleFade]  = useState(true);
+  const [activeExp, setActiveExp] = useState(0);
+  const [activeFilter, setActiveFilter] = useState<Project['category'] | 'all'>('all');
   const [expandedProject, setExpandedProject] = useState<string | null>(null);
 
-  const featuredProjects = getFeaturedProjects();
   const allProjects = getAllProjects();
-  
-  const filteredProjects = activeProjectFilter === 'all' 
-    ? allProjects 
-    : allProjects.filter(p => p.category === activeProjectFilter);
-
-  const getSkillIcon = (category: string) => {
-    const icons: { [key: string]: string } = {
-      'languages': '💻',
-      'frameworks': '⚡',
-      'cloud': '☁️',
-      'databases': '🗄️',
-      'devops': '🔧',
-      'concepts': '🧠'
-    };
-    return icons[category] || '🔧';
-  };
+  const filtered = activeFilter === 'all'
+    ? allProjects
+    : allProjects.filter(p => p.category === activeFilter);
 
   useEffect(() => {
-    let i = 0;
-    const timer = setInterval(() => {
-      if (i < fullText.length) {
-        setTypedText(fullText.slice(0, i + 1));
-        i++;
-      } else {
-        clearInterval(timer);
-      }
-    }, 100);
-
-    return () => clearInterval(timer);
+    const interval = setInterval(() => {
+      setRoleFade(false);
+      setTimeout(() => {
+        setRoleIndex(i => (i + 1) % ROLES.length);
+        setRoleFade(true);
+      }, 250);
+    }, 2800);
+    return () => clearInterval(interval);
   }, []);
 
-  const nextExperience = () => {
-    setCurrentExperienceIndex((prev) => (prev + 1) % experiences.length);
-  };
-
-  const prevExperience = () => {
-    setCurrentExperienceIndex((prev) => (prev - 1 + experiences.length) % experiences.length);
-  };
-
-  const currentExperience = experiences[currentExperienceIndex];
+  const exp = experiences[activeExp];
 
   return (
-    <main className="scroll-container">
-      {/* Hero Section */}
-      <section className="min-h-screen flex items-center justify-center px-4 sm:px-6 scroll-section" style={{ background: 'var(--background)' }}>
-        <div className="max-w-4xl mx-auto text-center">
-          <div className="animate-fade-in">
-            <div className="mb-8">
-              <h1 className="text-4xl sm:text-5xl md:text-6xl font-bold mb-6 funky-heading capitalize">
-                <span className="gradient-text">Babalola Opeyemi</span>
-              </h1>
-              <div className="h-8 mb-6">
-                <p className="text-xl md:text-2xl font-mono" style={{ color: 'var(--muted)' }}>
-                  {typedText}<span className="animate-pulse">|</span>
-                </p>
-              </div>
-              <p className="text-base md:text-lg max-w-3xl mx-auto leading-relaxed mb-8 funky-text" style={{ color: 'var(--muted)' }}>
-                Highly skilled, motivated and results-driven Software Engineer with over 6 years of experience designing, developing, and deploying secure, scalable platform services and backend systems. Proven track record of building high-performance APIs, infrastructure automation, and distributed systems serving millions of users. Passionate about building platform services that power exceptional user experiences, with particular interest in audio/AI technology and accessibility.
-              </p>
-            </div>
+    <main className="font-mono bg-[#0a0a0a]">
 
-            <div className="flex flex-col sm:flex-row gap-4 justify-center items-center mb-12">
-              <a
-                href={getBlogUrl()}
-                className="btn btn-secondary w-full sm:w-auto"
-              >
-                Read brainiac's blog
-              </a>
-              <a
-                href="mailto:babaloladanielope@gmail.com"
-                className="btn btn-secondary w-full sm:w-auto"
-              >
-                <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 4.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
-                </svg>
-                Get In Touch
-              </a>
-            </div>
-          </div>
-        </div>
-      </section>
+      {/* ── HERO ──────────────────────────────────────────────────── */}
+      <section className="min-h-screen flex flex-col items-center justify-center px-5 sm:px-10 pt-16 text-center">
+        <div className="max-w-3xl w-full py-20 flex flex-col items-center">
 
-      {/* About Section */}
-      <section id="about" className="min-h-screen flex items-center px-4 sm:px-6 scroll-section" style={{ background: 'var(--background-secondary)' }}>
-        <div className="max-w-7xl mx-auto">
-          <div className="text-center mb-12">
-            <h2 className="text-4xl sm:text-5xl md:text-6xl font-bold mb-6 funky-heading gradient-text">
-              about
-            </h2>
-          </div>
+          <p className="text-[10px] text-[#3a3a3a] mb-10 tracking-[0.2em] uppercase">
+            <span className="text-[#e8a000]">›</span>&nbsp;babalola.dev — initialized
+          </p>
 
-          <div className="grid lg:grid-cols-2 gap-8 max-w-6xl mx-auto mb-8">
-            <div className="space-y-6">
-              <div className="about-card p-6">
-                <h3 className="text-xl font-bold mb-4 font-mono gradient-text">Education</h3>
-                <div className="space-y-4">
-                  <div className="p-4 glass rounded-lg">
-                    <h4 className="font-semibold text-lg" style={{ color: 'var(--foreground)' }}>EdgeHill University, UK</h4>
-                    <p className="text-sm mt-1" style={{ color: 'var(--muted)' }}>Master's Degree in Computing (2024)</p>
-                  </div>
-                  <div className="p-4 glass rounded-lg">
-                    <h4 className="font-semibold text-lg" style={{ color: 'var(--foreground)' }}>University of Ilorin, Nigeria</h4>
-                    <p className="text-sm mt-1" style={{ color: 'var(--muted)' }}>Bachelor's Degree (2016)</p>
-                  </div>
-                </div>
-              </div>
+          <h1 className="text-5xl sm:text-6xl md:text-7xl font-bold text-[#d4d0c8] leading-none tracking-tight mb-5">
+            BABALOLA<br />OPEYEMI
+          </h1>
 
-              <div className="about-card p-6">
-                <h3 className="text-xl font-bold mb-4 font-mono gradient-text">Quick Stats</h3>
-                <div className="space-y-3">
-                  <div className="flex justify-between items-center p-3 glass rounded-lg">
-                    <span className="text-sm" style={{ color: 'var(--muted)' }}>Experience</span>
-                    <span className="font-bold text-lg gradient-text">5+ Years</span>
-                  </div>
-                  <div className="flex justify-between items-center p-3 glass rounded-lg">
-                    <span className="text-sm" style={{ color: 'var(--muted)' }}>Users Impacted</span>
-                    <span className="font-bold text-lg gradient-text">52M+</span>
-                  </div>
-                  <div className="flex justify-between items-center p-3 glass rounded-lg">
-                    <span className="text-sm" style={{ color: 'var(--muted)' }}>Companies</span>
-                    <span className="font-bold text-lg gradient-text">6</span>
-                  </div>
-                  <div className="flex justify-between items-center p-3 glass rounded-lg">
-                    <span className="text-sm" style={{ color: 'var(--muted)' }}>Technologies</span>
-                    <span className="font-bold text-lg gradient-text">25+</span>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            <div className="space-y-6">
-              <div className="about-card p-6">
-                <h3 className="text-xl font-bold mb-4 font-mono gradient-text">interests</h3>
-                <div className="space-y-4">
-                  <div className="p-4 glass rounded-lg">
-                    <div className="flex items-start gap-3">
-                      <span className="text-lg mt-0.5">🍳</span>
-                      <div>
-                        <p className="text-sm font-medium" style={{ color: 'var(--foreground)' }}>Cooking</p>
-                        <p className="text-xs mt-1" style={{ color: 'var(--muted)' }}>love experimenting with flavors</p>
-                      </div>
-                    </div>
-                  </div>
-                  <div className="p-4 glass rounded-lg">
-                    <div className="flex items-start gap-3">
-                      <span className="text-lg mt-0.5">🎌</span>
-                      <div>
-                        <p className="text-sm font-medium" style={{ color: 'var(--foreground)' }}>Anime</p>
-                        <p className="text-xs mt-1" style={{ color: 'var(--muted)' }}>avid watcher</p>
-                      </div>
-                    </div>
-                  </div>
-                  <div className="p-4 glass rounded-lg">
-                    <div className="flex items-start gap-3">
-                      <span className="text-lg mt-0.5">📚</span>
-                      <div>
-                        <p className="text-sm font-medium" style={{ color: 'var(--foreground)' }}>Epic Fantasy</p>
-                        <p className="text-xs mt-1" style={{ color: 'var(--muted)' }}>favorites: Wheel of Time, The Demon Cycle, The Name of the Wind, Before They Are Hanged</p>
-                      </div>
-                    </div>
-                  </div>
-                  <div className="p-4 glass rounded-lg">
-                    <div className="flex items-start gap-3">
-                      <span className="text-lg mt-0.5">🎹</span>
-                      <div>
-                        <p className="text-sm font-medium" style={{ color: 'var(--foreground)' }}>Music</p>
-                        <p className="text-xs mt-1" style={{ color: 'var(--muted)' }}>piano & guitar. used to be a music director directing a choir of over 300 choristers</p>
-                      </div>
-                    </div>
-                  </div>
-                  <div className="p-4 glass rounded-lg">
-                    <div className="flex items-start gap-3">
-                      <span className="text-lg mt-0.5">🎧</span>
-                      <div>
-                        <p className="text-sm font-medium" style={{ color: 'var(--foreground)' }}>Audiophile</p>
-                        <p className="text-xs mt-1" style={{ color: 'var(--muted)' }}>enjoys listening to music</p>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* Experience Section with Projects */}
-      <section id="experience" className="min-h-screen flex items-center px-4 sm:px-6 scroll-section py-20" style={{ background: 'var(--background)' }}>
-        <div className="max-w-7xl mx-auto w-full">
-          <div className="text-center mb-16">
-            <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold mb-4 funky-heading gradient-text">
-              experience
-            </h2>
-            <p className="text-lg max-w-2xl mx-auto" style={{ color: 'var(--muted)' }}>
-              where i've worked and what i've built
+          <div className="flex items-center justify-center gap-3 mb-8 h-7">
+            <span className="text-[#e8a000] font-light select-none text-xl leading-none">_</span>
+            <p
+              className="text-lg text-[#888888] transition-opacity duration-250"
+              style={{ opacity: roleFade ? 1 : 0 }}
+            >
+              {ROLES[roleIndex]}
             </p>
           </div>
 
-          <div className="grid lg:grid-cols-12 gap-8">
-            {/* Experience List - Left Side */}
-            <div className="lg:col-span-4 space-y-2">
-              {experiences.map((exp, index) => (
-                <button
-                  key={exp.id}
-                  onClick={() => setCurrentExperienceIndex(index)}
-                  className={`w-full text-left p-4 rounded-xl transition-all duration-300 group ${
-                    index === currentExperienceIndex
-                      ? 'bg-[var(--accent)]/10 border border-[var(--accent)]/30'
-                      : 'hover:bg-[var(--glass-bg)] border border-transparent'
-                  }`}
-                >
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <h3 className={`font-semibold ${
-                        index === currentExperienceIndex ? 'text-[var(--accent)]' : 'text-[var(--foreground)]'
-                      }`}>
-                        {exp.company}
-                      </h3>
-                      <p className="text-sm" style={{ color: 'var(--muted)' }}>{exp.title}</p>
-                    </div>
-                    <span className="text-xs font-mono opacity-50">{exp.period.split(' - ')[0]}</span>
-                  </div>
-                </button>
-              ))}
-            </div>
+          <div className="flex items-center justify-center gap-5 text-[10px] text-[#3a3a3a] mb-10 tracking-widest uppercase">
+            <span>6+ years</span>
+            <span>·</span>
+            <span>52M+ users</span>
+            <span>·</span>
+            <span>United Kingdom</span>
+          </div>
 
-            {/* Experience Details - Right Side */}
-            <div className="lg:col-span-8">
-              <div className="experience-card animate-fade-in">
-                {/* Header */}
-                <div className="flex flex-col sm:flex-row sm:justify-between sm:items-start mb-6 gap-4">
-                  <div>
-                    <h3 className="text-2xl sm:text-3xl font-bold font-mono gradient-text mb-1">
-                      {currentExperience.title}
-                    </h3>
-                    <p className="text-xl font-semibold" style={{ color: 'var(--foreground)' }}>
-                      {currentExperience.company}
-                    </p>
-                    <div className="flex flex-wrap items-center gap-2 mt-2 text-sm font-mono" style={{ color: 'var(--muted)' }}>
-                      <span>{currentExperience.period}</span>
-                      <span className="opacity-50">•</span>
-                      <span>{currentExperience.location}</span>
-                      <span className="opacity-50">•</span>
-                      <span className={`px-2 py-0.5 rounded-full text-xs ${
-                        currentExperience.type === 'contract' 
-                          ? 'bg-yellow-500/20 text-yellow-400' 
-                          : currentExperience.type === 'parttime'
-                          ? 'bg-blue-500/20 text-blue-400'
-                          : 'bg-green-500/20 text-green-400'
-                      }`}>
-                        {currentExperience.type}
-                      </span>
-                    </div>
+          <p className="text-sm text-[#666666] max-w-xl leading-relaxed mb-12">
+            Senior Software Engineer specialising in platform services, backend systems, and AI/ML infrastructure.
+            Building tools that serve millions and shipping code that actually matters.
+          </p>
+
+          <div className="flex flex-wrap justify-center gap-3">
+            <a href="#projects" className="btn btn-primary">view work</a>
+            <a href="mailto:babaloladanielope@gmail.com" className="btn btn-secondary">get in touch</a>
+            <a href={getBlogUrl()} className="btn btn-ghost">blog →</a>
+          </div>
+
+          <p className="mt-20 text-[10px] text-[#2a2a2a] tracking-[0.2em] uppercase">
+            ▼ scroll
+          </p>
+        </div>
+      </section>
+
+      {/* ── ABOUT ─────────────────────────────────────────────────── */}
+      <section id="about" className="py-28 px-5 sm:px-10 border-t border-[#1e1e1e]">
+        <div className="max-w-7xl mx-auto">
+          <p className="section-label mb-2">// 01.</p>
+          <h2 className="text-3xl sm:text-4xl font-bold text-[#d4d0c8] mb-16">about</h2>
+
+          <div className="grid lg:grid-cols-2 gap-10">
+            <div className="space-y-6">
+              {/* Education */}
+              <div className="about-card p-6">
+                <p className="text-[10px] text-[#e8a000] uppercase tracking-widest mb-5">Education</p>
+                <div className="space-y-5">
+                  <div className="border-l-2 border-[#e8a000] pl-4">
+                    <p className="text-sm text-[#d4d0c8] font-semibold">EdgeHill University, UK</p>
+                    <p className="text-xs text-[#888888] mt-0.5">MSc Computing · 2024</p>
+                  </div>
+                  <div className="border-l border-[#2a2a2a] pl-4">
+                    <p className="text-sm text-[#d4d0c8] font-semibold">University of Ilorin, Nigeria</p>
+                    <p className="text-xs text-[#888888] mt-0.5">BSc · 2016</p>
                   </div>
                 </div>
-
-                {/* Highlights */}
-                <div className="mb-8">
-                  <h4 className="text-lg font-semibold mb-3 font-mono gradient-text">Key Achievements</h4>
-                  <ul className="space-y-3" style={{ color: 'var(--muted)' }}>
-                    {currentExperience.highlights.map((highlight, idx) => (
-                      <li key={idx} className="flex items-start gap-3">
-                        <span className="text-[var(--accent)] mt-1">▶</span>
-                        <span className="leading-relaxed text-sm">{highlight}</span>
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-
-                {/* Tech Stack */}
-                <div className="mb-8">
-                  <h4 className="text-sm font-semibold mb-2 font-mono" style={{ color: 'var(--muted)' }}>Technologies</h4>
-                  <div className="flex flex-wrap gap-2">
-                    {currentExperience.tech.map((tech) => (
-                      <span key={tech} className="project-tag text-xs">
-                        {tech}
-                      </span>
-                    ))}
-                  </div>
-                </div>
-
-                {/* Projects Built at this Role */}
-                {currentExperience.projects && currentExperience.projects.length > 0 && (
-                  <div className="border-t border-[var(--glass-border)] pt-6">
-                    <h4 className="text-lg font-semibold mb-4 font-mono gradient-text flex items-center gap-2">
-                      <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
-                      </svg>
-                      Projects Built
-                    </h4>
-                    <div className="grid sm:grid-cols-2 gap-4">
-                      {currentExperience.projects.map((project) => (
-                        <div 
-                          key={project.id}
-                          className="p-4 glass rounded-lg hover:border-[var(--accent)]/30 transition-all duration-300 group"
-                        >
-                          <div className="flex items-start justify-between mb-2">
-                            <h5 className="font-semibold text-[var(--accent)] group-hover:text-[var(--accent)] transition-colors">
-                              {project.name}
-                            </h5>
-                            {getProjectIcon(project.category)}
-                          </div>
-                          <p className="text-xs mb-2 font-medium" style={{ color: 'var(--foreground)' }}>
-                            {project.tagline}
-                          </p>
-                          <p className="text-xs leading-relaxed" style={{ color: 'var(--muted)' }}>
-                            {project.description}
-                          </p>
-                          <div className="flex flex-wrap gap-1 mt-3">
-                            {project.tech.slice(0, 3).map((t) => (
-                              <span key={t} className="text-[10px] px-2 py-0.5 rounded-full bg-[var(--glass-bg)]" style={{ color: 'var(--muted)' }}>
-                                {t}
-                              </span>
-                            ))}
-                          </div>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-                )}
               </div>
 
-              {/* Navigation Dots */}
-              <div className="flex justify-center mt-8 space-x-2">
-                {experiences.map((_, index) => (
-                  <button
-                    key={index}
-                    onClick={() => setCurrentExperienceIndex(index)}
-                    className={`w-2 h-2 rounded-full transition-all duration-300 ${
-                      index === currentExperienceIndex 
-                        ? 'bg-[var(--accent)] w-6' 
-                        : 'bg-[var(--muted)] hover:bg-[var(--accent)]'
-                    }`}
-                    aria-label={`Go to experience ${index + 1}`}
-                  />
+              {/* Stats */}
+              <div className="about-card p-6">
+                <p className="text-[10px] text-[#e8a000] uppercase tracking-widest mb-4">Quick Stats</p>
+                <div className="space-y-0">
+                  {[
+                    { k: 'Experience',     v: '6+ years' },
+                    { k: 'Users Impacted', v: '52M+'     },
+                    { k: 'Companies',      v: '6'        },
+                    { k: 'Technologies',   v: '25+'      },
+                  ].map(({ k, v }) => (
+                    <div key={k} className="flex justify-between text-xs py-2.5 border-b border-[#1e1e1e] last:border-0">
+                      <span className="text-[#888888]">{k}</span>
+                      <span className="text-[#e8a000] font-bold">{v}</span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
+
+            {/* Interests */}
+            <div className="about-card p-6">
+              <p className="text-[10px] text-[#e8a000] uppercase tracking-widest mb-5">Interests</p>
+              <div className="space-y-0">
+                {[
+                  { icon: '🍳', title: 'Cooking',      detail: 'love experimenting with flavors' },
+                  { icon: '🎌', title: 'Anime',        detail: 'avid watcher' },
+                  { icon: '📚', title: 'Epic Fantasy', detail: 'Wheel of Time · Demon Cycle · Name of the Wind' },
+                  { icon: '🎹', title: 'Music',        detail: 'piano & guitar · former choir director, 300+ choristers' },
+                  { icon: '🎧', title: 'Audiophile',   detail: 'serious listener, serious headphones' },
+                ].map(({ icon, title, detail }) => (
+                  <div key={title} className="flex gap-3 py-3 border-b border-[#1e1e1e] last:border-0">
+                    <span className="text-base w-6 shrink-0 leading-tight mt-0.5">{icon}</span>
+                    <div>
+                      <p className="text-xs text-[#d4d0c8] font-semibold">{title}</p>
+                      <p className="text-[11px] text-[#666666] mt-0.5 leading-relaxed">{detail}</p>
+                    </div>
+                  </div>
                 ))}
               </div>
             </div>
@@ -423,147 +168,180 @@ export default function MainBody() {
         </div>
       </section>
 
-      {/* Projects Section - Bento Grid */}
-      <section id="projects" className="min-h-screen flex items-center px-4 sm:px-6 scroll-section py-20" style={{ background: 'var(--background-secondary)' }}>
-        <div className="max-w-7xl mx-auto w-full">
-          <div className="text-center mb-12">
-            <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold mb-4 funky-heading gradient-text">
-              projects
-            </h2>
-            <p className="text-lg max-w-2xl mx-auto mb-8" style={{ color: 'var(--muted)' }}>
-              building tools that solve real problems
-            </p>
+      {/* ── EXPERIENCE ────────────────────────────────────────────── */}
+      <section id="experience" className="py-28 px-5 sm:px-10 bg-[#111111] border-t border-[#1e1e1e]">
+        <div className="max-w-7xl mx-auto">
+          <p className="section-label mb-2">// 02.</p>
+          <h2 className="text-3xl sm:text-4xl font-bold text-[#d4d0c8] mb-16">experience</h2>
 
-            {/* Filter Tabs */}
-            <div className="flex flex-wrap justify-center gap-2 mb-8">
-              {(['all', 'agent', 'ai', 'security', 'iac', 'health', 'opensource'] as const).map((filter) => (
+          <div className="grid lg:grid-cols-12 gap-6">
+            {/* Company list */}
+            <div className="lg:col-span-4 space-y-1">
+              {experiences.map((e, i) => (
                 <button
-                  key={filter}
-                  onClick={() => setActiveProjectFilter(filter)}
-                  className={`px-4 py-2 rounded-full text-sm font-medium transition-all duration-300 ${
-                    activeProjectFilter === filter
-                      ? 'bg-[var(--accent)] text-white'
-                      : 'glass hover:border-[var(--accent)]/30'
+                  key={e.id}
+                  onClick={() => setActiveExp(i)}
+                  className={`w-full text-left px-4 py-3 border transition-all duration-150 ${
+                    i === activeExp
+                      ? 'border-[#e8a000] bg-[rgba(232,160,0,0.04)] text-[#e8a000]'
+                      : 'border-[#1e1e1e] text-[#888888] hover:border-[#2a2a2a] hover:text-[#d4d0c8]'
                   }`}
                 >
-                  {filter === 'all' ? 'All Projects' : getCategoryLabel(filter)}
+                  <p className="text-xs font-semibold tracking-wide">{e.company}</p>
+                  <p className="text-[10px] mt-0.5 opacity-70">{e.title}</p>
                 </button>
               ))}
             </div>
+
+            {/* Detail */}
+            <div className="lg:col-span-8 experience-card">
+              <div className="mb-6">
+                <h3 className="text-xl font-bold text-[#d4d0c8]">{exp.title}</h3>
+                <div className="flex flex-wrap items-center gap-2 mt-1 text-xs text-[#888888]">
+                  <span className="text-[#e8a000]">{exp.company}</span>
+                  <span className="text-[#2a2a2a]">·</span>
+                  <span>{exp.period}</span>
+                  <span className="text-[#2a2a2a]">·</span>
+                  <span>{exp.location}</span>
+                  <span className={`ml-1 px-1.5 py-0.5 text-[9px] uppercase tracking-widest border ${
+                    exp.type === 'contract'
+                      ? 'border-yellow-700/40 text-yellow-600'
+                      : exp.type === 'parttime'
+                      ? 'border-blue-900/40 text-blue-500'
+                      : 'border-[#2a2a2a] text-[#555555]'
+                  }`}>{exp.type}</span>
+                </div>
+              </div>
+
+              <div className="mb-6">
+                <p className="text-[10px] text-[#e8a000] uppercase tracking-widest mb-3">Key Achievements</p>
+                <ul className="space-y-2">
+                  {exp.highlights.map((h, i) => (
+                    <li key={i} className="flex gap-2 text-xs text-[#888888] leading-relaxed">
+                      <span className="text-[#e8a000] shrink-0 mt-0.5">›</span>
+                      <span>{h}</span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+
+              <div className="mb-5">
+                <p className="text-[10px] text-[#3a3a3a] uppercase tracking-widest mb-2">Technologies</p>
+                <div className="flex flex-wrap gap-1.5">
+                  {exp.tech.map(t => (
+                    <span key={t} className="project-tag">{t}</span>
+                  ))}
+                </div>
+              </div>
+
+              {exp.projects && exp.projects.length > 0 && (
+                <div className="border-t border-[#1e1e1e] pt-5">
+                  <p className="text-[10px] text-[#e8a000] uppercase tracking-widest mb-3">Projects Built</p>
+                  <div className="grid sm:grid-cols-2 gap-3">
+                    {exp.projects.map(p => (
+                      <div key={p.id} className="border border-[#1e1e1e] p-3 hover:border-[#2a2a2a] transition-colors">
+                        <p className="text-xs font-semibold text-[#d4d0c8] mb-0.5">{p.name}</p>
+                        <p className="text-[10px] text-[#e8a000] mb-1.5">{p.tagline}</p>
+                        <p className="text-[10px] text-[#555555] leading-relaxed mb-2">{p.description}</p>
+                        <div className="flex flex-wrap gap-1">
+                          {p.tech.slice(0, 3).map(t => (
+                            <span key={t} className="text-[9px] border border-[#1e1e1e] px-1.5 py-0.5 text-[#3a3a3a]">{t}</span>
+                          ))}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* ── PROJECTS ──────────────────────────────────────────────── */}
+      <section id="projects" className="py-28 px-5 sm:px-10 border-t border-[#1e1e1e]">
+        <div className="max-w-7xl mx-auto">
+          <p className="section-label mb-2">// 03.</p>
+          <h2 className="text-3xl sm:text-4xl font-bold text-[#d4d0c8] mb-3">projects</h2>
+          <p className="text-sm text-[#666666] mb-10">building tools that solve real problems</p>
+
+          <div className="flex flex-wrap gap-2 mb-10">
+            {(['all', 'agent', 'ai', 'security', 'iac', 'health', 'opensource'] as const).map(f => (
+              <button
+                key={f}
+                onClick={() => setActiveFilter(f)}
+                className={`text-[10px] uppercase tracking-widest px-3 py-1.5 border transition-all duration-150 ${
+                  activeFilter === f
+                    ? 'border-[#e8a000] bg-[rgba(232,160,0,0.06)] text-[#e8a000]'
+                    : 'border-[#1e1e1e] text-[#555555] hover:border-[#2a2a2a] hover:text-[#888888]'
+                }`}
+              >
+                {f === 'all' ? 'all' : CATEGORY_LABELS[f]}
+              </button>
+            ))}
           </div>
 
-          {/* Bento Grid */}
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {filteredProjects.map((project, index) => {
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            {filtered.map(project => {
               const isExpanded = expandedProject === project.id;
-              const isFeatured = project.featured;
-              
               return (
-                <div
-                  key={project.id}
-                  className={`project-card group relative overflow-hidden transition-all duration-500 ${
-                    isFeatured && activeProjectFilter === 'all' ? 'md:col-span-2 lg:col-span-1' : ''
-                  } ${isExpanded ? 'row-span-2' : ''}`}
-                  style={{ animationDelay: `${index * 0.1}s` }}
-                >
-                  {/* Gradient Background */}
-                  <div className={`absolute inset-0 bg-gradient-to-br ${getCategoryColor(project.category)} opacity-0 group-hover:opacity-100 transition-opacity duration-500`} />
-                  
-                  <div className="relative p-6 h-full flex flex-col">
-                    {/* Header */}
-                    <div className="flex items-start justify-between mb-4">
-                      <div>
-                        <div className="flex items-center gap-2 mb-1">
-                          <span className="text-[10px] uppercase tracking-wider font-semibold px-2 py-0.5 rounded-full bg-[var(--glass-bg)]" style={{ color: 'var(--muted)' }}>
-                            {getCategoryLabel(project.category)}
-                          </span>
-                          {project.featured && (
-                            <span className="text-[10px] uppercase tracking-wider font-semibold px-2 py-0.5 rounded-full bg-[var(--accent)]/20 text-[var(--accent)]">
-                              Featured
-                            </span>
-                          )}
-                        </div>
-                        <h3 className="text-xl font-bold font-mono gradient-text">
-                          {project.name}
-                        </h3>
-                        <p className="text-sm font-medium mt-0.5" style={{ color: 'var(--foreground)' }}>
-                          {project.tagline}
-                        </p>
-                      </div>
-                      <div className="glass p-2 rounded-lg text-[var(--accent)]">
-                        {getProjectIcon(project.category)}
-                      </div>
-                    </div>
-
-                    {/* Description */}
-                    <p className="text-sm leading-relaxed mb-4 flex-grow" style={{ color: 'var(--muted)' }}>
-                      {isExpanded ? project.fullDescription : project.description}
-                    </p>
-
-                    {/* Stats (if featured) */}
-                    {project.stats && (
-                      <div className="flex gap-4 mb-4">
-                        {project.stats.map((stat) => (
-                          <div key={stat.label} className="text-center">
-                            <div className="text-lg font-bold gradient-text">{stat.value}</div>
-                            <div className="text-[10px] uppercase tracking-wider" style={{ color: 'var(--muted)' }}>{stat.label}</div>
-                          </div>
-                        ))}
-                      </div>
-                    )}
-
-                    {/* Tech Stack */}
-                    <div className="flex flex-wrap gap-2 mb-4">
-                      {project.tech.map((tech) => (
-                        <span key={tech} className="project-tag text-xs">
-                          {tech}
+                <div key={project.id} className="project-card flex flex-col">
+                  <div className="flex items-start justify-between mb-3">
+                    <div className="flex-1">
+                      <div className="flex flex-wrap items-center gap-1.5 mb-1.5">
+                        <span className="text-[9px] uppercase tracking-widest text-[#3a3a3a] border border-[#1e1e1e] px-1.5 py-0.5">
+                          {CATEGORY_LABELS[project.category]}
                         </span>
+                        {project.featured && (
+                          <span className="text-[9px] uppercase tracking-widest text-[#e8a000] border border-[rgba(232,160,0,0.3)] px-1.5 py-0.5">
+                            ★ featured
+                          </span>
+                        )}
+                      </div>
+                      <h3 className="text-sm font-bold text-[#d4d0c8]">{project.name}</h3>
+                      <p className="text-[11px] text-[#e8a000] mt-0.5">{project.tagline}</p>
+                    </div>
+                  </div>
+
+                  <p className="text-xs text-[#666666] leading-relaxed mb-3 flex-grow">
+                    {isExpanded ? project.fullDescription : project.description}
+                  </p>
+
+                  {project.stats && (
+                    <div className="flex gap-5 mb-3 py-2.5 border-t border-b border-[#1e1e1e]">
+                      {project.stats.map(s => (
+                        <div key={s.label}>
+                          <p className="text-sm font-bold text-[#e8a000]">{s.value}</p>
+                          <p className="text-[9px] uppercase tracking-widest text-[#3a3a3a]">{s.label}</p>
+                        </div>
                       ))}
                     </div>
+                  )}
 
-                    {/* Actions */}
-                    <div className="flex flex-wrap gap-3 pt-4 border-t border-[var(--glass-border)]">
-                      {project.links.website && (
-                        <a
-                          href={project.links.website}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="btn btn-primary text-sm flex-1 text-center"
-                        >
-                          <svg className="w-4 h-4 mr-1 inline" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
-                          </svg>
-                          Website
-                        </a>
-                      )}
-                      {project.links.github && (
-                        <a
-                          href={project.links.github}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="btn btn-secondary text-sm flex-1 text-center"
-                        >
-                          <svg className="w-4 h-4 mr-1 inline" fill="currentColor" viewBox="0 0 24 24">
-                            <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/>
-                          </svg>
-                          GitHub
-                        </a>
-                      )}
-                      <button
-                        onClick={() => setExpandedProject(isExpanded ? null : project.id)}
-                        className="btn btn-secondary text-sm px-3"
-                        title={isExpanded ? 'Show less' : 'Show more'}
-                      >
-                        <svg 
-                          className={`w-4 h-4 transition-transform duration-300 ${isExpanded ? 'rotate-180' : ''}`} 
-                          fill="none" 
-                          stroke="currentColor" 
-                          viewBox="0 0 24 24"
-                        >
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-                        </svg>
-                      </button>
-                    </div>
+                  <div className="flex flex-wrap gap-1 mb-4">
+                    {project.tech.map(t => (
+                      <span key={t} className="project-tag">{t}</span>
+                    ))}
+                  </div>
+
+                  <div className="flex flex-wrap gap-2 pt-3 border-t border-[#1e1e1e]">
+                    {project.links.website && (
+                      <a href={project.links.website} target="_blank" rel="noopener noreferrer" className="btn btn-primary flex-1 text-center">
+                        website
+                      </a>
+                    )}
+                    {project.links.github && (
+                      <a href={project.links.github} target="_blank" rel="noopener noreferrer" className="btn btn-secondary flex-1 text-center">
+                        github
+                      </a>
+                    )}
+                    <button
+                      onClick={() => setExpandedProject(isExpanded ? null : project.id)}
+                      className="btn btn-ghost px-3"
+                      title={isExpanded ? 'show less' : 'show more'}
+                    >
+                      {isExpanded ? '↑' : '↓'}
+                    </button>
                   </div>
                 </div>
               );
@@ -572,33 +350,19 @@ export default function MainBody() {
         </div>
       </section>
 
-      {/* Skills Section */}
-      <section id="skills" className="min-h-screen flex items-center px-4 sm:px-6 scroll-section" style={{ background: 'var(--background)' }}>
-        <div className="max-w-6xl mx-auto">
-          <div className="text-center mb-16">
-            <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold mb-4 funky-heading gradient-text">
-              skills
-            </h2>
-          </div>
+      {/* ── SKILLS ────────────────────────────────────────────────── */}
+      <section id="skills" className="py-28 px-5 sm:px-10 bg-[#111111] border-t border-[#1e1e1e]">
+        <div className="max-w-7xl mx-auto">
+          <p className="section-label mb-2">// 04.</p>
+          <h2 className="text-3xl sm:text-4xl font-bold text-[#d4d0c8] mb-16">skills</h2>
 
-          <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-8">
-            {skills.map((skillGroup, index) => (
-              <div key={skillGroup.category} className="skill-card p-6 animate-fade-in" style={{ animationDelay: `${index * 0.1}s` }}>
-                <div className="skill-icon">
-                  <span className="text-2xl">{skillGroup.icon}</span>
-                </div>
-                <h3 className="text-xl font-bold mb-4 font-mono gradient-text capitalize">
-                  {skillGroup.category}
-                </h3>
-                <div className="flex flex-wrap gap-2">
-                  {skillGroup.items.map((skill, skillIndex) => (
-                    <span 
-                      key={skill} 
-                      className="skill-tag"
-                      style={{ animationDelay: `${(index * 0.1) + (skillIndex * 0.05)}s` }}
-                    >
-                      {skill}
-                    </span>
+          <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-5">
+            {skills.map(group => (
+              <div key={group.category} className="skill-card p-5">
+                <div className="skill-icon">{group.category}</div>
+                <div className="flex flex-wrap gap-1.5 mt-3">
+                  {group.items.map(item => (
+                    <span key={item} className="skill-tag">{item}</span>
                   ))}
                 </div>
               </div>
@@ -607,68 +371,35 @@ export default function MainBody() {
         </div>
       </section>
 
-      {/* Open Source & Community Section */}
-      <section id="opensource" className="min-h-screen flex items-center px-4 sm:px-6 scroll-section py-20" style={{ background: 'var(--background-secondary)' }}>
-        <div className="max-w-6xl mx-auto w-full">
-          <div className="text-center mb-16">
-            <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold mb-4 funky-heading gradient-text">
-              open source & community
-            </h2>
-            <p className="text-lg max-w-2xl mx-auto" style={{ color: 'var(--muted)' }}>
-              contributing to the ecosystem and building communities
-            </p>
-          </div>
+      {/* ── OPEN SOURCE ───────────────────────────────────────────── */}
+      <section id="opensource" className="py-28 px-5 sm:px-10 border-t border-[#1e1e1e]">
+        <div className="max-w-7xl mx-auto">
+          <p className="section-label mb-2">// 05.</p>
+          <h2 className="text-3xl sm:text-4xl font-bold text-[#d4d0c8] mb-3">open source</h2>
+          <p className="text-sm text-[#666666] mb-16">contributing to the ecosystem and building communities</p>
 
-          <div className="grid md:grid-cols-2 gap-8">
-            {openSourceContributions.map((contribution, index) => (
-              <div 
-                key={contribution.organization}
-                className="opensource-card p-8 animate-fade-in"
-                style={{ animationDelay: `${index * 0.1}s` }}
-              >
-                <div className="flex items-start justify-between mb-6">
-                  <div>
-                    <h3 className="text-2xl font-bold font-mono gradient-text">
-                      {contribution.organization}
-                    </h3>
-                    <p className="text-sm font-semibold mt-1" style={{ color: 'var(--accent)' }}>
-                      {contribution.role}
-                    </p>
-                  </div>
-                  <div className="glass p-3 rounded-lg">
-                    <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" style={{ color: 'var(--accent)' }}>
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
-                    </svg>
-                  </div>
-                </div>
-
-                <p className="text-sm mb-6 leading-relaxed" style={{ color: 'var(--muted)' }}>
-                  {contribution.description}
-                </p>
-
-                <div className="space-y-3">
-                  {contribution.highlights.map((highlight, idx) => (
-                    <div key={idx} className="flex items-start gap-3">
-                      <span className="text-[var(--accent)] mt-1">▶</span>
-                      <span className="text-sm leading-relaxed" style={{ color: 'var(--foreground)' }}>
-                        {highlight}
-                      </span>
-                    </div>
+          <div className="grid md:grid-cols-2 gap-5">
+            {openSourceContributions.map(c => (
+              <div key={c.organization} className="opensource-card p-7">
+                <h3 className="text-base font-bold text-[#d4d0c8]">{c.organization}</h3>
+                <p className="text-xs text-[#e8a000] mt-0.5 mb-4">{c.role}</p>
+                <p className="text-xs text-[#666666] leading-relaxed mb-5">{c.description}</p>
+                <ul className="space-y-2 mb-5">
+                  {c.highlights.map((h, i) => (
+                    <li key={i} className="flex gap-2 text-xs text-[#888888] leading-relaxed">
+                      <span className="text-[#e8a000] shrink-0 mt-0.5">›</span>
+                      <span>{h}</span>
+                    </li>
                   ))}
-                </div>
-
-                {contribution.links?.website && (
-                  <a 
-                    href={contribution.links.website}
+                </ul>
+                {c.links?.website && (
+                  <a
+                    href={c.links.website}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="inline-flex items-center gap-2 mt-6 text-sm font-semibold hover:opacity-80 transition-opacity"
-                    style={{ color: 'var(--accent)' }}
+                    className="text-[10px] uppercase tracking-widest text-[#e8a000] hover:underline"
                   >
-                    Learn more
-                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
-                    </svg>
+                    learn more →
                   </a>
                 )}
               </div>
@@ -677,58 +408,48 @@ export default function MainBody() {
         </div>
       </section>
 
-      {/* Contact Section */}
-      <section id="contact" className="min-h-screen flex items-center px-4 sm:px-6 scroll-section" style={{ background: 'var(--background)' }}>
-        <div className="max-w-4xl mx-auto text-center">
-          <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold mb-8 funky-heading gradient-text">
-            let's connect
-          </h2>
+      {/* ── CONTACT ───────────────────────────────────────────────── */}
+      <section id="contact" className="py-28 px-5 sm:px-10 bg-[#111111] border-t border-[#1e1e1e]">
+        <div className="max-w-4xl mx-auto">
+          <p className="section-label mb-2">// 06.</p>
+          <h2 className="text-3xl sm:text-4xl font-bold text-[#d4d0c8] mb-3">let's connect</h2>
+          <p className="text-sm text-[#666666] mb-14">want to collaborate, hire, or just talk tech?</p>
 
-          <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
-            <a 
-              href="mailto:babaloladanielope@gmail.com" 
-              className="contact-card p-6"
-            >
-              <div className="text-3xl mb-4">📧</div>
-              <h3 className="font-bold mb-2" style={{ color: 'var(--foreground)' }}>Email</h3>
-              <p className="font-mono text-xs break-all" style={{ color: 'var(--muted)' }}>babaloladanielope@gmail.com</p>
-            </a>
-
-            <a 
-              href="https://linkedin.com/in/babalola-opeyemi" 
-              target="_blank"
-              rel="noopener noreferrer"
-              className="contact-card p-6"
-            >
-              <div className="text-3xl mb-4">💼</div>
-              <h3 className="font-bold mb-2" style={{ color: 'var(--foreground)' }}>LinkedIn</h3>
-              <p className="font-mono text-xs" style={{ color: 'var(--muted)' }}>Babalola Opeyemi</p>
-            </a>
-
-            <a 
-              href="https://medium.com/@babaloladanielope" 
-              target="_blank"
-              rel="noopener noreferrer"
-              className="contact-card p-6"
-            >
-              <div className="text-3xl mb-4">📝</div>
-              <h3 className="font-bold mb-2" style={{ color: 'var(--foreground)' }}>Medium</h3>
-              <p className="font-mono text-xs break-all" style={{ color: 'var(--muted)' }}>@babaloladanielope</p>
-            </a>
-
-            <a 
-              href="https://twitter.com/brainiac_ope" 
-              target="_blank"
-              rel="noopener noreferrer"
-              className="contact-card p-6"
-            >
-              <div className="text-3xl mb-4">🐦</div>
-              <h3 className="font-bold mb-2" style={{ color: 'var(--foreground)' }}>Twitter</h3>
-              <p className="font-mono text-xs" style={{ color: 'var(--muted)' }}>@brainiac_ope</p>
-            </a>
+          <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-3">
+            {[
+              { href: 'mailto:babaloladanielope@gmail.com',        label: 'Email',    sub: 'babaloladanielope\n@gmail.com' },
+              { href: 'https://linkedin.com/in/babalola-opeyemi', label: 'LinkedIn', sub: 'Babalola Opeyemi'               },
+              { href: 'https://github.com/BabalolaBrainiac',      label: 'GitHub',   sub: '@BabalolaBrainiac'              },
+              { href: 'https://twitter.com/brainiac_ope',          label: 'Twitter',  sub: '@brainiac_ope'                  },
+            ].map(({ href, label, sub }) => (
+              <a
+                key={label}
+                href={href}
+                target={href.startsWith('mailto') ? undefined : '_blank'}
+                rel="noopener noreferrer"
+                className="contact-card p-5 group"
+              >
+                <p className="text-[10px] text-[#e8a000] uppercase tracking-widest mb-3">{label}</p>
+                <p className="text-xs text-[#888888] leading-relaxed whitespace-pre-line">{sub}</p>
+                <p className="text-[10px] text-[#2a2a2a] group-hover:text-[#e8a000] mt-4 transition-colors">→</p>
+              </a>
+            ))}
           </div>
         </div>
       </section>
+
+      {/* ── FOOTER ────────────────────────────────────────────────── */}
+      <footer className="py-8 px-5 sm:px-10 border-t border-[#1e1e1e]">
+        <div className="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-2">
+          <p className="text-[10px] text-[#2a2a2a] tracking-widest uppercase">
+            © {new Date().getFullYear()} Babalola Opeyemi
+          </p>
+          <p className="text-[10px] text-[#2a2a2a] tracking-widest uppercase">
+            built with Next.js · deployed on Vercel
+          </p>
+        </div>
+      </footer>
+
     </main>
   );
 }

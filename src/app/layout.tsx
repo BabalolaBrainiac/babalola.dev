@@ -73,7 +73,7 @@ export const metadata = {
 		description: 'Results-driven Software Engineer with 5+ years of expertise architecting and deploying enterprise-grade backend systems, AI/ML infrastructure, and cloud-native solutions.',
 		images: [
 			{
-				url: '/og-image.jpg',
+				url: '/logo.svg',
 				width: 1200,
 				height: 630,
 				alt: 'Babalola Opeyemi - Software Engineer Portfolio',
@@ -86,7 +86,7 @@ export const metadata = {
 		creator: '@brainiac_ope',
 		title: 'Babalola Opeyemi - Senior Backend Engineer | AI/ML Infrastructure Specialist | Cloud Architect',
 		description: 'Results-driven Software Engineer with 5+ years of expertise architecting and deploying enterprise-grade backend systems, AI/ML infrastructure, and cloud-native solutions.',
-		images: ['/og-image.jpg'],
+		images: ['/logo.svg'],
 	},
 	alternates: {
 		canonical: 'https://babalola.dev',
@@ -116,7 +116,7 @@ export const metadata = {
 		'DC.description': 'Experienced Software Engineer specializing in backend development, cloud/ML infrastructure, and DevOps automation',
 		'DC.publisher': 'Babalola Opeyemi',
 		'DC.contributor': 'Babalola Opeyemi',
-		'DC.date': '2024',
+		'DC.date': new Date().getFullYear().toString(),
 		'DC.type': 'Text',
 		'DC.format': 'text/html',
 		'DC.identifier': 'https://babalola.dev',
@@ -124,7 +124,7 @@ export const metadata = {
 		'DC.language': 'en',
 		'DC.relation': 'https://babalola.dev',
 		'DC.coverage': 'United Kingdom, Nigeria',
-		'DC.rights': 'Copyright 2024 Babalola Opeyemi',
+		'DC.rights': `Copyright ${new Date().getFullYear()} Babalola Opeyemi`,
 	},
 };
 
@@ -147,7 +147,7 @@ export default function RootLayout({
 							"jobTitle": "Senior Backend Engineer",
 							"description": "Results-driven Software Engineer with 5+ years of expertise architecting and deploying enterprise-grade backend systems, AI/ML infrastructure, and cloud-native solutions.",
 							"url": "https://babalola.dev",
-							"image": "https://babalola.dev/og-image.jpg",
+							"image": "https://babalola.dev/logo.svg",
 							"sameAs": [
 								"https://linkedin.com/in/babalola-opeyemi",
 								"https://github.com/BabalolaBrainiac",

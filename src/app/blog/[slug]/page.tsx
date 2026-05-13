@@ -137,10 +137,52 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
 export default async function BlogPostPage({ params }: Props) {
   const post = await getPost(params.slug)
-  
+
   if (!post) {
     notFound()
   }
 
-  return <BlogPostClient post={post} />
+  const canonicalUrl = `https://blog.babalola.dev/${post.slug}`
+  const articleSchema = {
+    '@context': 'https://schema.org',
+    '@type': 'TechArticle',
+    headline: post.title,
+    description: post.meta_description || post.excerpt,
+    url: canonicalUrl,
+    datePublished: post.created_at,
+    dateModified: post.updated_at,
+    author: {
+      '@type': 'Person',
+      name: 'Babalola Opeyemi',
+      url: 'https://babalola.dev',
+      sameAs: [
+        'https://twitter.com/brainiac_ope',
+        'https://linkedin.com/in/babalola-opeyemi',
+        'https://github.com/BabalolaBrainiac',
+      ],
+    },
+    publisher: {
+      '@type': 'Person',
+      name: 'Babalola Opeyemi',
+      url: 'https://babalola.dev',
+    },
+    mainEntityOfPage: {
+      '@type': 'WebPage',
+      '@id': canonicalUrl,
+    },
+    keywords: Array.isArray(post.tags) ? post.tags.join(', ') : post.tags,
+    articleSection: 'Technology',
+    inLanguage: 'en-GB',
+    ...(post.reading_time && { timeRequired: `PT${post.reading_time}M` }),
+  }
+
+  return (
+    <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(articleSchema) }}
+      />
+      <BlogPostClient post={post} />
+    </>
+  )
 }
