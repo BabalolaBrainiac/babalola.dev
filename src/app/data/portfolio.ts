@@ -443,42 +443,42 @@ export const openSourceContributions: OpenSourceContribution[] = [
 export const skills: SkillCategory[] = [
   {
     category: 'languages',
-    icon: '💻',
+    icon: '>',
     items: ['Java', 'C#', 'TypeScript', 'JavaScript', 'Python', 'Go/Golang', 'Rust'],
   },
   {
     category: 'frameworks',
-    icon: '⚡',
+    icon: '>',
     items: ['Spring Boot', 'ASP.NET Core', 'NestJS', 'React', 'Next.js', 'Node.js', 'ExpressJS'],
   },
   {
     category: 'cloud',
-    icon: '☁️',
+    icon: '>',
     items: ['AWS', 'Azure', 'GCP', 'Docker', 'Kubernetes', 'Terraform', 'CloudFormation', 'SageMaker', 'Cloudflare Workers', 'Cloudflare R2'],
   },
   {
     category: 'databases',
-    icon: '🗄️',
+    icon: '>',
     items: ['PostgreSQL', 'MySQL', 'MongoDB', 'DynamoDB', 'Redis', 'Elasticsearch', 'Pinecone', 'Redshift', 'TimescaleDB'],
   },
   {
     category: 'devops',
-    icon: '🔧',
+    icon: '>',
     items: ['Git', 'Jenkins', 'Maven', 'Gradle', 'Ansible', 'Vagrant', 'CI/CD', 'GitHub Actions'],
   },
   {
     category: 'ai/ml',
-    icon: '🤖',
-    items: ['LLM Integration', 'RAG Pipelines', 'MLOps', 'OpenAI', 'Anthropic', 'Ollama', 'SageMaker', 'Vector DBs', 'MeiliSearch'],
+    icon: '>',
+    items: ['LLM Integration', 'RAG Pipelines', 'MLOps', 'OpenAI', 'Anthropic', 'Ollama', 'SageMaker', 'Vector DBs', 'MeiliSearch', 'MLflow', 'Kubeflow', 'Ray', 'vLLM', 'Triton', 'Prometheus', 'Grafana', 'OpenTelemetry'],
   },
   {
     category: 'protocols & apis',
-    icon: '🔌',
+    icon: '>',
     items: ['REST', 'GraphQL', 'gRPC', 'SOAP', 'WebSockets', 'Kafka', 'RabbitMQ', 'NATS.io', 'SQS'],
   },
   {
     category: 'concepts',
-    icon: '🧠',
+    icon: '>',
     items: ['Microservices', 'Serverless', 'TDD', 'System Design', 'Event-driven Architecture', 'AI Agents', 'OASF'],
   },
 ];

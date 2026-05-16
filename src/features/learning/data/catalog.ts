@@ -16,6 +16,14 @@ import {
   mlopsWeek9,
   mlopsWeek10,
 } from './mlops-weeks3to10';
+import {
+  mlopsWeek11,
+  mlopsWeek12,
+  mlopsWeek13,
+  mlopsWeek14,
+  mlopsWeek15,
+  mlopsWeek16,
+} from './mlops-weeks11to16';
 import { rustWeek1 } from './rust-week1';
 
 const mlSystemBasicsTemplate: ProjectTemplate = {
@@ -886,10 +894,10 @@ const mlopsCourse: LearningCourse = {
   title: 'Principal MLOps and AI Infra',
   subtitle: 'A guided path from backend engineering intuition to principal-level ML systems judgment.',
   level: 'Senior backend engineer → Principal MLOps / AI infra engineer',
-  duration: '10 weeks core path + continuing weekly briefings',
-  focus: ['Python', 'MLOps', 'distributed systems', 'GPU systems', 'LLM infrastructure'],
+  duration: '16 weeks core path + continuing weekly briefings',
+  focus: ['Python', 'MLOps', 'distributed systems', 'GPU systems', 'LLM infrastructure', 'CUDA', 'observability'],
   description:
-    'This course is built for a strong backend engineer who needs a rigorous, systems-first path into ML production engineering, infrastructure, reliability, and scale.',
+    'This course is built for a strong backend engineer who needs a rigorous, systems-first path into ML production engineering, infrastructure, reliability, and scale. Covers distributed training, GPU architecture, LLM systems, and production observability.',
   audience: [
     'You already know how to design services and APIs.',
     'You can write Python, but ML systems still feel fuzzy.',
@@ -925,6 +933,12 @@ const mlopsCourse: LearningCourse = {
     mlopsWeek8,
     mlopsWeek9,
     mlopsWeek10,
+    mlopsWeek11,
+    mlopsWeek12,
+    mlopsWeek13,
+    mlopsWeek14,
+    mlopsWeek15,
+    mlopsWeek16,
   ],
 };
 

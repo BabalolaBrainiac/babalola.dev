@@ -67,15 +67,15 @@ export default function BlogPostClient({ post }: BlogPostClientProps) {
       />
 
       {/* Header */}
-      <header className="border-b border-[#1e1e1e] bg-[#0a0a0a] sticky top-0 z-40">
-        <div className="max-w-7xl mx-auto px-5 sm:px-8 py-4 flex items-center justify-between gap-4">
+      <header className="border-b border-[#1e1e1e] bg-[#0a0a0a] sticky top-0 z-40 w-full overflow-hidden">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3 sm:py-4 flex items-center justify-between gap-2 sm:gap-4 w-full overflow-hidden">
           <Link
             href="/blog"
-            className="text-[10px] text-[#888888] hover:text-[#e8a000] transition-colors uppercase tracking-widest"
+            className="text-[8px] sm:text-[10px] text-[#888888] hover:text-[#e8a000] transition-colors uppercase tracking-widest whitespace-nowrap"
           >
             ← blog
           </Link>
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-1.5 sm:gap-2">
             <ShareButton title={post.title} slug={post.slug} />
             {canEdit && (
               <Link
@@ -97,10 +97,10 @@ export default function BlogPostClient({ post }: BlogPostClientProps) {
         </div>
       </header>
 
-      <div className="max-w-7xl mx-auto px-5 sm:px-8 py-16 lg:py-24 grid lg:grid-cols-12 gap-12">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-16 lg:py-24 grid lg:grid-cols-12 gap-8 lg:gap-12 w-full overflow-hidden">
 
         {/* TOC sidebar */}
-        <aside className="hidden lg:block lg:col-span-3 sticky top-24 h-fit space-y-8">
+        <aside className="hidden lg:block lg:col-span-3 sticky top-24 h-fit space-y-8 overflow-hidden">
           {headings.length > 0 && (
             <div>
               <p className="text-[10px] text-[#e8a000] uppercase tracking-widest mb-4">
@@ -137,27 +137,27 @@ export default function BlogPostClient({ post }: BlogPostClientProps) {
         </aside>
 
         {/* Article */}
-        <article className="lg:col-span-7 space-y-10">
+        <article className="lg:col-span-7 space-y-6 sm:space-y-10 w-full overflow-hidden">
           {/* Meta */}
-          <header className="space-y-4">
-            <div className="flex flex-wrap items-center gap-3 text-[10px] text-[#444444] uppercase tracking-widest">
+          <header className="space-y-3 sm:space-y-4 w-full overflow-hidden">
+            <div className="flex flex-wrap items-center gap-2 sm:gap-3 text-[10px] text-[#444444] uppercase tracking-widest break-words">
               <span className="text-[#e8a000]">{post.tags?.[0] || 'Engineering'}</span>
-              <span>·</span>
-              <span>{new Date(post.created_at).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' })}</span>
-              <span>·</span>
+              <span className="hidden sm:inline">·</span>
+              <span className="break-words">{new Date(post.created_at).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' })}</span>
+              <span className="hidden sm:inline">·</span>
               <span>{readTime} min read</span>
             </div>
 
-            <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold text-[#d4d0c8] leading-tight">
+            <h1 className="text-2xl xs:text-3xl sm:text-4xl md:text-5xl font-bold text-[#d4d0c8] leading-tight break-words w-full">
               {post.title}
             </h1>
 
             {post.tags && post.tags.length > 0 && (
-              <div className="flex flex-wrap gap-1.5 pt-1">
+              <div className="flex flex-wrap gap-1 sm:gap-1.5 pt-1">
                 {post.tags.map(t => (
                   <span
                     key={t}
-                    className="text-[9px] border border-[#2a2a2a] px-2 py-0.5 text-[#555555] uppercase tracking-widest"
+                    className="text-[8px] sm:text-[9px] border border-[#2a2a2a] px-1.5 sm:px-2 py-0.5 text-[#555555] uppercase tracking-widest break-words"
                   >
                     #{t}
                   </span>
@@ -167,36 +167,37 @@ export default function BlogPostClient({ post }: BlogPostClientProps) {
           </header>
 
           {/* Content */}
-          <div className="prose prose-invert max-w-none
-            prose-p:text-[#888888] prose-p:leading-relaxed prose-p:text-sm
+          <div className="prose prose-invert max-w-none w-full overflow-hidden
+            prose-p:text-[#888888] prose-p:leading-relaxed prose-p:text-xs sm:prose-p:text-sm prose-p:break-words
             prose-h1:text-[#d4d0c8] prose-h2:text-[#d4d0c8] prose-h3:text-[#d4d0c8]
-            prose-h2:border-b prose-h2:border-[#1e1e1e] prose-h2:pb-2
-            prose-a:text-[#e8a000] prose-a:no-underline hover:prose-a:underline
-            prose-strong:text-[#d4d0c8]
-            prose-code:text-[#e8a000] prose-code:bg-[#111111] prose-code:border prose-code:border-[#1e1e1e]
-            prose-pre:bg-[#111111] prose-pre:border prose-pre:border-[#1e1e1e] prose-pre:rounded-none
-            prose-blockquote:border-l-[#e8a000] prose-blockquote:text-[#666666] prose-blockquote:not-italic
+            prose-h1:text-xl sm:prose-h1:text-2xl prose-h1:break-words
+            prose-h2:text-lg sm:prose-h2:text-xl prose-h2:break-words prose-h2:border-b prose-h2:border-[#1e1e1e] prose-h2:pb-2
+            prose-h3:text-base sm:prose-h3:text-lg prose-h3:break-words
+            prose-a:text-[#e8a000] prose-a:no-underline hover:prose-a:underline prose-a:break-words
+            prose-strong:text-[#d4d0c8] prose-strong:break-words
+            prose-code:text-[#e8a000] prose-code:bg-[#111111] prose-code:border prose-code:border-[#1e1e1e] prose-code:text-xs prose-code:break-words
+            prose-pre:bg-[#111111] prose-pre:border prose-pre:border-[#1e1e1e] prose-pre:rounded-none prose-pre:overflow-x-auto
+            prose-blockquote:border-l-[#e8a000] prose-blockquote:text-[#666666] prose-blockquote:not-italic prose-blockquote:break-words
             prose-hr:border-[#1e1e1e]
-            prose-li:text-[#888888] prose-li:text-sm
+            prose-li:text-[#888888] prose-li:text-xs sm:prose-li:text-sm prose-li:break-words
           ">
             <MarkdownRenderer content={post.content} />
           </div>
 
           {/* Author card */}
-          <div className="border-t border-[#1e1e1e] pt-10 mt-10">
-            <div className="border border-[#1e1e1e] p-7 flex flex-col sm:flex-row items-start sm:items-center gap-6">
-              <div className="w-14 h-14 border border-[#2a2a2a] flex items-center justify-center text-base font-bold text-[#e8a000] shrink-0">
+          <div className="border-t border-[#1e1e1e] pt-6 sm:pt-10 mt-8 sm:mt-10 w-full overflow-hidden">
+            <div className="border border-[#1e1e1e] p-4 sm:p-7 flex flex-col sm:flex-row items-start sm:items-center gap-4 sm:gap-6 w-full overflow-hidden">
+              <div className="w-12 sm:w-14 h-12 sm:h-14 border border-[#2a2a2a] flex items-center justify-center text-sm sm:text-base font-bold text-[#e8a000] shrink-0">
                 BO
               </div>
-              <div className="space-y-2 flex-1">
-                <p className="text-sm font-bold text-[#d4d0c8]">Babalola Opeyemi</p>
-                <p className="text-xs text-[#666666] leading-relaxed">
+              <div className="space-y-2 flex-1 w-full overflow-hidden">
+                <p className="text-xs sm:text-sm font-bold text-[#d4d0c8] break-words">Babalola Opeyemi</p>
+                <p className="text-xs text-[#666666] leading-relaxed break-words">
                   Software Engineer and Platform Builder specialising in AI systems and secure infrastructure.
                   I write about my findings in the trenches of backend engineering.
                 </p>
-                <div className="flex gap-4 pt-1">
-                  <a href="https://twitter.com/brainiac_ope" className="text-[10px] uppercase tracking-widest text-[#e8a000] hover:underline">Twitter</a>
-                  <a href="https://linkedin.com/in/babalola-opeyemi" className="text-[10px] uppercase tracking-widest text-[#e8a000] hover:underline">LinkedIn</a>
+                <div className="flex gap-3 sm:gap-4 pt-1">
+                  <a href="https://linkedin.com/in/babalola-opeyemi" className="text-[9px] sm:text-[10px] uppercase tracking-widest text-[#e8a000] hover:underline break-words">LinkedIn</a>
                 </div>
               </div>
             </div>

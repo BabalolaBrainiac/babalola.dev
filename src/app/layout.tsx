@@ -4,8 +4,8 @@ import { ThemeProvider } from '@/contexts/ThemeContext'
 
 export const metadata = {
 	metadataBase: new URL(process.env.NODE_ENV === 'production' ? 'https://babalola.dev' : 'http://localhost:3000'),
-	title: "Babalola Opeyemi - Senior Backend Engineer | AI/ML Infrastructure Specialist | Cloud Architect",
-	description: "Results-driven Software Engineer with 5+ years of expertise architecting and deploying enterprise-grade backend systems, AI/ML infrastructure, and cloud-native solutions. Proven track record scaling platforms serving 52M+ users and processing $1.5M+ weekly transactions.",
+	title: "Babalola Opeyemi - Senior Software Engineer | AI/ML Infrastructure | MLOps",
+	description: "Senior Software Engineer specialising in platform engineering, AI/ML infrastructure, and distributed systems. Lead Coordinator at MLOps Community Liverpool. Building AI-native tools at WardScribe and HeySavi.",
 	keywords: [
 		"Software Engineer",
 		"Backend Developer", 
@@ -68,9 +68,9 @@ export const metadata = {
 		type: 'website',
 		locale: 'en_GB',
 		url: 'https://babalola.dev',
-		siteName: 'Babalola Opeyemi - Senior Backend Engineer',
-		title: 'Babalola Opeyemi - Senior Backend Engineer | AI/ML Infrastructure Specialist | Cloud Architect',
-		description: 'Results-driven Software Engineer with 5+ years of expertise architecting and deploying enterprise-grade backend systems, AI/ML infrastructure, and cloud-native solutions.',
+		siteName: 'Babalola Opeyemi - Senior Software Engineer',
+		title: 'Babalola Opeyemi - Senior Software Engineer | AI/ML Infrastructure | MLOps',
+		description: 'Senior Software Engineer specialising in platform engineering, AI/ML infrastructure, and distributed systems. Lead Coordinator at MLOps Community Liverpool.',
 		images: [
 			{
 				url: '/logo.svg',
@@ -84,8 +84,8 @@ export const metadata = {
 		card: 'summary_large_image',
 		site: '@brainiac_ope',
 		creator: '@brainiac_ope',
-		title: 'Babalola Opeyemi - Senior Backend Engineer | AI/ML Infrastructure Specialist | Cloud Architect',
-		description: 'Results-driven Software Engineer with 5+ years of expertise architecting and deploying enterprise-grade backend systems, AI/ML infrastructure, and cloud-native solutions.',
+		title: 'Babalola Opeyemi - Senior Software Engineer | AI/ML Infrastructure | MLOps',
+		description: 'Senior Software Engineer specialising in platform engineering, AI/ML infrastructure, and distributed systems.',
 		images: ['/logo.svg'],
 	},
 	alternates: {
@@ -112,8 +112,8 @@ export const metadata = {
 		'ICBM': '53.4808, -2.2426',
 		'DC.title': 'Babalola Opeyemi - Software Engineer',
 		'DC.creator': 'Babalola Opeyemi',
-		'DC.subject': 'Software Engineering, Backend Development, Cloud Infrastructure, DevOps',
-		'DC.description': 'Experienced Software Engineer specializing in backend development, cloud/ML infrastructure, and DevOps automation',
+		'DC.subject': 'Software Engineering, Backend Development, Cloud Infrastructure, DevOps, MLOps',
+		'DC.description': 'Senior Software Engineer specialising in platform engineering, AI/ML infrastructure, and distributed systems',
 		'DC.publisher': 'Babalola Opeyemi',
 		'DC.contributor': 'Babalola Opeyemi',
 		'DC.date': new Date().getFullYear().toString(),
@@ -144,8 +144,8 @@ export default function RootLayout({
 							"@context": "https://schema.org",
 							"@type": "Person",
 							"name": "Babalola Opeyemi",
-							"jobTitle": "Senior Backend Engineer",
-							"description": "Results-driven Software Engineer with 5+ years of expertise architecting and deploying enterprise-grade backend systems, AI/ML infrastructure, and cloud-native solutions.",
+							"jobTitle": "Senior Software Engineer",
+							"description": "Senior Software Engineer specialising in platform engineering, AI/ML infrastructure, and distributed systems. Lead Coordinator at MLOps Community Liverpool.",
 							"url": "https://babalola.dev",
 							"image": "https://babalola.dev/logo.svg",
 							"sameAs": [
@@ -181,12 +181,12 @@ export default function RootLayout({
 								{
 									"@type": "Organization",
 									"name": "HeySavi LTD",
-									"jobTitle": "Software Engineer"
+									"jobTitle": "Senior Software Engineer"
 								},
 								{
 									"@type": "Organization",
-									"name": "Access Bank PLC",
-									"jobTitle": "Software Engineer"
+									"name": "WardScribe",
+									"jobTitle": "Founder"
 								}
 							],
 							"knowsAbout": [
@@ -207,16 +207,19 @@ export default function RootLayout({
 								"Docker",
 								"Fintech",
 								"Banking Software",
-								"AI/ML Infrastructure"
+								"AI/ML Infrastructure",
+								"MLOps",
+								"Distributed Systems",
+								"LLM Systems"
 							],
 							"hasOccupation": {
 								"@type": "Occupation",
-								"name": "Senior Backend Engineer",
+								"name": "Senior Software Engineer",
 								"occupationLocation": {
 									"@type": "Country",
 									"name": "United Kingdom"
 								},
-								"skills": "Backend Development, AI/ML Infrastructure, MLOps, Cloud Architecture, Microservices, Serverless Computing, Infrastructure Automation, SageMaker, LLM Integration"
+								"skills": "Backend Development, AI/ML Infrastructure, MLOps, Cloud Architecture, Microservices, Serverless Computing, Infrastructure Automation, SageMaker, LLM Integration, Distributed Systems"
 							}
 						})
 					}}

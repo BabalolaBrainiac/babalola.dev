@@ -114,20 +114,22 @@ export default function MarkdownRenderer({ content }: MarkdownRendererProps) {
 
       if (!inline && language) {
         return (
-          <SyntaxHighlighter
-            style={tomorrow}
-            language={language}
-            PreTag="div"
-            className="rounded-lg"
-            {...props}
-          >
-            {String(children).replace(/\n$/, '')}
-          </SyntaxHighlighter>
+          <div className="overflow-x-auto w-full my-4">
+            <SyntaxHighlighter
+              style={tomorrow}
+              language={language}
+              PreTag="div"
+              className="rounded-lg"
+              {...props}
+            >
+              {String(children).replace(/\n$/, '')}
+            </SyntaxHighlighter>
+          </div>
         )
       }
 
       return (
-        <code className={className} {...props}>
+        <code className={`${className} break-words`} {...props}>
           {children}
         </code>
       )
@@ -156,20 +158,20 @@ export default function MarkdownRenderer({ content }: MarkdownRendererProps) {
         }
       }
 
-      return <p className="mb-4 leading-relaxed text-[var(--foreground)]" {...props}>{children}</p>
+      return <p className="mb-4 leading-relaxed text-[var(--foreground)] break-words" {...props}>{children}</p>
     },
 
     // Add better spacing for lists
     ul({ children, ...props }: any) {
-      return <ul className="mb-4 ml-6 space-y-2" {...props}>{children}</ul>
+      return <ul className="mb-4 ml-4 sm:ml-6 space-y-2 break-words" {...props}>{children}</ul>
     },
 
     ol({ children, ...props }: any) {
-      return <ol className="mb-4 ml-6 space-y-2" {...props}>{children}</ol>
+      return <ol className="mb-4 ml-4 sm:ml-6 space-y-2 break-words" {...props}>{children}</ol>
     },
 
     li({ children, ...props }: any) {
-      return <li className="text-[var(--foreground)]" {...props}>{children}</li>
+      return <li className="text-[var(--foreground)] break-words" {...props}>{children}</li>
     },
 
     // Add better spacing for blockquotes
@@ -188,7 +190,7 @@ export default function MarkdownRenderer({ content }: MarkdownRendererProps) {
   }
 
   return (
-    <div className="prose prose-invert max-w-none">
+    <div className="prose prose-invert max-w-none w-full overflow-hidden">
       <ReactMarkdown
         components={components}
         rehypePlugins={[rehypeSlug]}

@@ -4,57 +4,38 @@
 
 @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&display=swap');
 
-/* ─── Amber Terminal Design System ─────────────────────────────── */
+/* ─── Strict 4-Color Design System ─────────────────────────────── */
 :root {
-  --bg:          #0a0a0a;
-  --surface:     #111111;
-  --surface-2:   #161616;
-  --surface-3:   #1a1a1a;
-  --amber:       #e8a000;
-  --amber-dim:   #a06800;
-  --amber-faint: rgba(232, 160, 0, 0.06);
-  --text:        #d4d0c8;
-  --text-muted:  #888888;
-  --text-dim:    #3a3a3a;
-  --border:      #1e1e1e;
-  --border-2:    #2a2a2a;
+  --color-bg:      #000000;
+  --color-surface: #111111;
+  --color-text:    #d0ccc4;
+  --color-accent:  #e8a000;
 
-  /* Tailwind color map (tailwind.config reads these) */
-  --bg-base:        #0a0a0a;
+  /* Tailwind color map */
+  --bg-base:        #000000;
   --bg-elevated:    #111111;
-  --bg-overlay:     #161616;
+  --text-primary:   #d0ccc4;
   --accent-primary: #e8a000;
-  --accent-glow:    #e8a000;
-  --accent-cyan:    #e8a000;
-  --accent-purple:  #a06800;
-  --text-primary:   #d4d0c8;
-  --glass-border:   #1e1e1e;
-
-  /* Legacy compat */
-  --background:           #0a0a0a;
-  --background-secondary: #111111;
-  --foreground:           #d4d0c8;
-  --muted:                #888888;
-  --accent:               #e8a000;
-  --glass-bg:             rgba(255, 255, 255, 0.015);
-  --glow-subtle:          rgba(232, 160, 0, 0.05);
-  --shadow:               rgba(0, 0, 0, 0.8);
-  --green:                #22c55e;
-  --red:                  #ef4444;
-  --amber-status:         #e8a000;
 }
 
 /* ─── Reset ─────────────────────────────────────────────────────── */
 * { margin: 0; padding: 0; box-sizing: border-box; }
 
-html { scroll-behavior: smooth; }
+html {
+  scroll-behavior: smooth;
+  overflow-x: hidden;
+  width: 100%;
+}
 
 body {
-  background: var(--bg);
-  color: var(--text);
+  background: var(--color-bg);
+  color: var(--color-text);
   font-family: 'JetBrains Mono', monospace;
+  font-size: 14px;
   line-height: 1.6;
   overflow-x: hidden;
+  width: 100%;
+  max-width: 100%;
 }
 
 h1, h2, h3, h4, h5, h6 {
@@ -64,37 +45,27 @@ h1, h2, h3, h4, h5, h6 {
 
 /* ─── Scrollbar ──────────────────────────────────────────────────── */
 ::-webkit-scrollbar { width: 4px; }
-::-webkit-scrollbar-track { background: var(--bg); }
-::-webkit-scrollbar-thumb { background: var(--border-2); }
-::-webkit-scrollbar-thumb:hover { background: var(--amber-dim); }
+::-webkit-scrollbar-track { background: var(--color-bg); }
+::-webkit-scrollbar-thumb { background: #222; }
+::-webkit-scrollbar-thumb:hover { background: var(--color-accent); }
 
 /* ─── Selection ──────────────────────────────────────────────────── */
-::selection { background: rgba(232, 160, 0, 0.2); color: var(--text); }
+::selection { background: rgba(232, 160, 0, 0.2); color: var(--color-text); }
 
 /* ─── Terminal Cards ─────────────────────────────────────────────── */
 .term-card {
-  background: var(--surface);
-  border: 1px solid var(--border);
+  background: var(--color-surface);
+  border-left: 1px solid #222;
+  padding: 1.5rem;
   transition: border-color 0.15s ease;
 }
-.term-card:hover { border-color: var(--amber); }
+.term-card:hover { border-left-color: var(--color-accent); }
 
 .term-card-static {
-  background: var(--surface);
-  border: 1px solid var(--border);
+  background: var(--color-surface);
+  border-left: 1px solid #222;
+  padding: 1.5rem;
 }
-
-/* ─── Legacy glass (remapped — no blur) ──────────────────────────── */
-.glass {
-  background: var(--surface);
-  border: 1px solid var(--border);
-}
-.glass-card {
-  background: var(--surface);
-  border: 1px solid var(--border);
-  transition: border-color 0.15s ease;
-}
-.glass-card:hover { border-color: var(--amber); }
 
 /* ─── Buttons ────────────────────────────────────────────────────── */
 .btn {
@@ -105,7 +76,7 @@ h1, h2, h3, h4, h5, h6 {
   font-size: 0.7rem;
   font-weight: 600;
   text-transform: uppercase;
-  letter-spacing: 0.1em;
+  letter-spacing: 0.12em;
   padding: 0.5rem 1.25rem;
   transition: all 0.15s ease;
   cursor: pointer;
@@ -113,60 +84,56 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 .btn-primary {
-  background: var(--amber);
-  color: #0a0a0a;
-  border: 1px solid var(--amber);
+  background: transparent;
+  color: var(--color-accent);
+  border: 1px solid var(--color-accent);
 }
+.btn-primary::before { content: '[ '; }
+.btn-primary::after { content: ' ]'; }
 .btn-primary:hover {
-  background: #c88800;
-  border-color: #c88800;
+  background: var(--color-accent);
+  color: var(--color-bg);
 }
 
 .btn-secondary {
   background: transparent;
-  color: var(--amber);
-  border: 1px solid var(--amber);
+  color: var(--color-text);
+  border: 1px solid #222;
 }
+.btn-secondary::before { content: '[ '; }
+.btn-secondary::after { content: ' ]'; }
 .btn-secondary:hover {
-  background: var(--amber);
-  color: #0a0a0a;
+  border-color: var(--color-accent);
+  color: var(--color-accent);
 }
 
 .btn-ghost {
   background: transparent;
-  color: var(--text-muted);
-  border: 1px solid var(--border-2);
+  color: #555;
+  border: 1px solid transparent;
 }
 .btn-ghost:hover {
-  border-color: var(--amber);
-  color: var(--amber);
+  color: var(--color-accent);
 }
 
 /* ─── Typography ─────────────────────────────────────────────────── */
-.gradient-text { color: var(--amber); }
-.amber-text    { color: var(--amber); }
-
-.funky-heading {
-  font-family: 'JetBrains Mono', monospace;
-  font-weight: 700;
-  letter-spacing: -0.02em;
-}
-.funky-text { font-family: 'JetBrains Mono', monospace; }
+.gradient-text { color: var(--color-accent); }
+.amber-text    { color: var(--color-accent); }
 
 .section-label {
   font-size: 0.65rem;
   font-weight: 600;
   text-transform: uppercase;
-  letter-spacing: 0.15em;
-  color: var(--amber);
+  letter-spacing: 0.12em;
+  color: var(--color-accent);
   font-family: 'JetBrains Mono', monospace;
 }
 
 /* ─── Tags ───────────────────────────────────────────────────────── */
 .skill-tag {
   display: inline-block;
-  border: 1px solid var(--border-2);
-  color: var(--text-muted);
+  border: 1px solid #222;
+  color: #888;
   padding: 0.2rem 0.6rem;
   font-size: 0.65rem;
   text-transform: uppercase;
@@ -174,12 +141,12 @@ h1, h2, h3, h4, h5, h6 {
   font-family: 'JetBrains Mono', monospace;
   transition: border-color 0.15s ease, color 0.15s ease;
 }
-.skill-tag:hover { border-color: var(--amber-dim); color: var(--amber); }
+.skill-tag:hover { border-color: var(--color-accent); color: var(--color-accent); }
 
 .project-tag {
   display: inline-block;
-  border: 1px solid var(--border);
-  color: var(--text-dim);
+  border: 1px solid #222;
+  color: #3a3a3a;
   padding: 0.15rem 0.5rem;
   font-size: 0.6rem;
   text-transform: uppercase;
@@ -190,60 +157,63 @@ h1, h2, h3, h4, h5, h6 {
 /* ─── Section divider ────────────────────────────────────────────── */
 .term-divider {
   border: none;
-  border-top: 1px solid var(--border);
+  border-top: 1px solid #222;
   margin: 0;
 }
 
 /* ─── Experience card ────────────────────────────────────────────── */
 .experience-card {
-  background: var(--surface);
-  border: 1px solid var(--border);
+  background: var(--color-surface);
+  border-left: 1px solid #222;
   padding: 2rem;
 }
 
 /* ─── Project card ───────────────────────────────────────────────── */
 .project-card {
-  background: var(--surface);
-  border: 1px solid var(--border);
+  background: var(--color-surface);
+  border-left: 1px solid #222;
   padding: 1.5rem;
   transition: border-color 0.15s ease;
   position: relative;
   overflow: hidden;
 }
-.project-card:hover { border-color: var(--amber); }
+.project-card:hover { border-left-color: var(--color-accent); }
 
 /* ─── About card ─────────────────────────────────────────────────── */
 .about-card {
-  background: var(--surface);
-  border: 1px solid var(--border);
+  background: var(--color-surface);
+  border-left: 1px solid #222;
 }
 
 /* ─── Skill card ─────────────────────────────────────────────────── */
 .skill-card {
-  background: var(--surface);
-  border: 1px solid var(--border);
+  background: var(--color-surface);
+  border-left: 1px solid #222;
+  padding: 1.5rem;
   transition: border-color 0.15s ease;
 }
-.skill-card:hover { border-color: var(--border-2); }
-.skill-icon { margin-bottom: 0.75rem; font-size: 0.65rem; color: var(--amber); text-transform: uppercase; letter-spacing: 0.1em; }
+.skill-card:hover { border-left-color: #222; }
+.skill-icon { margin-bottom: 0.75rem; font-size: 0.65rem; color: var(--color-accent); text-transform: uppercase; letter-spacing: 0.1em; }
 
 /* ─── Open source card ───────────────────────────────────────────── */
 .opensource-card {
-  background: var(--surface);
-  border: 1px solid var(--border);
+  background: var(--color-surface);
+  border-left: 1px solid #222;
+  padding: 1.75rem;
   transition: border-color 0.15s ease;
 }
-.opensource-card:hover { border-color: var(--amber); }
+.opensource-card:hover { border-left-color: var(--color-accent); }
 
 /* ─── Contact card ───────────────────────────────────────────────── */
 .contact-card {
-  background: var(--surface);
-  border: 1px solid var(--border);
+  background: var(--color-surface);
+  border-left: 1px solid #222;
   text-decoration: none;
   transition: border-color 0.15s ease;
   display: block;
+  padding: 1.25rem;
 }
-.contact-card:hover { border-color: var(--amber); }
+.contact-card:hover { border-left-color: var(--color-accent); }
 
 /* ─── Scroll sections (kept for compat) ─────────────────────────── */
 .scroll-container { overflow-y: auto; }
@@ -275,16 +245,76 @@ h1, h2, h3, h4, h5, h6 {
 [data-vercel-badge], .vercel-badge { display: none !important; }
 
 /* ─── Blog typography (prose overrides) ─────────────────────────── */
-.prose { color: var(--text); max-width: 68ch; }
-.prose h1, .prose h2, .prose h3, .prose h4 { color: var(--text); font-family: 'JetBrains Mono', monospace; }
-.prose a { color: var(--amber); text-decoration: underline; text-underline-offset: 3px; }
+.prose {
+  color: var(--color-text);
+  max-width: 68ch;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+  width: 100%;
+}
+.prose h1, .prose h2, .prose h3, .prose h4 {
+  color: var(--color-text);
+  font-family: 'JetBrains Mono', monospace;
+  word-break: break-word;
+}
+.prose a {
+  color: var(--color-accent);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  word-break: break-word;
+}
 .prose a:hover { color: #c88800; }
-.prose strong { color: var(--text); font-weight: 600; }
-.prose code { color: var(--amber); background: var(--surface-2); padding: 0.15em 0.4em; font-size: 0.85em; border: 1px solid var(--border); }
-.prose pre { background: var(--surface); border: 1px solid var(--border); border-radius: 0; }
-.prose pre code { background: none; border: none; padding: 0; color: var(--text); }
-.prose blockquote { border-left: 2px solid var(--amber); padding-left: 1rem; color: var(--text-muted); font-style: normal; }
-.prose hr { border-color: var(--border); }
-.prose table { border-collapse: collapse; width: 100%; }
-.prose th, .prose td { border: 1px solid var(--border); padding: 0.5rem 0.75rem; }
-.prose th { background: var(--surface-2); color: var(--amber); font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.1em; }
+.prose strong { color: var(--color-text); font-weight: 600; }
+.prose code {
+  color: var(--color-accent);
+  background: #161616;
+  padding: 0.15em 0.4em;
+  font-size: 0.85em;
+  border: 1px solid #222;
+  word-break: break-word;
+  overflow-wrap: break-word;
+}
+.prose pre {
+  background: var(--color-surface);
+  border: 1px solid #222;
+  border-radius: 0;
+  overflow-x: auto;
+  padding: 1rem;
+}
+.prose pre code {
+  background: none;
+  border: none;
+  padding: 0;
+  color: var(--color-text);
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+.prose blockquote {
+  border-left: 2px solid var(--color-accent);
+  padding-left: 1rem;
+  color: #888;
+  font-style: normal;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+}
+.prose hr { border-color: #222; }
+.prose table {
+  border-collapse: collapse;
+  width: 100%;
+  table-layout: auto;
+  display: block;
+  overflow-x: auto;
+}
+.prose th, .prose td {
+  border: 1px solid #222;
+  padding: 0.5rem 0.75rem;
+  text-align: left;
+  word-break: break-word;
+}
+.prose th {
+  background: #161616;
+  color: var(--color-accent);
+  font-size: 0.7rem;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+}

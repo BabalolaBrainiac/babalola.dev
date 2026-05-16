@@ -238,7 +238,6 @@ export default function BlogPageClient() {
         <div className="max-w-7xl mx-auto flex flex-col sm:flex-row justify-between items-center gap-2">
           <p className="text-[10px] text-[#2a2a2a] uppercase tracking-widest">© {new Date().getFullYear()} Babalola Opeyemi</p>
           <div className="flex gap-5 text-[10px] text-[#2a2a2a] uppercase tracking-widest">
-            <a href="https://twitter.com/brainiac_ope" className="hover:text-[#e8a000] transition-colors">Twitter</a>
             <a href="https://linkedin.com/in/babalola-opeyemi" className="hover:text-[#e8a000] transition-colors">LinkedIn</a>
           </div>
         </div>

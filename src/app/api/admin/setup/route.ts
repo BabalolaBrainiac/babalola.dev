@@ -16,9 +16,14 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Database not configured' }, { status: 500 })
     }
 
-    // Get password from env or use the one you specified
-    // In production, set ADMIN_PASSWORD in your environment variables
-    const adminPassword = process.env.ADMIN_PASSWORD || 'Ahimsa@25'
+    // Get password from environment variable (required in all environments)
+    const adminPassword = process.env.ADMIN_PASSWORD
+    if (!adminPassword) {
+      return NextResponse.json(
+        { error: 'ADMIN_PASSWORD environment variable is not set' },
+        { status: 400 }
+      )
+    }
     
     // Hash password with bcrypt (12 rounds)
     const saltRounds = 12
@@ -52,9 +57,8 @@ export async function POST(request: NextRequest) {
 
         if (updateError) {
           console.error('Update error:', updateError)
-          return NextResponse.json({ 
-            error: 'Failed to update user. Try running this SQL in Supabase:', 
-            sql: `UPDATE blog_users SET password_hash = '${passwordHash}', role = 'admin' WHERE email = '${ALLOWED_EMAIL}';`
+          return NextResponse.json({
+            error: 'Failed to update user. Check server logs and Supabase dashboard.'
           }, { status: 500 })
         }
 
@@ -107,11 +111,8 @@ export async function POST(request: NextRequest) {
 
       if (insertError) {
         console.error('Insert error:', insertError)
-        // Return SQL for manual execution
-        return NextResponse.json({ 
-          error: 'Failed to create user via API. Run this SQL in Supabase directly:', 
-          sql: `INSERT INTO blog_users (email, name, password_hash, role, created_at, updated_at) 
-VALUES ('${ALLOWED_EMAIL}', 'Brainiac', '${passwordHash}', 'admin', NOW(), NOW());`
+        return NextResponse.json({
+          error: 'Failed to create user via API. Check server logs and Supabase dashboard.'
         }, { status: 500 })
       }
 
