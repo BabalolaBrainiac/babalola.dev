@@ -132,16 +132,29 @@ export const projects: Project[] = [
   {
     id: 'portfolio',
     name: 'babalola.dev',
-    tagline: 'Personal Portfolio & Blog',
-    description: 'Next.js portfolio with interactive blog, custom domain routing, and dark mode.',
-    fullDescription: 'A modern portfolio website built with Next.js 13+ featuring a custom blog platform with markdown support, subdomain routing for blog.babalola.dev, dark mode theming, and interactive UI components.',
-    tech: ['Next.js', 'TypeScript', 'Tailwind', 'Supabase'],
+    tagline: 'Portfolio, Blog, and Learning Platform',
+    description: 'Next.js portfolio with custom subdomain routing for blog, uploads, jobs, and learning surfaces.',
+    fullDescription: 'A production portfolio system built with Next.js App Router, Supabase, NextAuth, custom subdomain middleware, markdown publishing, authenticated learning workspaces, and token-gated Cloudflare R2 uploads.',
+    tech: ['Next.js', 'TypeScript', 'Tailwind', 'Supabase', 'NextAuth', 'Cloudflare R2'],
     category: 'opensource',
     links: {
       website: 'https://babalola.dev',
       github: 'https://github.com/BabalolaBrainiac/babalola.dev',
     },
     featured: false,
+  },
+  {
+    id: 'learning-platform',
+    name: 'learning.babalola.dev',
+    tagline: 'Private AI Infrastructure Learning Workspace',
+    description: 'Structured learning surface for principal-level MLOps, Rust systems work, coding labs, notes, and progress tracking.',
+    fullDescription: 'An authenticated learning workspace with course roadmaps, module notes, task tracking, code lab state, and autosave backed by Supabase. It runs as a first-party subdomain inside the portfolio app rather than a separate stale deployment.',
+    tech: ['Next.js', 'TypeScript', 'Supabase', 'NextAuth', 'Monaco Editor', 'MLOps'],
+    category: 'ai',
+    links: {
+      website: 'https://learning.babalola.dev',
+    },
+    featured: true,
   },
   {
     id: 'ml-pipeline',

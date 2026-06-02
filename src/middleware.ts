@@ -2,14 +2,28 @@ import { withAuth } from 'next-auth/middleware'
 import { NextResponse } from 'next/server'
 import type { NextRequest } from 'next/server'
 
+const PUBLIC_SUBDOMAIN_BYPASS_PREFIXES = ['/_next', '/api', '/auth']
+
+function normalizedHost(req: NextRequest): string {
+  return (req.headers.get('host') || '').split(':')[0].toLowerCase()
+}
+
+function isHost(hostname: string, hosts: string[]): boolean {
+  return hosts.includes(hostname)
+}
+
+function isBypassPath(pathname: string): boolean {
+  return PUBLIC_SUBDOMAIN_BYPASS_PREFIXES.some(prefix => pathname.startsWith(prefix))
+}
+
 function handleSubdomainRouting(req: NextRequest): NextResponse | null {
-  const hostname = req.headers.get('host') || ''
+  const hostname = normalizedHost(req)
   const pathname = req.nextUrl.pathname
 
   // learning subdomain
-  const isLearningSubdomain = hostname.includes('learning.localhost') || hostname.includes('learning.babalola.dev')
+  const isLearningSubdomain = isHost(hostname, ['learning.localhost', 'learning.babalola.dev'])
   if (isLearningSubdomain) {
-    if (!pathname.startsWith('/learning') && !pathname.startsWith('/_next') && !pathname.startsWith('/api') && !pathname.startsWith('/auth')) {
+    if (!pathname.startsWith('/learning') && !isBypassPath(pathname)) {
       const url = req.nextUrl.clone()
       url.pathname = pathname === '/' ? '/learning' : `/learning${pathname}`
       return NextResponse.rewrite(url)
@@ -18,7 +32,7 @@ function handleSubdomainRouting(req: NextRequest): NextResponse | null {
   }
 
   // uploads subdomain - rewrite to /uploads/* and bypass auth
-  const isUploadsSubdomain = hostname.includes('uploads.localhost') || hostname.includes('uploads.babalola.dev')
+  const isUploadsSubdomain = isHost(hostname, ['uploads.localhost', 'uploads.babalola.dev'])
   if (isUploadsSubdomain) {
     if (!pathname.startsWith('/uploads') && !pathname.startsWith('/_next') && !pathname.startsWith('/api')) {
       const url = req.nextUrl.clone()
@@ -29,7 +43,7 @@ function handleSubdomainRouting(req: NextRequest): NextResponse | null {
   }
 
   // check if we're on jobs subdomain
-  const isJobsSubdomain = hostname.includes('jobs.localhost') || hostname.includes('jobs.babalola.dev')
+  const isJobsSubdomain = isHost(hostname, ['jobs.localhost', 'jobs.babalola.dev'])
 
   if (isJobsSubdomain) {
     if (pathname === '/') {
@@ -40,7 +54,7 @@ function handleSubdomainRouting(req: NextRequest): NextResponse | null {
   }
 
   // check if we're on blog subdomain (handle with or without port)
-  const isBlogSubdomain = hostname.includes('blog.localhost') || hostname.includes('blog.babalola.dev')
+  const isBlogSubdomain = isHost(hostname, ['blog.localhost', 'blog.babalola.dev'])
   
   if (isBlogSubdomain) {
     // rewrite root to blog page
@@ -78,9 +92,9 @@ function handleSubdomainRouting(req: NextRequest): NextResponse | null {
 
 export default withAuth(
   function middleware(req) {
-    const hostname = req.headers.get('host') || ''
+    const hostname = normalizedHost(req)
     const pathname = req.nextUrl.pathname
-    const isBlogSubdomain = hostname.includes('blog.localhost') || hostname.includes('blog.babalola.dev')
+    const isBlogSubdomain = isHost(hostname, ['blog.localhost', 'blog.babalola.dev'])
     
     // handle subdomain routing first
     const subdomainResponse = handleSubdomainRouting(req)
@@ -101,8 +115,11 @@ export default withAuth(
     if (isBlogSubdomain && url.searchParams.get('callbackUrl')?.includes('/auth/signin')) {
       const mainDomain = hostname.replace(/^blog\./, '')
       const protocol = url.protocol
-      const callbackUrl = pathname + url.search
-      return NextResponse.redirect(`${protocol}//${mainDomain}/auth/signin${callbackUrl}`)
+      const redirectUrl = req.nextUrl.clone()
+      redirectUrl.host = mainDomain
+      redirectUrl.pathname = '/auth/signin'
+      redirectUrl.searchParams.set('callbackUrl', `${protocol}//${mainDomain}${pathname}`)
+      return NextResponse.redirect(redirectUrl)
     }
     
     // additional middleware logic can go here
@@ -112,12 +129,17 @@ export default withAuth(
     callbacks: {
       authorized: ({ token, req }) => {
         const pathname = req.nextUrl.pathname
-        const hostname = req.headers.get('host') || ''
+        const hostname = normalizedHost(req)
 
         // uploads subdomain uses its own TOTP auth - never require NextAuth session
-        const isUploadsSubdomain = hostname.includes('uploads.localhost') || hostname.includes('uploads.babalola.dev')
+        const isUploadsSubdomain = isHost(hostname, ['uploads.localhost', 'uploads.babalola.dev'])
         if (isUploadsSubdomain || pathname.startsWith('/uploads')) {
           return true
+        }
+
+        const isLearningSubdomain = isHost(hostname, ['learning.localhost', 'learning.babalola.dev'])
+        if (isLearningSubdomain && !isBypassPath(pathname)) {
+          return pathname === '/' || pathname === '/learning' || pathname === '/learning/' || !!token
         }
 
         // protect blog creation and editing routes (handle both /create and /blog/create)

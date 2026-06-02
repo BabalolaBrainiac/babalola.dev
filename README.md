@@ -1,102 +1,68 @@
 # babalola.dev
 
-Personal portfolio and blog built with Next.js 14, TypeScript, and Tailwind CSS.
+Personal portfolio, blog, upload portal, and private learning platform built with Next.js, TypeScript, Tailwind CSS, Supabase, NextAuth, and Cloudflare R2.
 
-## Features
+## Surfaces
 
-- **Portfolio**: Showcasing projects and professional experience
-- **Blog Platform**: Custom blog with markdown support and SEO optimization
-- **Subdomain Routing**: Blog runs on `blog.babalola.dev` using Next.js middleware
-- **Dark Mode**: Theme switching with persistent preferences
-- **Admin Dashboard**: Secure authentication for content management
+- `babalola.dev` - portfolio, projects, experience, and contact
+- `blog.babalola.dev` - markdown blog with contributor/admin workflows
+- `learning.babalola.dev` - authenticated learning workspace and labs
+- `uploads.babalola.dev` - token-gated client upload portal
+- `jobs.babalola.dev` - focused jobs/resource surface
 
-## Tech Stack
+## Local Setup
 
-- **Framework**: Next.js 14 (App Router)
-- **Language**: TypeScript
-- **Styling**: Tailwind CSS
-- **Database**: Supabase (PostgreSQL)
-- **Authentication**: NextAuth.js
-- **Deployment**: Docker + AWS/GCP
-
-## Getting Started
-
-### Prerequisites
-
-- Node.js 18+
-- npm or yarn
-- Supabase account
-
-### Installation
-
-1. Clone the repository:
-```bash
-git clone https://github.com/BabalolaBrainiac/babalola.dev.git
-cd babalola.dev
-```
-
-2. Install dependencies:
 ```bash
 npm install
-```
-
-3. Copy the environment template:
-```bash
 cp .env.example .env.local
-```
-
-4. Update `.env.local` with your actual values:
-   - Generate a `NEXTAUTH_SECRET` (run `openssl rand -base64 32`)
-   - Add your Supabase credentials
-
-5. Run the development server:
-```bash
 npm run dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) to view the site.
+Use these local hostnames for subdomain routing when needed:
 
-## Project Structure
-
-```
-src/
-├── app/              # Next.js app router
-│   ├── blog/         # Blog pages
-│   ├── api/          # API routes
-│   └── components/   # React components
-├── lib/              # Utility functions
-└── data/             # Portfolio data
-
-BLOG_POSTS/           # Markdown blog posts
-public/               # Static assets
+```text
+127.0.0.1 blog.localhost
+127.0.0.1 learning.localhost
+127.0.0.1 uploads.localhost
+127.0.0.1 jobs.localhost
 ```
 
-## Deployment
+## Required Environment
 
-### Docker
+```text
+NEXTAUTH_URL=
+NEXTAUTH_SECRET=
+NEXT_PUBLIC_SUPABASE_URL=
+SUPABASE_SERVICE_ROLE_KEY=
+ADMIN_PASSWORD=
+R2_ACCOUNT_ID=
+R2_UPLOADS_BUCKET_NAME=
+CF_R2_ACCESS_KEY_ID=
+CF_R2_SECRET_ACCESS_KEY=
+R2_UPLOADS_PUBLIC_URL=
+UPLOAD_SESSION_SECRET=
+UPLOAD_TOKEN_HMAC_SECRET=
+ZEPTOMAIL_TOKEN=
+ZEPTOMAIL_FROM_ADDRESS=
+ZEPTOMAIL_FROM_NAME=
+```
 
-Build and run with Docker:
+Generate secrets with `openssl rand -base64 32`. Keep `.env.local`, Vercel project metadata, build output, and TypeScript caches out of git.
+
+## Security Notes
+
+- Subdomain routing uses exact host matching in middleware.
+- Admin, blog edit/create, private learning, and upload APIs are role or token protected.
+- Uploads use signed multipart URLs and a short-lived HTTP-only upload session cookie.
+- Service-role Supabase access is only used server-side.
+- Response headers include CSP, frame denial, HSTS, content type sniffing protection, strict referrer policy, and a locked-down permissions policy.
+- `/api/execute-code` does not execute arbitrary JavaScript on the server; it only provides a constrained preview for demo content.
+
+## Scripts
 
 ```bash
-docker build -t babalola-dev .
-docker run -p 3000:3000 babalola-dev
+npm run dev
+npm run build
 ```
 
-### Environment Variables
-
-| Variable | Description |
-|----------|-------------|
-| `NEXTAUTH_SECRET` | Secret for NextAuth.js sessions |
-| `NEXTAUTH_URL` | Your site URL |
-| `NEXT_PUBLIC_SUPABASE_URL` | Supabase project URL |
-| `SUPABASE_SERVICE_ROLE_KEY` | Supabase service role key |
-
-## License
-
-MIT License - feel free to use this as inspiration for your own portfolio!
-
-## Contact
-
-- Website: [babalola.dev](https://babalola.dev)
-- Email: babaloladanielope@gmail.com
-- LinkedIn: [Babalola Opeyemi](https://linkedin.com/in/babalola-opeyemi)
+`npm run lint` is defined for older Next linting, but this project is on Next 13.5 and may need an ESLint config refresh before it is useful.

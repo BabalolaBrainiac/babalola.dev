@@ -10,9 +10,36 @@ const generatePassword = customAlphabet(
   12,
 );
 
+const WINDOW_MS = 60 * 60 * 1000;
+const MAX_REQUESTS_PER_WINDOW = 3;
+const requestCounts = new Map<string, { count: number; resetAt: number }>();
+
+function getClientIp(request: NextRequest): string {
+  return request.headers.get('x-forwarded-for')?.split(',')[0]?.trim()
+    || request.headers.get('x-real-ip')
+    || 'unknown';
+}
+
+function isRateLimited(ip: string): boolean {
+  const now = Date.now();
+  const current = requestCounts.get(ip);
+  if (!current || current.resetAt <= now) {
+    requestCounts.set(ip, { count: 1, resetAt: now + WINDOW_MS });
+    return false;
+  }
+
+  current.count += 1;
+  return current.count > MAX_REQUESTS_PER_WINDOW;
+}
+
 export async function POST(request: NextRequest) {
   if (!supabase) {
     return NextResponse.json({ error: 'Service unavailable' }, { status: 503 });
+  }
+
+  const ip = getClientIp(request);
+  if (isRateLimited(ip)) {
+    return NextResponse.json({ error: 'Too many access requests. Try again later.' }, { status: 429 });
   }
 
   let body: { email?: string; name?: string };
@@ -27,6 +54,10 @@ export async function POST(request: NextRequest) {
 
   if (!email || !/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)) {
     return NextResponse.json({ error: 'Valid email required' }, { status: 400 });
+  }
+
+  if (email.length > 254 || name.length > 80) {
+    return NextResponse.json({ error: 'Email or name is too long' }, { status: 400 });
   }
 
   // Block duplicate signups: if account already exists, tell them to sign in

@@ -6,6 +6,7 @@ const NAV_LINKS = [
   { href: "#about",      label: "about" },
   { href: "#experience", label: "experience" },
   { href: "#projects",   label: "projects" },
+  { href: "https://learning.babalola.dev", label: "learning" },
   { href: "#skills",     label: "skills" },
   { href: "#opensource", label: "open_source" },
   { href: "#contact",    label: "contact" },
@@ -44,6 +45,8 @@ export default function NavBar() {
             <a
               key={href}
               href={href}
+              target={href.startsWith("https://") ? "_blank" : undefined}
+              rel={href.startsWith("https://") ? "noopener noreferrer" : undefined}
               className="text-[#888] hover:text-[#e8a000] transition-colors text-xs tracking-wide"
             >
               {label}
@@ -107,6 +110,8 @@ export default function NavBar() {
               <a
                 key={href}
                 href={href}
+                target={href.startsWith("https://") ? "_blank" : undefined}
+                rel={href.startsWith("https://") ? "noopener noreferrer" : undefined}
                 onClick={() => setMenuOpen(false)}
                 className="text-[#888] hover:text-[#e8a000] transition-colors text-xs py-2 border-b border-[#222] last:border-0"
               >

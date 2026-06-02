@@ -2,53 +2,26 @@ import { NextRequest, NextResponse } from 'next/server'
 import { getServerSession } from 'next-auth'
 import { authOptions } from '@/lib/auth'
 
-// Simple in-memory code execution for demo purposes
-// In production, you'd want to use a proper sandboxed execution environment
-
 const executeJavaScript = (code: string, userInputs: string[] = []): string => {
-  try {
-    // Capture console.log output
-    const logs: string[] = []
-    const originalLog = console.log
-    console.log = (...args) => {
-      logs.push(args.map(arg => 
-        typeof arg === 'object' ? JSON.stringify(arg, null, 2) : String(arg)
-      ).join(' '))
-    }
+  const logs: string[] = []
+  let inputIndex = 0
 
-    // Mock prompt function for user input
-    let inputIndex = 0
-    const originalPrompt = global.prompt
-    global.prompt = (message?: string, _default?: string) => {
-      const promptMessage = message || 'Enter input:'
-      if (inputIndex < userInputs.length) {
-        const input = userInputs[inputIndex]
-        inputIndex++
-        logs.push(`> ${promptMessage} ${input}`)
-        return input
-      } else {
-        logs.push(`> ${promptMessage} [No input provided]`)
-        return null
-      }
-    }
+  const promptPattern = /prompt\((['"`])([^'"`]*)\1\)/g
+  code.replace(promptPattern, (_match, _quote, message) => {
+    const input = inputIndex < userInputs.length ? userInputs[inputIndex++] : '[No input provided]'
+    logs.push(`> ${message || 'Enter input:'} ${input}`)
+    return ''
+  })
 
-    // Execute the code
-    const result = eval(code)
-    
-    // Restore original functions
-    console.log = originalLog
-    global.prompt = originalPrompt
-
-    // Return output
-    let output = logs.join('\n')
-    if (result !== undefined && !logs.length) {
-      output = String(result)
-    }
-    
-    return output || 'Code executed successfully (no output)'
-  } catch (error) {
-    throw new Error(`JavaScript Error: ${error instanceof Error ? error.message : String(error)}`)
+  const consolePattern = /console\.log\(([^;]*)\)/g
+  let match: RegExpExecArray | null
+  while ((match = consolePattern.exec(code)) !== null) {
+    const expression = match[1].trim()
+    const quoted = expression.match(/^(['"`])([\s\S]*)\1$/)
+    logs.push(quoted ? quoted[2] : expression)
   }
+
+  return logs.join('\n') || 'JavaScript preview completed. Server-side execution is disabled.'
 }
 
 const executePython = (code: string): string => {
@@ -124,8 +97,12 @@ export async function POST(request: NextRequest) {
     const body = await request.json()
     const { code, language, userInputs = [] } = body
 
-    if (!code || !language) {
+    if (typeof code !== 'string' || typeof language !== 'string' || !code || !language) {
       return NextResponse.json({ error: 'Code and language are required' }, { status: 400 })
+    }
+
+    if (!Array.isArray(userInputs) || userInputs.some(input => typeof input !== 'string')) {
+      return NextResponse.json({ error: 'userInputs must be an array of strings' }, { status: 400 })
     }
 
     // Basic security checks

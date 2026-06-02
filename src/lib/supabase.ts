@@ -3,9 +3,9 @@ import { createClient } from '@supabase/supabase-js'
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || ''
 const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY || ''
 
-// Only create client if key is available
+// Only create the service-role client when all server-side config is available.
 // Service role key bypasses RLS policies
-export const supabase = supabaseKey ? createClient(supabaseUrl, supabaseKey, {
+export const supabase = supabaseUrl && supabaseKey ? createClient(supabaseUrl, supabaseKey, {
   auth: {
     autoRefreshToken: false,
     persistSession: false,

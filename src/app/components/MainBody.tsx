@@ -21,9 +21,9 @@ const CATEGORY_LABELS: Record<Project['category'], string> = {
 
 const ROLES = [
   'Senior Software Engineer',
-  'Platform Builder',
+  'Platform Engineer',
   'AI Systems Architect',
-  'Brainiac',
+  'MLOps Community Lead',
 ];
 
 export default function MainBody() {
@@ -59,7 +59,7 @@ export default function MainBody() {
         <div className="max-w-3xl w-full py-20 flex flex-col items-center">
 
           <p className="text-[10px] text-[#333] mb-10 tracking-[0.2em] uppercase">
-            <span className="text-[#e8a000]">&gt;</span>&nbsp;babalola.dev — initialized
+            <span className="text-[#e8a000]">&gt;</span>&nbsp;platform engineering · ai infrastructure · distributed systems
           </p>
 
           <h1 className="text-5xl sm:text-6xl md:text-7xl font-bold text-[#d0ccc4] leading-none tracking-tight mb-5">
@@ -85,13 +85,14 @@ export default function MainBody() {
           </div>
 
           <p className="text-sm text-[#666] max-w-xl leading-relaxed mb-12">
-            Senior Software Engineer specialising in platform engineering, AI/ML infrastructure, and distributed systems.
-            Lead Coordinator at MLOps Community Liverpool. Building AI-native tools at WardScribe and HeySavi.
+            I build production systems where backend architecture, cloud infrastructure, and AI workflows meet.
+            Current work spans LLM backends, MLOps infrastructure, secure developer tools, and agent interoperability.
           </p>
 
           <div className="flex flex-wrap justify-center gap-3">
             <a href="#projects" className="btn btn-primary">view work</a>
             <a href="mailto:babaloladanielope@gmail.com" className="btn btn-secondary">get in touch</a>
+            <a href="https://learning.babalola.dev" target="_blank" rel="noopener noreferrer" className="btn btn-secondary">learning</a>
             <a href={getBlogUrl()} className="btn btn-ghost">blog -&gt;</a>
           </div>
 

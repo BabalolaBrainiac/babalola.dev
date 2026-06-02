@@ -22,10 +22,12 @@ export const authOptions: NextAuthOptions = {
         }
 
         try {
+          const email = credentials.email.trim().toLowerCase()
+
           const { data: user, error } = await supabase
             .from('blog_users')
-            .select('*')
-            .eq('email', credentials.email)
+            .select('id, email, name, role, password_hash')
+            .eq('email', email)
             .single()
 
           if (error || !user) {
