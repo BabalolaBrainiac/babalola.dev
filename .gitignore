@@ -189,7 +189,6 @@ src/layer/nodejs/shared/application/controller/test.js
 # ============================================
 # AGENT & AI ASSISTANT FILES
 # ============================================
-AGENTS.md
 AGENT.md
 agent*.md
 agents*.md
