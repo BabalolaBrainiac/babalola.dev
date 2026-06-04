@@ -30,7 +30,7 @@
     "framer-motion": "^12.38.0",
     "monaco-editor": "^0.53.0",
     "nanoid": "^5.1.9",
-    "next": "13.5.11",
+    "next": "16.2.7",
     "next-auth": "^4.24.11",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
