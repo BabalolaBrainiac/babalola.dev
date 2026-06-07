@@ -1,6 +1,6 @@
 'use client';
 
-import Editor, { Monaco } from '@monaco-editor/react';
+import Editor, { loader, Monaco } from '@monaco-editor/react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useEffect, useMemo, useRef, useState } from 'react';
@@ -54,6 +54,10 @@ function sidebarKey() {
   return 'learning:sidebar:collapsed';
 }
 
+function sidebarWidthKey() {
+  return 'learning:sidebar:width';
+}
+
 function mergeState(serverState: LearningStatePayload, localState?: LearningStatePayload): LearningStatePayload {
   if (!localState) return serverState;
   return {
@@ -96,17 +100,17 @@ function saveBadgeTone(state: SaveBadgeState) {
     case 'error':
       return 'text-[#e06c75]';
     default:
-      return 'text-[#495162]';
+      return 'text-[#555555]';
   }
 }
 
 function getTerminalLineColor(line: string): string {
-  if (!line.trim()) return 'text-[#4b5263]';
+  if (!line.trim()) return 'text-[#333333]';
   const l = line.toLowerCase();
-  if (l.includes('exception') || l.includes('error') || l.includes('traceback') || l.includes('critical') || line.startsWith('❌') || l.includes('failed') || l.includes('halted')) {
+  if (l.includes('exception') || l.includes('error') || l.includes('traceback') || l.includes('critical') || l.includes('failed') || l.includes('halted')) {
     return 'text-[#e06c75]';
   }
-  if (l.includes('success') || l.includes('verified') || l.includes('passed') || l.includes('nominal') || line.startsWith('✅') || l.includes('completed')) {
+  if (l.includes('success') || l.includes('verified') || l.includes('passed') || l.includes('nominal') || l.includes('completed')) {
     return 'text-[#98c379]';
   }
   if (l.includes('alert') || l.includes('warning') || l.includes('drift') || l.includes('mismatch')) {
@@ -121,7 +125,7 @@ function getTerminalLineColor(line: string): string {
   if (l.includes('initializing') || l.includes('running') || l.includes('loading')) {
     return 'text-[#61afef]';
   }
-  return 'text-[#abb2bf]';
+  return 'text-[#d0ccc4]';
 }
 
 function getDeviceLabel(): string {
@@ -131,7 +135,7 @@ function getDeviceLabel(): string {
   return `${browser} on ${os}`;
 }
 
-const ONE_DARK_PRO_THEME = {
+const PORTFOLIO_DARK_THEME = {
   base: 'vs-dark' as const,
   inherit: true,
   rules: [
@@ -164,28 +168,28 @@ const ONE_DARK_PRO_THEME = {
     { token: 'meta.decorator', foreground: 'c678dd' },
   ],
   colors: {
-    'editor.background': '#282c34',
-    'editor.foreground': '#abb2bf',
-    'editor.lineHighlightBackground': '#2c313a',
-    'editor.selectionBackground': '#3e4451',
+    'editor.background': '#0a0a0a',
+    'editor.foreground': '#d0ccc4',
+    'editor.lineHighlightBackground': '#161616',
+    'editor.selectionBackground': '#222222',
     'editor.inactiveSelectionBackground': '#3a3f4b',
-    'editorCursor.foreground': '#528bff',
-    'editorLineNumber.foreground': '#495162',
-    'editorLineNumber.activeForeground': '#abb2bf',
+    'editorCursor.foreground': '#e8a000',
+    'editorLineNumber.foreground': '#555555',
+    'editorLineNumber.activeForeground': '#d0ccc4',
     'editorIndentGuide.background': '#3b4048',
-    'editorIndentGuide.activeBackground': '#4b5263',
+    'editorIndentGuide.activeBackground': '#333333',
     'editorWhitespace.foreground': '#3b4048',
-    'editorWidget.background': '#21252b',
+    'editorWidget.background': '#111111',
     'editorWidget.border': '#3e4452',
-    'editorSuggestWidget.background': '#21252b',
+    'editorSuggestWidget.background': '#111111',
     'editorSuggestWidget.border': '#3e4452',
-    'editorSuggestWidget.selectedBackground': '#2c313a',
-    'editorSuggestWidget.foreground': '#abb2bf',
+    'editorSuggestWidget.selectedBackground': '#161616',
+    'editorSuggestWidget.foreground': '#d0ccc4',
     'editorSuggestWidget.highlightForeground': '#61afef',
     'editor.wordHighlightBackground': '#344b5a33',
     'editor.findMatchBackground': '#42557b',
     'editor.findMatchHighlightBackground': '#314365',
-    'editorGutter.background': '#282c34',
+    'editorGutter.background': '#0a0a0a',
     'editorGutter.addedBackground': '#3d5213',
     'editorGutter.deletedBackground': '#6b1e1e',
     'editorGutter.modifiedBackground': '#5b4b00',
@@ -193,32 +197,32 @@ const ONE_DARK_PRO_THEME = {
     'scrollbarSlider.background': '#4e566440',
     'scrollbarSlider.hoverBackground': '#5a637566',
     'scrollbarSlider.activeBackground': '#747d8c99',
-    'tab.activeBackground': '#282c34',
-    'tab.inactiveBackground': '#21252b',
-    'tab.border': '#181a1f',
-    'tab.activeBorderTop': '#528bff',
-    'tab.unfocusedActiveBorderTop': '#528bff80',
-    'editorGroupHeader.tabsBackground': '#21252b',
-    'editorGroupHeader.tabsBorder': '#181a1f',
-    'sideBar.background': '#21252b',
-    'sideBar.foreground': '#abb2bf',
-    'sideBar.border': '#181a1f',
-    'sideBarSectionHeader.background': '#282c34',
-    'sideBarSectionHeader.foreground': '#9da5b4',
-    'panel.background': '#21252b',
-    'panel.border': '#181a1f',
-    'panelTitle.activeForeground': '#abb2bf',
-    'panelTitle.activeBorder': '#528bff',
-    'statusBar.background': '#21252b',
-    'statusBar.foreground': '#9da5b4',
-    'titleBar.activeBackground': '#21252b',
-    'titleBar.activeForeground': '#abb2bf',
-    'activityBar.background': '#21252b',
-    'activityBar.foreground': '#d7dae0',
-    'activityBarBadge.background': '#528bff',
+    'tab.activeBackground': '#0a0a0a',
+    'tab.inactiveBackground': '#111111',
+    'tab.border': '#222222',
+    'tab.activeBorderTop': '#e8a000',
+    'tab.unfocusedActiveBorderTop': '#e8a00080',
+    'editorGroupHeader.tabsBackground': '#111111',
+    'editorGroupHeader.tabsBorder': '#222222',
+    'sideBar.background': '#111111',
+    'sideBar.foreground': '#d0ccc4',
+    'sideBar.border': '#222222',
+    'sideBarSectionHeader.background': '#0a0a0a',
+    'sideBarSectionHeader.foreground': '#888888',
+    'panel.background': '#111111',
+    'panel.border': '#222222',
+    'panelTitle.activeForeground': '#d0ccc4',
+    'panelTitle.activeBorder': '#e8a000',
+    'statusBar.background': '#111111',
+    'statusBar.foreground': '#888888',
+    'titleBar.activeBackground': '#111111',
+    'titleBar.activeForeground': '#d0ccc4',
+    'activityBar.background': '#111111',
+    'activityBar.foreground': '#d0ccc4',
+    'activityBarBadge.background': '#e8a000',
     'activityBarBadge.foreground': '#ffffff',
-    'terminal.background': '#282c34',
-    'terminal.foreground': '#abb2bf',
+    'terminal.background': '#0a0a0a',
+    'terminal.foreground': '#d0ccc4',
     'terminal.ansiBlack': '#3f4451',
     'terminal.ansiRed': '#e06c75',
     'terminal.ansiGreen': '#98c379',
@@ -226,7 +230,7 @@ const ONE_DARK_PRO_THEME = {
     'terminal.ansiBlue': '#61afef',
     'terminal.ansiMagenta': '#c678dd',
     'terminal.ansiCyan': '#56b6c2',
-    'terminal.ansiWhite': '#abb2bf',
+    'terminal.ansiWhite': '#d0ccc4',
     'terminal.ansiBrightBlack': '#4f5666',
     'terminal.ansiBrightRed': '#be5046',
     'terminal.ansiBrightGreen': '#7ec069',
@@ -235,16 +239,16 @@ const ONE_DARK_PRO_THEME = {
     'terminal.ansiBrightMagenta': '#a626a4',
     'terminal.ansiBrightCyan': '#42b3c2',
     'terminal.ansiBrightWhite': '#ffffff',
-    'focusBorder': '#528bff',
+    'focusBorder': '#e8a000',
     'contrastBorder': '#00000000',
     'input.background': '#1d2025',
-    'input.border': '#3e4451',
-    'input.foreground': '#abb2bf',
-    'button.background': '#528bff',
-    'button.hoverBackground': '#6a9ff5',
-    'list.activeSelectionBackground': '#2c313a',
-    'list.activeSelectionForeground': '#d7dae0',
-    'list.hoverBackground': '#2c313a50',
+    'input.border': '#222222',
+    'input.foreground': '#d0ccc4',
+    'button.background': '#e8a000',
+    'button.hoverBackground': '#f0b429',
+    'list.activeSelectionBackground': '#161616',
+    'list.activeSelectionForeground': '#d0ccc4',
+    'list.hoverBackground': '#16161650',
   },
 };
 
@@ -279,13 +283,18 @@ export default function LearningWorkspaceClient({
   const [visibleHintCount, setVisibleHintCount] = useState(1);
   const [selectedTab, setSelectedTab] = useState<GuideTab>('guide');
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
+  const [sidebarWidth, setSidebarWidth] = useState(250);
   const [terminalHeight, setTerminalHeight] = useState(220);
   const [sessions, setSessions] = useState<SessionRow[]>([]);
   const [runMs, setRunMs] = useState<number | null>(null);
-  const [guidePanelWidth, setGuidePanelWidth] = useState(360);
+  const [guidePanelWidth, setGuidePanelWidth] = useState(440);
+  const [monacoLoadAttempt, setMonacoLoadAttempt] = useState(0);
+  const [monacoReady, setMonacoReady] = useState(false);
+  const [monacoError, setMonacoError] = useState('');
 
   const saveTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const terminalDragRef = useRef<{ startY: number; startH: number } | null>(null);
+  const sidebarDragRef = useRef<{ startX: number; startW: number } | null>(null);
   const guidePanelDragRef = useRef<{ startX: number; startW: number } | null>(null);
   const runValidationRef = useRef<() => Promise<void>>(() => Promise.resolve());
   const notesRef = useRef<HTMLTextAreaElement>(null);
@@ -293,11 +302,39 @@ export default function LearningWorkspaceClient({
   const notesRedoStack = useRef<string[]>([]);
   const { saveNotes, saveCode, saveTask, getStatus } = useAutoSave(course.slug, module?.id);
 
+  // Use the installed Monaco package. The default loader points at jsDelivr,
+  // which is intentionally blocked by the site's self-only script CSP.
+  useEffect(() => {
+    let active = true;
+    setMonacoReady(false);
+    setMonacoError('');
+
+    import('monaco-editor')
+      .then((localMonaco) => {
+        if (!active) return;
+        loader.config({ monaco: localMonaco });
+        setMonacoReady(true);
+      })
+      .catch((error: unknown) => {
+        if (!active) return;
+        setMonacoError(error instanceof Error ? error.message : String(error));
+      });
+
+    return () => {
+      active = false;
+    };
+  }, [monacoLoadAttempt]);
+
   // Hydrate from localStorage
   useEffect(() => {
     try {
       const collapsed = localStorage.getItem(sidebarKey());
       if (collapsed === 'true') setSidebarCollapsed(true);
+
+      const savedSidebarWidth = Number(localStorage.getItem(sidebarWidthKey()));
+      if (Number.isFinite(savedSidebarWidth) && savedSidebarWidth >= 200 && savedSidebarWidth <= 640) {
+        setSidebarWidth(savedSidebarWidth);
+      }
 
       const raw = localStorage.getItem(localStorageKey(course.slug));
       if (raw) {
@@ -321,6 +358,10 @@ export default function LearningWorkspaceClient({
   useEffect(() => {
     if (hydrated) localStorage.setItem(sidebarKey(), String(sidebarCollapsed));
   }, [sidebarCollapsed, hydrated]);
+
+  useEffect(() => {
+    if (hydrated) localStorage.setItem(sidebarWidthKey(), String(sidebarWidth));
+  }, [hydrated, sidebarWidth]);
 
   // Reset workspace when initialFiles change (module navigation)
   useEffect(() => {
@@ -451,6 +492,31 @@ export default function LearningWorkspaceClient({
   }, [course.slug, status]);
 
   // Guide panel horizontal drag resize
+  function handleSidebarDragStart(e: React.MouseEvent) {
+    if (sidebarCollapsed) return;
+    e.preventDefault();
+    sidebarDragRef.current = { startX: e.clientX, startW: sidebarWidth };
+    document.body.style.cursor = 'col-resize';
+    document.body.style.userSelect = 'none';
+
+    function onMove(ev: MouseEvent) {
+      if (!sidebarDragRef.current) return;
+      const delta = ev.clientX - sidebarDragRef.current.startX;
+      setSidebarWidth(Math.max(200, Math.min(640, sidebarDragRef.current.startW + delta)));
+    }
+
+    function onUp() {
+      sidebarDragRef.current = null;
+      document.body.style.cursor = '';
+      document.body.style.userSelect = '';
+      document.removeEventListener('mousemove', onMove);
+      document.removeEventListener('mouseup', onUp);
+    }
+
+    document.addEventListener('mousemove', onMove);
+    document.addEventListener('mouseup', onUp);
+  }
+
   function handleGuidePanelDragStart(e: React.MouseEvent) {
     e.preventDefault();
     guidePanelDragRef.current = { startX: e.clientX, startW: guidePanelWidth };
@@ -658,9 +724,9 @@ export default function LearningWorkspaceClient({
     const matched = (patterns ?? []).every((p) => src.includes(p));
     if (matched) {
       setSuccessMessage(message);
-      setTerminalOutput(`✅ Source validation passed.\n\n${message}`);
+      setTerminalOutput(`Source validation passed.\n\n${message}`);
     } else {
-      setTerminalOutput(`❌ Validation failed.\n\nExpected patterns not found:\n${(patterns ?? []).map((p) => `  - ${p}`).join('\n')}`);
+      setTerminalOutput(`Validation failed.\n\nExpected patterns not found:\n${(patterns ?? []).map((p) => `  - ${p}`).join('\n')}`);
     }
   }
 
@@ -696,10 +762,11 @@ export default function LearningWorkspaceClient({
   }
 
   function handleMonacoBeforeMount(monaco: Monaco) {
+    // Themes are cheap to redefine and must survive Next.js hot reloads.
+    monaco.editor.defineTheme('portfolio-dark', PORTFOLIO_DARK_THEME as Parameters<typeof monaco.editor.defineTheme>[1]);
+
     if (window.__learningMonacoRegistered) return;
     window.__learningMonacoRegistered = true;
-
-    monaco.editor.defineTheme('one-dark-pro', ONE_DARK_PRO_THEME as Parameters<typeof monaco.editor.defineTheme>[1]);
 
     const PY_KEYWORDS = [
       'False','None','True','and','as','assert','async','await','break','class',
@@ -994,29 +1061,29 @@ export default function LearningWorkspaceClient({
   }
 
   return (
-    <div className="h-screen flex flex-col bg-[#21252b] text-[#abb2bf] overflow-hidden" style={{ fontFamily: "'Inter', system-ui, sans-serif" }}>
+    <div className="h-screen flex flex-col bg-black text-[#d0ccc4] overflow-hidden pt-11 font-mono">
 
       {/* ── Header ── */}
-      <header className="shrink-0 h-11 bg-[#21252b] border-b border-[#181a1f] flex items-center justify-between px-3 z-20">
+      <header className="shrink-0 h-11 bg-black border-b border-[#222222] flex items-center justify-between px-3 z-20">
         <div className="flex items-center gap-3 min-w-0">
-          <Link href="/learning" className="text-[#528bff] hover:text-[#6a9ff5] text-xs font-mono transition-colors shrink-0">
+          <Link href="/learning" className="text-[#e8a000] hover:text-[#f0b429] text-xs font-mono transition-colors shrink-0">
             ← courses
           </Link>
-          <span className="text-[#495162] text-xs">›</span>
-          <span className="text-[10px] font-mono uppercase tracking-[0.2em] text-[#495162] truncate hidden sm:block">{course.slug}</span>
+          <span className="text-[#555555] text-xs">›</span>
+          <span className="text-[10px] font-mono uppercase tracking-[0.2em] text-[#555555] truncate hidden sm:block">{course.slug}</span>
           {week && <>
-            <span className="text-[#495162] text-xs hidden sm:block">›</span>
-            <span className="text-[10px] font-mono uppercase tracking-[0.2em] text-[#6a737d] truncate hidden md:block">{week.slug}</span>
+            <span className="text-[#555555] text-xs hidden sm:block">›</span>
+            <span className="text-[10px] font-mono uppercase tracking-[0.2em] text-[#777777] truncate hidden md:block">{week.slug}</span>
           </>}
           {module && <>
-            <span className="text-[#495162] text-xs hidden md:block">›</span>
-            <span className="text-xs text-[#9da5b4] truncate hidden lg:block">{module.title}</span>
+            <span className="text-[#555555] text-xs hidden md:block">›</span>
+            <span className="text-xs text-[#888888] truncate hidden lg:block">{module.title}</span>
           </>}
         </div>
 
         <div className="flex items-center gap-2 shrink-0">
           {sessions.length > 0 && (
-            <div className="hidden md:flex items-center gap-1.5 text-[11px] text-[#495162] font-mono">
+            <div className="hidden md:flex items-center gap-1.5 text-[11px] text-[#555555] font-mono">
               {sessions.slice(0, 4).map((s) => (
                 <span key={s.id} title={`${s.device_label} · last active ${new Date(s.last_active_at).toLocaleDateString()}`} className="flex items-center gap-1">
                   <span className="w-1.5 h-1.5 rounded-full bg-[#98c379] inline-block" />
@@ -1035,14 +1102,17 @@ export default function LearningWorkspaceClient({
       <div className="flex flex-1 min-h-0 overflow-hidden">
 
         {/* ── Collapsible Sidebar ── */}
-        <aside className={`shrink-0 border-r border-[#181a1f] bg-[#21252b] flex flex-col overflow-hidden transition-all duration-200 ${sidebarCollapsed ? 'w-10' : 'w-[260px]'}`}>
-          <div className={`h-9 border-b border-[#181a1f] flex items-center shrink-0 ${sidebarCollapsed ? 'justify-center' : 'justify-between px-3'}`}>
+        <aside
+          style={{ width: sidebarCollapsed ? 40 : sidebarWidth }}
+          className="shrink-0 bg-black flex flex-col overflow-hidden transition-[width] duration-200"
+        >
+          <div className={`h-9 border-b border-[#222222] flex items-center shrink-0 ${sidebarCollapsed ? 'justify-center' : 'justify-between px-3'}`}>
             {!sidebarCollapsed && (
-              <span className="text-[10px] font-mono uppercase tracking-[0.25em] text-[#495162]">Curriculum</span>
+              <span className="text-[10px] font-mono uppercase tracking-[0.25em] text-[#555555]">Curriculum</span>
             )}
             <button
               onClick={() => setSidebarCollapsed((c) => !c)}
-              className="w-6 h-6 flex items-center justify-center text-[#495162] hover:text-[#abb2bf] hover:bg-[#2c313a] rounded text-sm transition-colors"
+              className="w-6 h-6 flex items-center justify-center text-[#555555] hover:text-[#d0ccc4] hover:bg-[#161616] rounded text-sm transition-colors"
               title={sidebarCollapsed ? 'Expand sidebar' : 'Collapse sidebar'}
             >
               {sidebarCollapsed ? '›' : '‹'}
@@ -1058,14 +1128,14 @@ export default function LearningWorkspaceClient({
                 return (
                   <div key={courseWeek.id} className="px-2 mb-1">
                     <div className="px-2 py-1.5 flex items-center gap-2">
-                      <p className="text-[9px] font-mono uppercase tracking-[0.2em] text-[#495162] flex-1 truncate">{courseWeek.title ?? courseWeek.slug}</p>
+                      <p className="text-[9px] font-mono uppercase tracking-[0.2em] text-[#555555] flex-1 leading-relaxed">{courseWeek.title ?? courseWeek.slug}</p>
                       {weekDone > 0 && (
-                        <span className="text-[9px] font-mono text-[#495162] shrink-0">{weekDone}/{weekTotal}</span>
+                        <span className="text-[9px] font-mono text-[#555555] shrink-0">{weekDone}/{weekTotal}</span>
                       )}
                     </div>
                     {weekDone > 0 && (
-                      <div className="mx-2 mb-1.5 h-0.5 rounded-full bg-[#3e4451] overflow-hidden">
-                        <div className="h-full rounded-full bg-[#528bff]/60 transition-all" style={{ width: `${weekPct}%` }} />
+                      <div className="mx-2 mb-1.5 h-0.5 rounded-full bg-[#222222] overflow-hidden">
+                        <div className="h-full rounded-full bg-[#e8a000]/60 transition-all" style={{ width: `${weekPct}%` }} />
                       </div>
                     )}
                     {courseWeek.modules.map((courseModule) => {
@@ -1076,10 +1146,10 @@ export default function LearningWorkspaceClient({
                         <Link
                           key={courseModule.id}
                           href={href}
-                          className={`flex items-center gap-2 rounded-md px-2 py-1.5 text-xs transition-colors ${isActive ? 'bg-[#2c313a] text-[#d7dae0]' : 'text-[#6a737d] hover:bg-[#2c313a50] hover:text-[#abb2bf]'}`}
+                          className={`flex items-center gap-2 border-l px-2 py-1.5 text-xs transition-colors ${isActive ? 'border-[#e8a000] bg-[#111111] text-[#d0ccc4]' : 'border-transparent text-[#777777] hover:border-[#333333] hover:bg-[#111111] hover:text-[#d0ccc4]'}`}
                         >
-                          <span className={`shrink-0 w-1.5 h-1.5 rounded-full ${mStatus === 'completed' ? 'bg-[#98c379]' : mStatus === 'in_progress' ? 'bg-[#e5c07b]' : 'bg-[#3e4451]'}`} />
-                          <span className="truncate leading-5">{courseModule.title}</span>
+                          <span className={`shrink-0 w-1.5 h-1.5 rounded-full ${mStatus === 'completed' ? 'bg-[#98c379]' : mStatus === 'in_progress' ? 'bg-[#e5c07b]' : 'bg-[#222222]'}`} />
+                          <span className="min-w-0 whitespace-normal break-words leading-5">{courseModule.title}</span>
                         </Link>
                       );
                     })}
@@ -1090,37 +1160,47 @@ export default function LearningWorkspaceClient({
           )}
         </aside>
 
+        <div
+          onMouseDown={handleSidebarDragStart}
+          className={`group relative shrink-0 w-1 border-r border-[#222222] transition-colors ${sidebarCollapsed ? 'cursor-default' : 'cursor-col-resize hover:border-[#e8a000] active:border-[#e8a000]'}`}
+          title={sidebarCollapsed ? 'Expand the curriculum before resizing' : 'Drag to resize curriculum'}
+        >
+          {!sidebarCollapsed && (
+            <span className="absolute left-1/2 top-1/2 h-10 w-1 -translate-x-1/2 -translate-y-1/2 bg-[#333333] opacity-0 transition-opacity group-hover:opacity-100" />
+          )}
+        </div>
+
         {/* ── Guide Panel ── */}
-        <section style={{ width: guidePanelWidth }} className="shrink-0 border-r border-[#181a1f] bg-[#282c34] flex flex-col overflow-hidden">
+        <section style={{ width: guidePanelWidth }} className="shrink-0 border-r border-[#222222] bg-black flex flex-col overflow-hidden">
           {/* Module header */}
-          <div className="shrink-0 border-b border-[#181a1f] px-5 pt-4 pb-3">
+          <div className="shrink-0 border-b border-[#222222] px-5 pt-4 pb-3">
             {module && (
               <>
                 <div className="flex items-baseline justify-between gap-2">
-                  <p className="text-[9px] font-mono uppercase tracking-[0.25em] text-[#495162] truncate">{week?.title}</p>
+                  <p className="text-[9px] font-mono uppercase tracking-[0.25em] text-[#555555] truncate">{week?.title}</p>
                   {moduleCount > 0 && (
-                    <span className="text-[9px] font-mono text-[#3e4451] shrink-0">{modulePosition}/{moduleCount}</span>
+                    <span className="text-[9px] font-mono text-[#222222] shrink-0">{modulePosition}/{moduleCount}</span>
                   )}
                 </div>
-                <h2 className="mt-1.5 text-sm font-semibold text-[#d7dae0] leading-snug">{module.title}</h2>
+                <h2 className="mt-1.5 text-base font-bold text-[#d0ccc4] leading-snug">{module.title}</h2>
                 <div className="mt-3 flex items-center gap-2">
-                  <div className="flex-1 h-1 rounded-full bg-[#3e4451] overflow-hidden">
-                    <div className="h-full rounded-full bg-[#528bff] transition-all" style={{ width: `${moduleCompletion}%` }} />
+                  <div className="flex-1 h-1 rounded-full bg-[#222222] overflow-hidden">
+                    <div className="h-full rounded-full bg-[#e8a000] transition-all" style={{ width: `${moduleCompletion}%` }} />
                   </div>
-                  <span className="text-[10px] font-mono text-[#495162] shrink-0">{moduleCompletion}%</span>
+                  <span className="text-[10px] font-mono text-[#555555] shrink-0">{moduleCompletion}%</span>
                 </div>
               </>
             )}
             {projectTemplate && !module && (
               <>
-                <p className="text-[9px] font-mono uppercase tracking-[0.25em] text-[#495162]">Project workspace</p>
-                <h2 className="mt-1.5 text-sm font-semibold text-[#d7dae0] leading-snug">{projectTemplate.title}</h2>
+                <p className="text-[9px] font-mono uppercase tracking-[0.25em] text-[#555555]">Project workspace</p>
+                <h2 className="mt-1.5 text-sm font-semibold text-[#d0ccc4] leading-snug">{projectTemplate.title}</h2>
               </>
             )}
           </div>
 
           {/* Tabs */}
-          <div className="shrink-0 border-b border-[#181a1f] px-3 py-1.5 flex gap-0.5">
+          <div className="shrink-0 border-b border-[#222222] px-3 py-1.5 flex gap-0.5">
             {(['guide', 'reflection', 'checks'] as const).map((tab) => {
               const hasBadge = tab === 'checks' && module && completedRequired < totalRequired;
               const label = tab === 'guide' ? 'Guide + Notes' : tab === 'reflection' ? 'Reflect' : 'Checks';
@@ -1128,7 +1208,7 @@ export default function LearningWorkspaceClient({
                 <button
                   key={tab}
                   onClick={() => setSelectedTab(tab)}
-                  className={`relative flex items-center gap-1 rounded-md px-2.5 py-1.5 text-xs font-medium capitalize transition-colors ${selectedTab === tab ? 'bg-[#2c313a] text-[#d7dae0]' : 'text-[#6a737d] hover:text-[#abb2bf] hover:bg-[#2c313a50]'}`}
+                  className={`relative flex items-center gap-1 border-b px-2.5 py-1.5 text-[10px] font-semibold uppercase tracking-widest transition-colors ${selectedTab === tab ? 'border-[#e8a000] text-[#e8a000]' : 'border-transparent text-[#777777] hover:text-[#d0ccc4]'}`}
                 >
                   {label}
                   {hasBadge && <span className="w-1.5 h-1.5 rounded-full bg-[#e5c07b] shrink-0" />}
@@ -1142,36 +1222,66 @@ export default function LearningWorkspaceClient({
 
             {(selectedTab === 'guide' || selectedTab === ('notes' as GuideTab)) && (
               <div className="p-5 space-y-5">
+                {module && (
+                  <div className="border-l border-[#e8a000] bg-[#111111] p-4">
+                    <p className="text-[9px] font-mono uppercase tracking-[0.25em] text-[#e8a000] mb-2">Session brief</p>
+                    <p className="text-xs leading-relaxed text-[#d0ccc4]">{module.summary}</p>
+                    <div className="mt-4 border-t border-[#222222] pt-3">
+                      <p className="text-[9px] font-mono uppercase tracking-[0.2em] text-[#555555] mb-2">You should leave able to</p>
+                      <ul className="space-y-1.5">
+                        {module.outcomes.map((outcome) => (
+                          <li key={outcome} className="flex gap-2 text-[11px] leading-relaxed text-[#888888]">
+                            <span className="text-[#e8a000] shrink-0">&gt;</span>
+                            <span>{outcome}</span>
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                  </div>
+                )}
+
                 {module?.schedule && (
-                  <div className="rounded-xl border border-[#3e4451] bg-[#21252b] p-4">
-                    <p className="text-[9px] font-mono uppercase tracking-[0.25em] text-[#495162] mb-3">Schedule</p>
-                    <ul className="space-y-1.5 text-xs text-[#abb2bf] leading-relaxed">
-                      {module.schedule.map((item) => <li key={item} className="flex gap-2"><span className="text-[#528bff] shrink-0">›</span><span>{item}</span></li>)}
+                  <div className="border border-[#222222] bg-[#111111] p-4">
+                    <p className="text-[9px] font-mono uppercase tracking-[0.25em] text-[#e8a000] mb-3">Run of session</p>
+                    <ul className="space-y-1.5 text-xs text-[#d0ccc4] leading-relaxed">
+                      {module.schedule.map((item) => <li key={item} className="flex gap-2"><span className="text-[#e8a000] shrink-0">›</span><span>{item}</span></li>)}
                     </ul>
                   </div>
                 )}
 
                 {currentLab && (
-                  <div className="rounded-xl border border-[#528bff]/30 bg-[#528bff]/5 p-4">
-                    <p className="text-[9px] font-mono uppercase tracking-[0.25em] text-[#528bff] mb-2">Lab</p>
-                    <p className="text-xs font-semibold text-[#d7dae0] mb-1">{currentLab.title}</p>
-                    <p className="text-xs text-[#9da5b4] leading-relaxed">{currentLab.objective}</p>
+                  <div className="border-l border-[#e8a000] bg-[#111111] p-4">
+                    <p className="text-[9px] font-mono uppercase tracking-[0.25em] text-[#e8a000] mb-2">Applied lab</p>
+                    <p className="text-xs font-semibold text-[#d0ccc4] mb-1">{currentLab.title}</p>
+                    <p className="text-xs text-[#888888] leading-relaxed">{currentLab.objective}</p>
                   </div>
                 )}
 
-                <article className="prose prose-invert prose-xs max-w-none [&_h1]:text-sm [&_h1]:font-semibold [&_h1]:text-[#d7dae0] [&_h2]:text-xs [&_h2]:font-semibold [&_h2]:text-[#c8ccd4] [&_h3]:text-xs [&_h3]:font-medium [&_h3]:text-[#abb2bf] [&_p]:text-xs [&_p]:text-[#9da5b4] [&_p]:leading-relaxed [&_li]:text-xs [&_li]:text-[#9da5b4] [&_li]:leading-relaxed [&_strong]:text-[#d7dae0] [&_code]:text-[#98c379] [&_code]:bg-[#21252b] [&_code]:rounded [&_code]:px-1 [&_code]:py-0.5 [&_code]:text-[11px] [&_blockquote]:border-l-2 [&_blockquote]:border-[#528bff] [&_blockquote]:pl-3 [&_blockquote]:italic [&_blockquote]:text-[#6a737d]">
+                <article className="prose prose-invert prose-xs max-w-none [&_h1]:text-sm [&_h1]:font-semibold [&_h1]:text-[#d0ccc4] [&_h2]:text-xs [&_h2]:font-semibold [&_h2]:text-[#d0ccc4] [&_h3]:text-xs [&_h3]:font-medium [&_h3]:text-[#d0ccc4] [&_p]:text-xs [&_p]:text-[#888888] [&_p]:leading-relaxed [&_li]:text-xs [&_li]:text-[#888888] [&_li]:leading-relaxed [&_strong]:text-[#d0ccc4] [&_code]:text-[#98c379] [&_code]:bg-[#111111] [&_code]:rounded [&_code]:px-1 [&_code]:py-0.5 [&_code]:text-[11px] [&_blockquote]:border-l-2 [&_blockquote]:border-[#e8a000] [&_blockquote]:pl-3 [&_blockquote]:italic [&_blockquote]:text-[#777777]">
                   <ReactMarkdown>{guideMarkdown}</ReactMarkdown>
                 </article>
 
                 {module?.references && module.references.length > 0 && (
                   <div className="space-y-2">
-                    <p className="text-[9px] font-mono uppercase tracking-[0.25em] text-[#495162]">References</p>
+                    <p className="text-[9px] font-mono uppercase tracking-[0.25em] text-[#555555]">References</p>
                     {module.references.map((ref) => (
-                      <div key={ref.title} className="rounded-lg border border-[#3e4451] bg-[#21252b] p-3">
-                        <p className="text-xs font-medium text-[#abb2bf]">{ref.title}</p>
-                        {ref.author && <p className="text-[11px] text-[#495162] mt-0.5">{ref.author}</p>}
+                      <div key={ref.title} className="rounded-lg border border-[#222222] bg-[#111111] p-3">
+                        {ref.url ? (
+                          <a
+                            href={ref.url}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="text-xs font-medium text-[#d0ccc4] hover:text-[#e8a000]"
+                          >
+                            {ref.title}
+                          </a>
+                        ) : (
+                          <p className="text-xs font-medium text-[#d0ccc4]">{ref.title}</p>
+                        )}
+                        {ref.author && <p className="text-[11px] text-[#555555] mt-0.5">{ref.author}</p>}
+                        {ref.note && <p className="mt-1 text-[11px] leading-relaxed text-[#777777]">{ref.note}</p>}
                         <div className="flex gap-2 mt-1">
-                          <span className="text-[9px] font-mono uppercase tracking-[0.2em] text-[#495162] border border-[#3e4451] rounded px-1.5 py-0.5">{ref.kind}</span>
+                          <span className="text-[9px] font-mono uppercase tracking-[0.2em] text-[#555555] border border-[#222222] rounded px-1.5 py-0.5">{ref.kind}</span>
                           {ref.required && <span className="text-[9px] font-mono uppercase tracking-[0.2em] text-[#e5c07b] border border-[#e5c07b]/30 rounded px-1.5 py-0.5">required</span>}
                         </div>
                       </div>
@@ -1181,18 +1291,18 @@ export default function LearningWorkspaceClient({
 
                 {/* ── Inline Notes: edit on top, live preview below ── */}
                 {module && (
-                  <div className="rounded-xl border border-[#3e4451] bg-[#21252b] overflow-hidden">
+                  <div className="rounded-xl border border-[#222222] bg-[#111111] overflow-hidden">
                     {/* Header */}
-                    <div className="flex items-center justify-between px-4 py-2.5 border-b border-[#3e4451]">
+                    <div className="flex items-center justify-between px-4 py-2.5 border-b border-[#222222]">
                       <div className="flex items-center gap-2">
-                        <p className="text-[9px] font-mono uppercase tracking-[0.25em] text-[#495162]">Notes</p>
+                        <p className="text-[9px] font-mono uppercase tracking-[0.25em] text-[#555555]">Notes</p>
                         {renderSaveBadge(notesTracker.state as SaveBadgeState, notesTracker.message)}
                       </div>
-                      <span className="text-[9px] text-[#3e4451] font-mono">markdown · live preview below</span>
+                      <span className="text-[9px] text-[#222222] font-mono">markdown · live preview below</span>
                     </div>
 
                     {/* Formatting toolbar — always visible */}
-                    <div className="flex items-center gap-0.5 px-3 py-1.5 border-b border-[#3e4451] bg-[#282c34] flex-wrap">
+                    <div className="flex items-center gap-0.5 px-3 py-1.5 border-b border-[#222222] bg-[#0a0a0a] flex-wrap">
                       {[
                         { label: 'B',   title: 'Bold ⌘B',          action: () => insertMarkdown('**', '**', 'bold text'),       cls: 'font-bold' },
                         { label: 'I',   title: 'Italic ⌘I',        action: () => insertMarkdown('*', '*', 'italic text'),        cls: 'italic' },
@@ -1210,7 +1320,7 @@ export default function LearningWorkspaceClient({
                           key={label}
                           onMouseDown={(e) => { e.preventDefault(); action(); }}
                           title={title}
-                          className={`px-2 py-1 rounded text-[11px] text-[#6a737d] hover:text-[#abb2bf] hover:bg-[#3e4451] transition-colors ${cls}`}
+                          className={`px-2 py-1 rounded text-[11px] text-[#777777] hover:text-[#d0ccc4] hover:bg-[#222222] transition-colors ${cls}`}
                         >
                           {label}
                         </button>
@@ -1232,7 +1342,7 @@ export default function LearningWorkspaceClient({
                           updateNotes(module.id, e.target.value);
                         }}
                         placeholder={'Take notes here — markdown is supported.\n\n## Heading\n- bullet point\n**bold** or *italic*\n`code` or ```code block```\n> blockquote / highlight'}
-                        className="w-full min-h-[240px] p-4 text-xs leading-relaxed text-[#abb2bf] placeholder:text-[#3e4451] outline-none bg-[#21252b] resize-none font-mono"
+                        className="w-full min-h-[240px] p-4 text-xs leading-relaxed text-[#d0ccc4] placeholder:text-[#222222] outline-none bg-[#111111] resize-none font-mono"
                         style={{ lineHeight: '1.7' }}
                         onKeyDown={(e) => {
                           const meta = e.metaKey || e.ctrlKey;
@@ -1291,7 +1401,7 @@ export default function LearningWorkspaceClient({
 
                     {/* Live preview — always rendered below the edit area */}
                     {learningState.notesByModule[module.id] ? (
-                      <article className="px-4 pb-4 pt-3 border-t border-[#3e4451] prose prose-invert prose-xs max-w-none [&_h2]:text-xs [&_h2]:font-semibold [&_h2]:text-[#c8ccd4] [&_h2]:mt-3 [&_h2]:mb-1 [&_h3]:text-xs [&_h3]:font-medium [&_h3]:text-[#abb2bf] [&_h3]:mt-2 [&_h3]:mb-1 [&_p]:text-xs [&_p]:text-[#9da5b4] [&_p]:leading-relaxed [&_p]:my-1 [&_li]:text-xs [&_li]:text-[#9da5b4] [&_li]:leading-relaxed [&_strong]:text-[#d7dae0] [&_em]:text-[#c8ccd4] [&_code]:text-[#98c379] [&_code]:bg-[#282c34] [&_code]:rounded [&_code]:px-1 [&_code]:py-0.5 [&_code]:text-[11px] [&_pre]:bg-[#282c34] [&_pre]:p-3 [&_pre]:rounded-lg [&_pre]:text-[11px] [&_pre]:overflow-x-auto [&_blockquote]:border-l-2 [&_blockquote]:border-[#528bff] [&_blockquote]:pl-3 [&_blockquote]:italic [&_blockquote]:text-[#6a737d] [&_blockquote]:my-2 [&_ul]:my-1 [&_ol]:my-1 [&_hr]:border-[#3e4451] [&_input[type=checkbox]]:accent-[#528bff]">
+                      <article className="px-4 pb-4 pt-3 border-t border-[#222222] prose prose-invert prose-xs max-w-none [&_h2]:text-xs [&_h2]:font-semibold [&_h2]:text-[#d0ccc4] [&_h2]:mt-3 [&_h2]:mb-1 [&_h3]:text-xs [&_h3]:font-medium [&_h3]:text-[#d0ccc4] [&_h3]:mt-2 [&_h3]:mb-1 [&_p]:text-xs [&_p]:text-[#888888] [&_p]:leading-relaxed [&_p]:my-1 [&_li]:text-xs [&_li]:text-[#888888] [&_li]:leading-relaxed [&_strong]:text-[#d0ccc4] [&_em]:text-[#d0ccc4] [&_code]:text-[#98c379] [&_code]:bg-[#0a0a0a] [&_code]:rounded [&_code]:px-1 [&_code]:py-0.5 [&_code]:text-[11px] [&_pre]:bg-[#0a0a0a] [&_pre]:p-3 [&_pre]:rounded-lg [&_pre]:text-[11px] [&_pre]:overflow-x-auto [&_blockquote]:border-l-2 [&_blockquote]:border-[#e8a000] [&_blockquote]:pl-3 [&_blockquote]:italic [&_blockquote]:text-[#777777] [&_blockquote]:my-2 [&_ul]:my-1 [&_ol]:my-1 [&_hr]:border-[#222222] [&_input[type=checkbox]]:accent-[#e8a000]">
                         <ReactMarkdown>{learningState.notesByModule[module.id]}</ReactMarkdown>
                       </article>
                     ) : null}
@@ -1305,14 +1415,14 @@ export default function LearningWorkspaceClient({
                 {module.reflectionPrompts.map((prompt, idx) => (
                   <div key={prompt}>
                     <div className="mb-3 flex items-center justify-between gap-3">
-                      <p className="text-xs font-medium text-[#d7dae0] leading-relaxed">{prompt}</p>
+                      <p className="text-xs font-medium text-[#d0ccc4] leading-relaxed">{prompt}</p>
                       {idx === 0 && renderSaveBadge(reflectionTracker.state as SaveBadgeState, reflectionTracker.message)}
                     </div>
                     <textarea
                       value={learningState.reflectionsByModule[module.id]?.[idx] ?? ''}
                       onChange={(e) => updateReflection(module.id, idx, e.target.value)}
                       placeholder="Direct answer. Name the weak spots, not just the easy parts."
-                      className="w-full min-h-[160px] rounded-xl border border-[#3e4451] bg-[#21252b] p-4 text-xs leading-relaxed text-[#abb2bf] placeholder:text-[#3e4451] outline-none focus:border-[#528bff]/50 resize-none"
+                      className="w-full min-h-[160px] rounded-xl border border-[#222222] bg-[#111111] p-4 text-xs leading-relaxed text-[#d0ccc4] placeholder:text-[#222222] outline-none focus:border-[#e8a000]/50 resize-none"
                     />
                   </div>
                 ))}
@@ -1323,20 +1433,20 @@ export default function LearningWorkspaceClient({
               <div className="p-5 space-y-5">
                 {module?.tasks && (
                   <div className="space-y-2">
-                    <p className="text-[9px] font-mono uppercase tracking-[0.25em] text-[#495162] mb-3">Tasks · {completedRequired}/{totalRequired} done</p>
+                    <p className="text-[9px] font-mono uppercase tracking-[0.25em] text-[#555555] mb-3">Tasks · {completedRequired}/{totalRequired} done</p>
                     {module.tasks.map((task) => {
                       const checked = learningState.taskProgress[task.id] === 'completed';
                       return (
-                        <label key={task.id} className="flex items-start gap-3 rounded-xl border border-[#3e4451] bg-[#21252b] p-3 cursor-pointer hover:border-[#528bff]/30 transition-colors">
+                        <label key={task.id} className="flex items-start gap-3 rounded-xl border border-[#222222] bg-[#111111] p-3 cursor-pointer hover:border-[#e8a000]/30 transition-colors">
                           <input
                             type="checkbox"
                             checked={checked}
                             onChange={(e) => updateTask(task.id, e.target.checked)}
-                            className="mt-0.5 h-3.5 w-3.5 shrink-0 accent-[#528bff]"
+                            className="mt-0.5 h-3.5 w-3.5 shrink-0 accent-[#e8a000]"
                           />
                           <div className="min-w-0">
-                            <p className={`text-xs leading-snug ${checked ? 'text-[#495162] line-through' : 'text-[#abb2bf]'}`}>{task.label}</p>
-                            <p className="mt-1 text-[9px] font-mono uppercase tracking-[0.2em] text-[#3e4451]">{task.type}</p>
+                            <p className={`text-xs leading-snug ${checked ? 'text-[#555555] line-through' : 'text-[#d0ccc4]'}`}>{task.label}</p>
+                            <p className="mt-1 text-[9px] font-mono uppercase tracking-[0.2em] text-[#222222]">{task.type}</p>
                           </div>
                         </label>
                       );
@@ -1346,9 +1456,9 @@ export default function LearningWorkspaceClient({
 
                 {module?.quiz?.[0] && (
                   <div>
-                    <p className="text-[9px] font-mono uppercase tracking-[0.25em] text-[#495162] mb-3">Checkpoint</p>
-                    <div className="rounded-xl border border-[#3e4451] bg-[#21252b] p-4">
-                      <p className="text-xs font-medium text-[#d7dae0] mb-3 leading-relaxed">{module.quiz[0].prompt}</p>
+                    <p className="text-[9px] font-mono uppercase tracking-[0.25em] text-[#555555] mb-3">Checkpoint</p>
+                    <div className="rounded-xl border border-[#222222] bg-[#111111] p-4">
+                      <p className="text-xs font-medium text-[#d0ccc4] mb-3 leading-relaxed">{module.quiz[0].prompt}</p>
                       <div className="space-y-2">
                         {module.quiz[0].options.map((option) => {
                           const selected = learningState.quizAnswers[module.id] === option;
@@ -1356,7 +1466,7 @@ export default function LearningWorkspaceClient({
                             <button
                               key={option}
                               onClick={() => updateQuizAnswer(module.id, option)}
-                              className={`w-full text-left rounded-lg border px-3 py-2.5 text-xs leading-relaxed transition-colors ${selected ? 'border-[#528bff] bg-[#528bff]/10 text-[#d7dae0]' : 'border-[#3e4451] bg-[#282c34] text-[#9da5b4] hover:border-[#4b5263]'}`}
+                              className={`w-full text-left rounded-lg border px-3 py-2.5 text-xs leading-relaxed transition-colors ${selected ? 'border-[#e8a000] bg-[#e8a000]/10 text-[#d0ccc4]' : 'border-[#222222] bg-[#0a0a0a] text-[#888888] hover:border-[#333333]'}`}
                             >
                               {option}
                             </button>
@@ -1364,10 +1474,10 @@ export default function LearningWorkspaceClient({
                         })}
                       </div>
                       {learningState.quizAnswers[module.id] && (
-                        <div className="mt-3 rounded-lg border border-[#3e4451] p-3 text-xs leading-relaxed">
+                        <div className="mt-3 rounded-lg border border-[#222222] p-3 text-xs leading-relaxed">
                           {learningState.quizAnswers[module.id] === module.quiz[0].answer
-                            ? <p className="text-[#98c379]">✓ Correct — {module.quiz[0].explanation}</p>
-                            : <p className="text-[#e5c07b]">Not quite. Correct: <strong className="text-[#d7dae0]">{module.quiz[0].answer}</strong>. {module.quiz[0].explanation}</p>
+                            ? <p className="text-[#98c379]">Correct - {module.quiz[0].explanation}</p>
+                            : <p className="text-[#e5c07b]">Not quite. Correct: <strong className="text-[#d0ccc4]">{module.quiz[0].answer}</strong>. {module.quiz[0].explanation}</p>
                           }
                         </div>
                       )}
@@ -1377,7 +1487,7 @@ export default function LearningWorkspaceClient({
 
                 {successMessage && (
                   <div className="rounded-xl border border-[#98c379]/30 bg-[#98c379]/5 p-4 text-xs text-[#98c379] leading-relaxed">
-                    ✓ {successMessage}
+                    PASS: {successMessage}
                   </div>
                 )}
               </div>
@@ -1388,15 +1498,15 @@ export default function LearningWorkspaceClient({
         {/* ── Drag handle between guide panel and IDE ── */}
         <div
           onMouseDown={handleGuidePanelDragStart}
-          className="shrink-0 w-1 bg-[#181a1f] hover:bg-[#528bff] active:bg-[#528bff] cursor-col-resize transition-colors z-10"
+          className="shrink-0 w-1 bg-[#222222] hover:bg-[#e8a000] active:bg-[#e8a000] cursor-col-resize transition-colors z-10"
           title="Drag to resize panels"
         />
 
         {/* ── IDE Workspace ── */}
-        <section className="flex-1 flex flex-col min-h-0 min-w-0 bg-[#282c34]">
+        <section className="flex-1 flex flex-col min-h-0 min-w-0 bg-[#0a0a0a]">
 
           {/* IDE toolbar */}
-          <div className="shrink-0 h-10 bg-[#21252b] border-b border-[#181a1f] flex items-center justify-between px-2 gap-2">
+          <div className="shrink-0 h-10 bg-[#111111] border-b border-[#222222] flex items-center justify-between px-2 gap-2">
             {/* File tabs */}
             <div className="flex h-full items-end overflow-x-auto hide-scrollbar">
               {workspaceFiles.map((file) => {
@@ -1405,16 +1515,16 @@ export default function LearningWorkspaceClient({
                   <button
                     key={file.path}
                     onClick={() => setActiveFilePath(file.path)}
-                    className={`h-9 flex items-center gap-1.5 px-3 text-[11px] font-mono border-t-2 border-r border-r-[#181a1f] transition-colors shrink-0 ${isActive ? 'bg-[#282c34] text-[#d7dae0] border-t-[#528bff]' : 'bg-[#21252b] text-[#6a737d] border-t-transparent hover:text-[#abb2bf] hover:bg-[#2c313a50]'}`}
+                    className={`h-9 flex items-center gap-1.5 px-3 text-[11px] font-mono border-t-2 border-r border-r-[#222222] transition-colors shrink-0 ${isActive ? 'bg-[#0a0a0a] text-[#d0ccc4] border-t-[#e8a000]' : 'bg-[#111111] text-[#777777] border-t-transparent hover:text-[#d0ccc4] hover:bg-[#16161650]'}`}
                   >
-                    <FileIcon path={file.path} className={`w-3 h-3 shrink-0 ${isActive ? 'text-[#528bff]' : 'text-[#495162]'}`} />
+                    <FileIcon path={file.path} className={`w-3 h-3 shrink-0 ${isActive ? 'text-[#e8a000]' : 'text-[#555555]'}`} />
                     {file.path.split('/').pop()}
-                    {file.readOnly && <span className="text-[9px] text-[#3e4451] font-mono">RO</span>}
+                    {file.readOnly && <span className="text-[9px] text-[#222222] font-mono">RO</span>}
                   </button>
                 );
               })}
               {workspaceFiles.length === 0 && (
-                <span className="px-3 text-[11px] text-[#495162] font-mono">No workspace files</span>
+                <span className="px-3 text-[11px] text-[#555555] font-mono">No workspace files</span>
               )}
             </div>
 
@@ -1424,7 +1534,7 @@ export default function LearningWorkspaceClient({
                 <button
                   onClick={goToPreviousModule}
                   title={moduleContext.previous.moduleSlug}
-                  className="flex items-center gap-1 px-2.5 py-1 text-[11px] font-mono text-[#6a737d] hover:text-[#abb2bf] hover:bg-[#2c313a] rounded transition-colors border border-[#3e4451] hover:border-[#4b5263]"
+                  className="flex items-center gap-1 px-2.5 py-1 text-[11px] font-mono text-[#777777] hover:text-[#d0ccc4] hover:bg-[#161616] rounded transition-colors border border-[#222222] hover:border-[#333333]"
                 >
                   ← Prev
                 </button>
@@ -1433,7 +1543,7 @@ export default function LearningWorkspaceClient({
                 <button
                   onClick={goToNextModule}
                   title={moduleContext.next.moduleSlug}
-                  className="flex items-center gap-1 px-2.5 py-1 text-[11px] font-mono text-[#6a737d] hover:text-[#abb2bf] hover:bg-[#2c313a] rounded transition-colors border border-[#3e4451] hover:border-[#4b5263]"
+                  className="flex items-center gap-1 px-2.5 py-1 text-[11px] font-mono text-[#777777] hover:text-[#d0ccc4] hover:bg-[#161616] rounded transition-colors border border-[#222222] hover:border-[#333333]"
                 >
                   Next →
                 </button>
@@ -1442,13 +1552,13 @@ export default function LearningWorkspaceClient({
                 <Link
                   href={getProjectRoute(course.slug, course.projects[0].slug)}
                   title="Persistent project workspace — build the week's capstone system here"
-                  className="px-2.5 py-1 text-[11px] font-mono text-[#6a737d] hover:text-[#528bff] border border-[#3e4451] hover:border-[#528bff]/50 rounded transition-colors"
+                  className="px-2.5 py-1 text-[11px] font-mono text-[#777777] hover:text-[#e8a000] border border-[#222222] hover:border-[#e8a000]/50 rounded transition-colors"
                 >
                   Project →
                 </Link>
               )}
               {activeFile?.solution && (
-                <button onClick={revealSolution} className="px-2.5 py-1 text-[11px] font-mono text-[#6a737d] hover:text-[#e5c07b] border border-[#3e4451] hover:border-[#e5c07b]/50 rounded transition-colors">
+                <button onClick={revealSolution} className="px-2.5 py-1 text-[11px] font-mono text-[#777777] hover:text-[#e5c07b] border border-[#222222] hover:border-[#e5c07b]/50 rounded transition-colors">
                   Reveal
                 </button>
               )}
@@ -1457,16 +1567,16 @@ export default function LearningWorkspaceClient({
                   onClick={runValidation}
                   disabled={isRunning}
                   title="Run (⌘↵)"
-                  className="flex items-center gap-1.5 px-3 py-1 rounded bg-[#528bff] hover:bg-[#6a9ff5] text-white text-[11px] font-mono font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="flex items-center gap-1.5 px-3 py-1 rounded bg-[#e8a000] hover:bg-[#f0b429] text-white text-[11px] font-mono font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   {isRunning ? (
                     <><span className="w-2.5 h-2.5 border border-white border-t-transparent rounded-full animate-spin shrink-0" />Running</>
                   ) : (
-                    <>{projectTemplate ? 'Run checks' : '▶ Run'}<span className="hidden sm:inline opacity-50 text-[9px]">⌘↵</span></>
+                    <>{projectTemplate ? 'Run checks' : 'Run'}<span className="hidden sm:inline opacity-50 text-[9px]">⌘↵</span></>
                   )}
                 </button>
               )}
-              <button onClick={downloadWorkspaceAsZip} className="px-2.5 py-1 text-[11px] font-mono text-[#6a737d] hover:text-[#abb2bf] border border-[#3e4451] hover:border-[#4b5263] rounded transition-colors" title="Download workspace as .zip with real file structure">
+              <button onClick={downloadWorkspaceAsZip} className="px-2.5 py-1 text-[11px] font-mono text-[#777777] hover:text-[#d0ccc4] border border-[#222222] hover:border-[#333333] rounded transition-colors" title="Download workspace as .zip with real file structure">
                 .zip
               </button>
             </div>
@@ -1476,8 +1586,8 @@ export default function LearningWorkspaceClient({
           <div className="flex flex-1 min-h-0 min-w-0">
             {/* File tree */}
             {hasWorkspace && (
-              <div className="w-44 shrink-0 border-r border-[#181a1f] bg-[#21252b] flex flex-col overflow-hidden">
-                <div className="px-3 py-2 text-[9px] font-mono uppercase tracking-[0.25em] text-[#495162] border-b border-[#181a1f]">Files</div>
+              <div className="w-44 shrink-0 border-r border-[#222222] bg-[#111111] flex flex-col overflow-hidden">
+                <div className="px-3 py-2 text-[9px] font-mono uppercase tracking-[0.25em] text-[#555555] border-b border-[#222222]">Files</div>
                 <div className="flex-1 overflow-y-auto p-1.5 space-y-0.5">
                   {workspaceFiles.map((file) => {
                     const isActive = file.path === activeFilePath;
@@ -1485,9 +1595,9 @@ export default function LearningWorkspaceClient({
                       <button
                         key={file.path}
                         onClick={() => setActiveFilePath(file.path)}
-                        className={`w-full flex items-start gap-1.5 rounded px-2 py-1.5 text-left transition-colors ${isActive ? 'bg-[#2c313a] text-[#d7dae0]' : 'text-[#6a737d] hover:bg-[#2c313a50] hover:text-[#abb2bf]'}`}
+                        className={`w-full flex items-start gap-1.5 rounded px-2 py-1.5 text-left transition-colors ${isActive ? 'bg-[#161616] text-[#d0ccc4]' : 'text-[#777777] hover:bg-[#16161650] hover:text-[#d0ccc4]'}`}
                       >
-                        <FileIcon path={file.path} className={`w-3.5 h-3.5 mt-0.5 shrink-0 ${isActive ? 'text-[#528bff]' : 'text-[#495162]'}`} />
+                        <FileIcon path={file.path} className={`w-3.5 h-3.5 mt-0.5 shrink-0 ${isActive ? 'text-[#e8a000]' : 'text-[#555555]'}`} />
                         <span className="text-[11px] font-mono leading-snug break-all">{file.path}</span>
                       </button>
                     );
@@ -1495,16 +1605,16 @@ export default function LearningWorkspaceClient({
                 </div>
 
                 {currentLab?.hints && currentLab.hints.length > 0 && (
-                  <div className="border-t border-[#181a1f] p-3">
+                  <div className="border-t border-[#222222] p-3">
                     <div className="flex items-center justify-between mb-2">
-                      <p className="text-[9px] font-mono uppercase tracking-[0.25em] text-[#495162]">Hints</p>
+                      <p className="text-[9px] font-mono uppercase tracking-[0.25em] text-[#555555]">Hints</p>
                       {visibleHintCount < currentLab.hints.length && (
-                        <button onClick={() => setVisibleHintCount((n) => n + 1)} className="text-[10px] text-[#528bff] hover:text-[#6a9ff5]">+1</button>
+                        <button onClick={() => setVisibleHintCount((n) => n + 1)} className="text-[10px] text-[#e8a000] hover:text-[#f0b429]">+1</button>
                       )}
                     </div>
                     <div className="space-y-2">
                       {currentLab.hints.slice(0, visibleHintCount).map((hint) => (
-                        <p key={hint} className="text-[10px] leading-relaxed text-[#9da5b4]">{hint}</p>
+                        <p key={hint} className="text-[10px] leading-relaxed text-[#888888]">{hint}</p>
                       ))}
                     </div>
                   </div>
@@ -1514,12 +1624,12 @@ export default function LearningWorkspaceClient({
 
             {/* Monaco Editor */}
             <div className="flex-1 min-w-0 overflow-hidden">
-              {activeFile ? (
+              {activeFile && monacoReady ? (
                 <Editor
                   beforeMount={handleMonacoBeforeMount}
                   path={activeFile.path}
                   language={activeFile.language}
-                  theme="one-dark-pro"
+                  theme="portfolio-dark"
                   value={activeFile.content}
                   onChange={(val) => { if (!activeFile.readOnly) updateFile(activeFile.path, val ?? ''); }}
                   options={{
@@ -1563,12 +1673,31 @@ export default function LearningWorkspaceClient({
                     renderWhitespace: 'selection',
                   }}
                 />
+              ) : activeFile ? (
+                <div className="h-full flex items-center justify-center p-6">
+                  <div className="max-w-sm border-l border-[#e8a000] bg-[#111111] p-5">
+                    <p className="text-[10px] uppercase tracking-[0.2em] text-[#e8a000]">
+                      {monacoError ? 'Editor failed to load' : 'Loading local editor'}
+                    </p>
+                    <p className="mt-3 text-xs leading-relaxed text-[#888888]">
+                      {monacoError || 'Preparing the Monaco runtime from the installed application bundle.'}
+                    </p>
+                    {monacoError && (
+                      <button
+                        onClick={() => setMonacoLoadAttempt((attempt) => attempt + 1)}
+                        className="mt-4 border border-[#e8a000] px-3 py-1.5 text-[10px] uppercase tracking-widest text-[#e8a000] hover:bg-[#e8a000] hover:text-black"
+                      >
+                        Retry editor
+                      </button>
+                    )}
+                  </div>
+                </div>
               ) : (
                 <div className="h-full flex items-center justify-center flex-col gap-3">
-                  <svg className="w-12 h-12 text-[#3e4451]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <svg className="w-12 h-12 text-[#222222]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4" />
                   </svg>
-                  <p className="text-sm text-[#495162] font-mono">Focus on the reading material in the guide panel.</p>
+                  <p className="text-sm text-[#555555] font-mono">Focus on the reading material in the guide panel.</p>
                 </div>
               )}
             </div>
@@ -1579,17 +1708,17 @@ export default function LearningWorkspaceClient({
             <>
               <div
                 onMouseDown={handleTerminalDragStart}
-                className="shrink-0 h-1 bg-[#181a1f] hover:bg-[#528bff] cursor-ns-resize transition-colors"
+                className="shrink-0 h-1 bg-[#222222] hover:bg-[#e8a000] cursor-ns-resize transition-colors"
                 title="Drag to resize terminal"
               />
-              <div style={{ height: terminalHeight }} className="shrink-0 flex flex-col border-t border-[#181a1f] bg-[#21252b] overflow-hidden">
-                <div className="h-8 shrink-0 flex items-center justify-between px-3 border-b border-[#181a1f]">
+              <div style={{ height: terminalHeight }} className="shrink-0 flex flex-col border-t border-[#222222] bg-[#111111] overflow-hidden">
+                <div className="h-8 shrink-0 flex items-center justify-between px-3 border-b border-[#222222]">
                   <div className="flex items-center gap-3">
-                    <span className="text-[9px] font-mono uppercase tracking-[0.25em] text-[#495162]">Output</span>
+                    <span className="text-[9px] font-mono uppercase tracking-[0.25em] text-[#555555]">Output</span>
                     {renderSaveBadge(codeTracker.state as SaveBadgeState, codeTracker.message)}
-                    {runMs !== null && <span className="text-[9px] font-mono text-[#495162]">⏱ {runMs}ms</span>}
+                    {runMs !== null && <span className="text-[9px] font-mono text-[#555555]">⏱ {runMs}ms</span>}
                   </div>
-                  <button onClick={() => { setTerminalOutput('Ready.'); setRunMs(null); }} className="text-[10px] font-mono text-[#495162] hover:text-[#abb2bf] transition-colors">Clear</button>
+                  <button onClick={() => { setTerminalOutput('Ready.'); setRunMs(null); }} className="text-[10px] font-mono text-[#555555] hover:text-[#d0ccc4] transition-colors">Clear</button>
                 </div>
                 <div className="flex-1 overflow-y-auto px-3 py-2" style={{ fontFamily: "'JetBrains Mono', 'Fira Code', monospace", fontSize: 12, lineHeight: '20px' }}>
                   {terminalOutput.split('\n').map((line, i) => (

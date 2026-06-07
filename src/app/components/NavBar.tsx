@@ -6,7 +6,6 @@ const NAV_LINKS = [
   { href: "#about",      label: "about" },
   { href: "#experience", label: "experience" },
   { href: "#projects",   label: "projects" },
-  { href: "https://learning.babalola.dev", label: "learning" },
   { href: "#skills",     label: "skills" },
   { href: "#opensource", label: "open_source" },
   { href: "#contact",    label: "contact" },
@@ -32,12 +31,7 @@ export default function NavBar() {
     >
       <div className="max-w-7xl mx-auto px-5 sm:px-8 py-3 flex items-center justify-between">
 
-        {/* Logo */}
-        <a href="/" className="flex items-center gap-2.5 group">
-          <span className="text-[#e8a000] text-sm font-bold tracking-tight group-hover:opacity-80 transition-opacity">
-            babalola.dev
-          </span>
-        </a>
+        <div className="hidden md:block w-28" aria-hidden="true" />
 
         {/* Desktop nav */}
         <div className="hidden md:flex items-center gap-7">

@@ -482,7 +482,7 @@ export const skills: SkillCategory[] = [
   {
     category: 'ai/ml',
     icon: '>',
-    items: ['LLM Integration', 'RAG Pipelines', 'MLOps', 'OpenAI', 'Anthropic', 'Ollama', 'SageMaker', 'Vector DBs', 'MeiliSearch', 'MLflow', 'Kubeflow', 'Ray', 'vLLM', 'Triton', 'Prometheus', 'Grafana', 'OpenTelemetry'],
+    items: ['LLM Integration', 'RAG Pipelines', 'MLOps', 'OpenAI', 'Anthropic', 'Ollama', 'SageMaker', 'Vector DBs', 'MeiliSearch', 'MLflow', 'Kubeflow', 'Ray', 'vLLM', 'Triton', 'Prometheus', 'OpenObserve', 'OpenTelemetry'],
   },
   {
     category: 'protocols & apis',
