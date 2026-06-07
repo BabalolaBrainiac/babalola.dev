@@ -75,7 +75,7 @@ At the principal level, reproducibility is not about being able to repeat a sing
 
 ---
 
-### 💡 Trending in 2026: Deterministic Serving
+### Current systems note: Deterministic Serving
 
 > Beyond training, 2026 has seen growing focus on inference determinism. LLM sampling with temperature > 0 is inherently non-deterministic, but systems like vLLM now support **deterministic replay mode** for debugging: given the same prompt and the same RNG seed, you get the same tokens. This is essential for reproducing production failures in LLM-based systems.
 `,
@@ -260,7 +260,7 @@ At the principal level, the question is not "should we track experiments?" (obvi
 
 ---
 
-### 💡 Trending in 2026: Experiment Tracking for LLM Evals
+### Current systems note: Experiment Tracking for LLM Evals
 
 > Traditional experiment tracking was for numeric metrics. In 2026, teams are tracking LLM evaluation runs using the same paradigm: each eval run logs the prompt template version, the model version (by hash), the eval dataset version, and the LLM-as-a-judge scores. This gives you a proper A/B history for prompts — not just "the new prompt is better" but a statistically verifiable trail.
 `,
@@ -502,7 +502,7 @@ Every model artifact should have a dataset fingerprint attached to it. When you 
 
 ---
 
-### 💡 Trending in 2026: Dataset Diff for LLM Fine-Tuning
+### Current systems note: Dataset Diff for LLM Fine-Tuning
 
 > Fine-tuning datasets for LLMs have introduced new data versioning challenges. Teams are now versioning not just the data files, but the **annotation guidelines** used to create them. Two datasets with identical text but different rubrics for RLHF annotations produce different fine-tuned model personalities. LlamaIndex and LangChain are building dataset provenance tools to track this.
 `,
@@ -732,7 +732,7 @@ A config-driven pipeline is not just easier to experiment with — it is safer t
 
 ---
 
-### 💡 Trending in 2026: Structured Configs for Agents
+### Current systems note: Structured Configs for Agents
 
 > As agentic systems become more complex (tool choice, memory strategies, routing thresholds), teams are applying the same config-driven discipline to agent behavior. Frameworks like LangGraph and AutoGen support config objects that define agent personalities, tool access levels, and self-correction budgets. These configs are now versioned and logged alongside model configs in experiment trackers.
 `,

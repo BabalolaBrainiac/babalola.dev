@@ -98,28 +98,33 @@ function SignInForm() {
   }
 
   return (
-    <div className="min-h-screen bg-[var(--background)] text-[var(--foreground)] transition-all duration-300 ease-out flex items-center justify-center">
+    <div className="min-h-screen bg-black text-[#d0ccc4] transition-all duration-300 ease-out flex items-center justify-center px-4 py-10">
       <div className="max-w-md w-full mx-4">
-        <div className="glass-card p-8">
+        <div className="border border-[#222] bg-[#111] p-8">
           <div className="text-center mb-8">
-            <h1 className="text-3xl font-bold font-mono gradient-text mb-2">
+            <h1 className="text-3xl font-bold font-mono text-[#e8a000] mb-2">
               {mode === 'signin' ? 'Sign In' : 'Get Access'}
             </h1>
-            <p className="text-[var(--muted)]">
+            <p className="text-sm text-[#888] leading-6">
               {mode === 'signin'
                 ? 'Access your learning workspace or editorial tools'
                 : 'Request learner credentials by email'}
             </p>
           </div>
 
-          <div className="mb-6 flex rounded-lg border border-[var(--glass-border)] bg-[var(--background-secondary)] p-1">
+          <div className="mb-6 grid grid-cols-2 gap-1 rounded-none border border-[#222] bg-black p-1">
             <button
               type="button"
               onClick={() => {
                 setMode('signin')
                 setRequestError('')
               }}
-              className={`flex-1 rounded-md px-3 py-2 text-sm transition-colors ${mode === 'signin' ? 'bg-[var(--accent)] text-black' : 'text-[var(--muted)] hover:text-[var(--foreground)]'}`}
+              aria-pressed={mode === 'signin'}
+              className={`px-3 py-2 text-sm font-mono uppercase tracking-[0.12em] transition-colors border ${
+                mode === 'signin'
+                  ? 'border-[#e8a000] bg-[#e8a000] text-black'
+                  : 'border-transparent text-[#777] hover:border-[#222] hover:text-[#d0ccc4]'
+              }`}
             >
               Sign In
             </button>
@@ -129,7 +134,12 @@ function SignInForm() {
                 setMode('request')
                 setError('')
               }}
-              className={`flex-1 rounded-md px-3 py-2 text-sm transition-colors ${mode === 'request' ? 'bg-[var(--accent)] text-black' : 'text-[var(--muted)] hover:text-[var(--foreground)]'}`}
+              aria-pressed={mode === 'request'}
+              className={`px-3 py-2 text-sm font-mono uppercase tracking-[0.12em] transition-colors border ${
+                mode === 'request'
+                  ? 'border-[#e8a000] bg-[#e8a000] text-black'
+                  : 'border-transparent text-[#777] hover:border-[#222] hover:text-[#d0ccc4]'
+              }`}
             >
               Get Access
             </button>
@@ -138,34 +148,34 @@ function SignInForm() {
           {mode === 'signin' ? (
             <form onSubmit={handleSubmit} className="space-y-6">
               {error && (
-                <div className="p-4 glass rounded-lg border border-red-500">
+                <div className="p-4 border border-red-500 bg-black">
                   <p className="text-red-500 text-sm">{error}</p>
                 </div>
               )}
 
               <div>
-                <label className="block text-sm font-mono font-semibold mb-2" style={{ color: 'var(--foreground)' }}>
+                <label className="block text-sm font-mono font-semibold mb-2 text-[#d0ccc4]">
                   Email
                 </label>
                 <input
                   type="email"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  className="w-full px-4 py-2 glass rounded-lg border border-[var(--glass-border)] focus:border-[var(--accent)] focus:outline-none"
+                  className="w-full px-4 py-3 bg-black text-[#f4efe5] placeholder:text-[#555] rounded-none border border-[#222] focus:border-[#e8a000] focus:outline-none"
                   placeholder="Enter your email"
                   required
                 />
               </div>
 
               <div>
-                <label className="block text-sm font-mono font-semibold mb-2" style={{ color: 'var(--foreground)' }}>
+                <label className="block text-sm font-mono font-semibold mb-2 text-[#d0ccc4]">
                   Password
                 </label>
                 <input
                   type="password"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  className="w-full px-4 py-2 glass rounded-lg border border-[var(--glass-border)] focus:border-[var(--accent)] focus:outline-none"
+                  className="w-full px-4 py-3 bg-black text-[#f4efe5] placeholder:text-[#555] rounded-none border border-[#222] focus:border-[#e8a000] focus:outline-none"
                   placeholder="Enter your password"
                   required
                 />
@@ -181,9 +191,9 @@ function SignInForm() {
             </form>
           ) : requestSent ? (
             <div className="space-y-4">
-              <div className="p-4 glass rounded-lg border border-green-500">
+              <div className="p-4 border border-green-500 bg-black">
                 <p className="text-sm text-green-400">Check your inbox at {requestEmail}</p>
-                <p className="mt-2 text-sm text-[var(--muted)]">We sent your login credentials. Come back to this page to sign in.</p>
+                <p className="mt-2 text-sm text-[#888]">We sent your login credentials. Come back to this page to sign in.</p>
               </div>
               <button
                 type="button"
@@ -193,39 +203,39 @@ function SignInForm() {
                 }}
                 className="w-full btn btn-secondary"
               >
-                ← Back to sign in
+                {'<-'} Back to sign in
               </button>
             </div>
           ) : (
             <form onSubmit={handleRequestAccess} className="space-y-6">
               {requestError && (
-                <div className="p-4 glass rounded-lg border border-red-500">
+                <div className="p-4 border border-red-500 bg-black">
                   <p className="text-red-500 text-sm">{requestError}</p>
                 </div>
               )}
 
               <div>
-                <label className="block text-sm font-mono font-semibold mb-2" style={{ color: 'var(--foreground)' }}>
+                <label className="block text-sm font-mono font-semibold mb-2 text-[#d0ccc4]">
                   Name
                 </label>
                 <input
                   type="text"
                   value={requestName}
                   onChange={(e) => setRequestName(e.target.value)}
-                  className="w-full px-4 py-2 glass rounded-lg border border-[var(--glass-border)] focus:border-[var(--accent)] focus:outline-none"
+                  className="w-full px-4 py-3 bg-black text-[#f4efe5] placeholder:text-[#555] rounded-none border border-[#222] focus:border-[#e8a000] focus:outline-none"
                   placeholder="Optional display name"
                 />
               </div>
 
               <div>
-                <label className="block text-sm font-mono font-semibold mb-2" style={{ color: 'var(--foreground)' }}>
+                <label className="block text-sm font-mono font-semibold mb-2 text-[#d0ccc4]">
                   Email
                 </label>
                 <input
                   type="email"
                   value={requestEmail}
                   onChange={(e) => setRequestEmail(e.target.value)}
-                  className="w-full px-4 py-2 glass rounded-lg border border-[var(--glass-border)] focus:border-[var(--accent)] focus:outline-none"
+                  className="w-full px-4 py-3 bg-black text-[#f4efe5] placeholder:text-[#555] rounded-none border border-[#222] focus:border-[#e8a000] focus:outline-none"
                   placeholder="name@example.com"
                   required
                 />
@@ -242,8 +252,8 @@ function SignInForm() {
           )}
 
           <div className="mt-6 text-center space-y-2">
-            <Link href="/blog" className="text-sm text-[var(--muted)] hover:text-[var(--accent)] transition-colors">
-              ← Back to site
+            <Link href="/blog" className="text-sm text-[#888] hover:text-[#e8a000] transition-colors">
+              {'<-'} Back to site
             </Link>
           </div>
         </div>
@@ -255,8 +265,8 @@ function SignInForm() {
 export default function SignInPage() {
   return (
     <Suspense fallback={
-      <div className="min-h-screen bg-[var(--background)] text-[var(--foreground)] flex items-center justify-center">
-        <div className="text-[var(--muted)]">Loading...</div>
+      <div className="min-h-screen bg-black text-[#d0ccc4] flex items-center justify-center">
+        <div className="text-[#888]">Loading...</div>
       </div>
     }>
       <SignInForm />

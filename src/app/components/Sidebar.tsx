@@ -28,11 +28,6 @@ export default function Sidebar() {
       {/* Logo */}
       <div className="h-14 flex items-center px-4 border-b border-[#1e1e1e] overflow-hidden shrink-0">
         <span className="text-[#e8a000] font-bold text-sm shrink-0">B</span>
-        {expanded && (
-          <span className="ml-3 text-xs text-[#d4d0c8] whitespace-nowrap tracking-wide">
-            babalola.dev
-          </span>
-        )}
       </div>
 
       {/* Nav links */}

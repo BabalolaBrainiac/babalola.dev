@@ -64,7 +64,7 @@ As systems grow, data scientists often write "glue code"—scripts that pull dat
 
 ---
 
-### 💡 Trending in 2026: AgentOps & LLMOps
+### Current systems note: AgentOps & LLMOps
 > Traditional MLOps (CI/CD for ML) has rapidly evolved into **AgentOps**. We are no longer just deploying static prediction models; we are deploying autonomous Agentic Workflows.
 > 
 > *   **From Pipelines to Loops:** RAG (Retrieval-Augmented Generation) is no longer a linear "search and stuff" process. It is an iterative loop where an agent reasons, searches, evaluates the result, and self-corrects.
@@ -130,7 +130,7 @@ if __name__ == "__main__":
     print("--- ML INGESTION PIPELINE START ---")
     try:
         validated_data = validate_payload(raw_payload)
-        print("✅ SUCCESS: Data passed the contract.")
+        print("SUCCESS: Data passed the contract.")
         print(validated_data)
     except Exception as e:
         print("❌ CRITICAL INGESTION HALTED: Contract Violation!")
@@ -232,7 +232,7 @@ A feature store is a database designed specifically for ML features. If a real-t
 
 ---
 
-### 💡 Trending in 2026: LLM-as-a-Judge Evaluation
+### Current systems note: LLM-as-a-Judge Evaluation
 > In traditional MLOps, we evaluated models using static metrics like F1-score or RMSE. In the era of LLMs, we are evaluating *generative* text, which is incredibly difficult.
 > 
 > **The New Standard:** "LLM-as-a-Judge." We now deploy specialized, smaller LLMs (or prompt highly capable ones) whose sole job is to grade the outputs of our primary system in real-time. We grade for **Faithfulness** (did it hallucinate?), **Answer Relevance** (did it actually answer the user?), and **Context Precision** (was the retrieved context useful?). 

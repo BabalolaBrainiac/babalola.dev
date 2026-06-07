@@ -33,7 +33,7 @@ export default function MainBody() {
   const [activeFilter, setActiveFilter] = useState<Project['category'] | 'all'>('all');
   const [expandedProject, setExpandedProject] = useState<string | null>(null);
 
-  const allProjects = getAllProjects();
+  const allProjects = getAllProjects().filter((project) => project.id !== 'learning-platform');
   const filtered = activeFilter === 'all'
     ? allProjects
     : allProjects.filter(p => p.category === activeFilter);
@@ -85,14 +85,13 @@ export default function MainBody() {
           </div>
 
           <p className="text-sm text-[#666] max-w-xl leading-relaxed mb-12">
-            I build production systems where backend architecture, cloud infrastructure, and AI workflows meet.
+            I build production systems where backend architecture, cloud infrastructure, and AI infra meet.
             Current work spans LLM backends, MLOps infrastructure, secure developer tools, and agent interoperability.
           </p>
 
           <div className="flex flex-wrap justify-center gap-3">
             <a href="#projects" className="btn btn-primary">view work</a>
             <a href="mailto:babaloladanielope@gmail.com" className="btn btn-secondary">get in touch</a>
-            <a href="https://learning.babalola.dev" target="_blank" rel="noopener noreferrer" className="btn btn-secondary">learning</a>
             <a href={getBlogUrl()} className="btn btn-ghost">blog -&gt;</a>
           </div>
 
@@ -445,7 +444,7 @@ export default function MainBody() {
             &copy; {new Date().getFullYear()} Babalola Opeyemi
           </p>
           <p className="text-[10px] text-[#222] tracking-widest uppercase">
-            built with Next.js · deployed on Vercel
+            built with Next.js · OpenNext target
           </p>
         </div>
       </footer>
