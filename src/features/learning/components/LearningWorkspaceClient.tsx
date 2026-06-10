@@ -58,6 +58,14 @@ function sidebarWidthKey() {
   return 'learning:sidebar:width';
 }
 
+function guidePanelWidthKey() {
+  return 'learning:guide-panel:width';
+}
+
+function terminalHeightKey() {
+  return 'learning:terminal:height';
+}
+
 function mergeState(serverState: LearningStatePayload, localState?: LearningStatePayload): LearningStatePayload {
   if (!localState) return serverState;
   return {
@@ -336,6 +344,16 @@ export default function LearningWorkspaceClient({
         setSidebarWidth(savedSidebarWidth);
       }
 
+      const savedGuidePanelWidth = Number(localStorage.getItem(guidePanelWidthKey()));
+      if (Number.isFinite(savedGuidePanelWidth) && savedGuidePanelWidth >= 240 && savedGuidePanelWidth <= 720) {
+        setGuidePanelWidth(savedGuidePanelWidth);
+      }
+
+      const savedTerminalHeight = Number(localStorage.getItem(terminalHeightKey()));
+      if (Number.isFinite(savedTerminalHeight) && savedTerminalHeight >= 80 && savedTerminalHeight <= 520) {
+        setTerminalHeight(savedTerminalHeight);
+      }
+
       const raw = localStorage.getItem(localStorageKey(course.slug));
       if (raw) {
         const parsed = JSON.parse(raw) as LearningStatePayload;
@@ -362,6 +380,14 @@ export default function LearningWorkspaceClient({
   useEffect(() => {
     if (hydrated) localStorage.setItem(sidebarWidthKey(), String(sidebarWidth));
   }, [hydrated, sidebarWidth]);
+
+  useEffect(() => {
+    if (hydrated) localStorage.setItem(guidePanelWidthKey(), String(guidePanelWidth));
+  }, [guidePanelWidth, hydrated]);
+
+  useEffect(() => {
+    if (hydrated) localStorage.setItem(terminalHeightKey(), String(terminalHeight));
+  }, [hydrated, terminalHeight]);
 
   // Reset workspace when initialFiles change (module navigation)
   useEffect(() => {
@@ -520,16 +546,23 @@ export default function LearningWorkspaceClient({
   function handleGuidePanelDragStart(e: React.MouseEvent) {
     e.preventDefault();
     guidePanelDragRef.current = { startX: e.clientX, startW: guidePanelWidth };
+    document.body.style.cursor = 'col-resize';
+    document.body.style.userSelect = 'none';
+
     function onMove(ev: MouseEvent) {
       if (!guidePanelDragRef.current) return;
       const delta = ev.clientX - guidePanelDragRef.current.startX;
       setGuidePanelWidth(Math.max(240, Math.min(720, guidePanelDragRef.current.startW + delta)));
     }
+
     function onUp() {
       guidePanelDragRef.current = null;
+      document.body.style.cursor = '';
+      document.body.style.userSelect = '';
       document.removeEventListener('mousemove', onMove);
       document.removeEventListener('mouseup', onUp);
     }
+
     document.addEventListener('mousemove', onMove);
     document.addEventListener('mouseup', onUp);
   }
@@ -538,16 +571,23 @@ export default function LearningWorkspaceClient({
   function handleTerminalDragStart(e: React.MouseEvent) {
     e.preventDefault();
     terminalDragRef.current = { startY: e.clientY, startH: terminalHeight };
+    document.body.style.cursor = 'ns-resize';
+    document.body.style.userSelect = 'none';
+
     function onMove(e: MouseEvent) {
       if (!terminalDragRef.current) return;
       const delta = terminalDragRef.current.startY - e.clientY;
       setTerminalHeight(Math.max(80, Math.min(520, terminalDragRef.current.startH + delta)));
     }
+
     function onUp() {
       terminalDragRef.current = null;
+      document.body.style.cursor = '';
+      document.body.style.userSelect = '';
       document.removeEventListener('mousemove', onMove);
       document.removeEventListener('mouseup', onUp);
     }
+
     document.addEventListener('mousemove', onMove);
     document.addEventListener('mouseup', onUp);
   }
@@ -1061,7 +1101,9 @@ export default function LearningWorkspaceClient({
   }
 
   return (
-    <div className="h-screen flex flex-col bg-black text-[#d0ccc4] overflow-hidden pt-11 font-mono">
+    <div
+      className={`h-screen flex flex-col bg-black text-[#d0ccc4] overflow-hidden pt-11 font-mono transition-opacity duration-100 ${hydrated ? 'opacity-100' : 'opacity-0'}`}
+    >
 
       {/* ── Header ── */}
       <header className="shrink-0 h-11 bg-black border-b border-[#222222] flex items-center justify-between px-3 z-20">
